@@ -1,102 +1,310 @@
+# app/services/event_team_stats.py
+
 from dataclasses import dataclass
+from typing import List, Dict, Optional
+
+from fastapi import HTTPException
 
 from app.services.base import HLTVBase
 from app.utils.utils import extract_from_url, clear_number_str
 from app.utils.xpath import Events
 
+
 @dataclass
 class HLTVEventTeamStats(HLTVBase):
     """
-    A class for extract stats from a team in an specific event.
-
-    Attributes:
-        event_id (str): The HLTV event id.
-        team_id (str): The HLTV team id.
+    class for getting team stats from a specific event.
+    
+    attributes:
+        event_id: hltv event id
+        team_id: hltv team id
     """
+    
     event_id: str
     team_id: str
 
+    # ==================== INIT METHODS ====================
+
     def __post_init__(self) -> None:
-        """
-        Initializes the base class, sets the URL to the player stats tab, 
-        sends the request and check if the page is valid.
-
-        """
-        HLTVBase.__init__(self)
-        url = f"https://www.hltv.org/events/{self.event_id}/who"
-        self.URL = url
+        """setup event team stats with event and team ids."""
+        super().__post_init__()
+        
+        self.URL = f"https://www.hltv.org/events/{self.event_id}/who"
+        self.response["event_id"] = self.event_id
+        self.response["team_id"] = self.team_id
+        
+        self.logger.info(f"loading event team stats for event {self.event_id}, team {self.team_id}")
+        
         self.page = self.request_url_page()
+        
         self.raise_exception_if_not_found(xpath=Events.EventProfile.EVENT_URL)
-    def get_team_event_stats(self) -> dict:
-            """
-            Parses and returns the team stats in an specific event.
+        
+        self.logger.info(f"event page loaded for {self.event_id}")
 
-            Returns:
-                dict: A dictionary containing the team unique identifier, stats at the event, and the timestamp of when
-                the data was last updated.
-            """
+    # ==================== PARSING METHODS ====================
 
-            #placement
-            team_placement = self.get_text_by_xpath(Events.EventTeamStats.TEAM_PLACEMENT.format(team_id = self.team_id))
-            qualify_method = self.get_text_by_xpath(Events.EventTeamStats.QUALIFY_METHOD.format(team_id = self.team_id))
+    def __parse_team_placement(self) -> Dict:
+        """
+        parse team placement data.
+        
+        returns:
+            dict with team_placement (string) and qualify_method (optional)
+        """
+        data = {}
+        
+        try:
+            team_placement = self.get_text_by_xpath(
+                Events.EventTeamStats.TEAM_PLACEMENT.format(team_id=self.team_id)
+            )
+            data["team_placement"] = team_placement if team_placement else ""
             
+            qualify_method = self.get_text_by_xpath(
+                Events.EventTeamStats.QUALIFY_METHOD.format(team_id=self.team_id)
+            )
+            data["qualify_method"] = qualify_method if qualify_method else None
             
-            #lineup
-            team_lineup = self.get_all_by_xpath(Events.EventTeamStats.TEAM_LINEUP.format(team_id = self.team_id))
-            team_player_url= self.get_all_by_xpath(Events.EventTeamStats.TEAM_PLAYER_URL.format(team_id = self.team_id))
-            team_coach = self.get_text_by_xpath(Events.EventTeamStats.TEAM_COACH.format(team_id = self.team_id))
-            team_coach_url = f"http://www.hltv.org{self.get_text_by_xpath(Events.EventTeamStats.TEAM_COACH_URL.format(team_id = self.team_id))}"
-
-
-
-            #vrs
-            vrs_date = self.get_text_by_xpath(Events.EventTeamStats.VRS_DATE)
-            vrs_points_before_event = self.get_text_by_xpath(Events.EventTeamStats.VRS_POINTS_BEFORE_EVENT.format(team_id = self.team_id))      
-            vrs_points_after_event = self.get_text_by_xpath(Events.EventTeamStats.VRS_POINTS_AFTER_EVENT.format(team_id = self.team_id))
-            vrs_points_acquired = self.get_text_by_xpath(Events.EventTeamStats.VRS_POINTS_ACQUIRED.format(team_id = self.team_id))
-            vrs_placement_before_event  = clear_number_str(self.get_text_by_xpath(Events.EventTeamStats.VRS_PLACEMENT_BEFORE_EVENT.format(team_id = self.team_id)))
-            vrs_placement_after_event = clear_number_str(self.get_text_by_xpath(Events.EventTeamStats.VRS_PLACEMENT_AFTER_EVENT.format(team_id = self.team_id)))
+            self.logger.debug(f"placement: '{data['team_placement']}', qualify: {data['qualify_method']}")
             
-            #prize
-            prize = clear_number_str(self.get_text_by_xpath(Events.EventTeamStats.PRIZE.format(team_id = self.team_id)))
-            prize_club_share = clear_number_str(self.get_text_by_xpath(Events.EventTeamStats.PRIZE_CLUB_SHARE.format(team_id = self.team_id)))
+        except Exception as e:
+            self.logger.error(f"error parsing team placement: {e}")
+            data["team_placement"] = ""
+            data["qualify_method"] = None
             
-            lineup = []
+        return data
 
-            for (nickname, url) in zip(team_lineup, team_player_url):
-                 player_id = extract_from_url(url, 'id')
-                 
-                 lineup.append({
-                      "id": player_id,
-                      "nickname": nickname,
-                      "event_stats":  f"https://www.hltv.org/stats/players/{player_id}/who?event={self.event_id}"
-                 })
-            if team_coach_url: 
-                 team_coach_id = extract_from_url(team_coach_url, 'id')
+    def __parse_team_lineup(self) -> List[Dict]:
+        """
+        parse team lineup data.
+        
+        returns:
+            list of player dicts with id, nickname, event_stats url
+        """
+        lineup = []
+        
+        try:
+            team_lineup = self.get_all_by_xpath(
+                Events.EventTeamStats.TEAM_LINEUP.format(team_id=self.team_id)
+            )
+            team_player_urls = self.get_all_by_xpath(
+                Events.EventTeamStats.TEAM_PLAYER_URL.format(team_id=self.team_id)
+            )
+            
+            self.logger.debug(f"found {len(team_lineup)} players in lineup")
+            
+            for i, (nickname, url) in enumerate(zip(team_lineup, team_player_urls)):
+                try:
+                    player_id = extract_from_url(url, 'id') if url else None
+                    
+                    if player_id and nickname:
+                        lineup.append({
+                            "id": player_id,
+                            "nickname": nickname,
+                            "event_stats": f"https://www.hltv.org/stats/players/{player_id}/who?event={self.event_id}"
+                        })
+                    else:
+                        self.logger.warning(f"skipping player {i}: missing id or nickname")
+                except Exception as e:
+                    self.logger.error(f"error parsing player {i}: {e}")
+                    continue
+                    
+        except Exception as e:
+            self.logger.error(f"error parsing team lineup: {e}")
+            
+        return lineup
 
-            eventStats = {
-                "team_placement": team_placement,
-                "qualify_method": qualify_method,
-                "lineup":lineup,
-                "coach":[{
-                    "id": team_coach_id,
-                    "nickname":team_coach
-                }],
-                 "vrs":[{
-                        "vrs_date":vrs_date,
-                        "points_before_event": vrs_points_before_event,
-                        "points_after_event": vrs_points_after_event,
-                        "points_acquired": vrs_points_acquired,
-                        "placement_before_event": vrs_placement_before_event,
-                        "placement_after_event": vrs_placement_after_event
-                 }],
-                 "prize":[{
-                      "prize": prize,
-                      "club_share":prize_club_share if prize_club_share else None
-                 }]
+    def __parse_team_coach(self) -> List[Dict]:
+        """
+        parse team coach data.
+        
+        returns:
+            list with coach dict (id, nickname) or empty list
+        """
+        coach_data = []
+        
+        try:
+            team_coach = self.get_text_by_xpath(
+                Events.EventTeamStats.TEAM_COACH.format(team_id=self.team_id)
+            )
+            
+            coach_url_suffix = self.get_text_by_xpath(
+                Events.EventTeamStats.TEAM_COACH_URL.format(team_id=self.team_id)
+            )
+            
+            if team_coach and coach_url_suffix:
+                coach_url = f"https://www.hltv.org{coach_url_suffix}"
+                coach_id = extract_from_url(coach_url, 'id')
+                
+                if coach_id:
+                    coach_data.append({
+                        "id": coach_id,
+                        "nickname": team_coach
+                    })
+                    self.logger.debug(f"coach: {team_coach}")
+            
+        except Exception as e:
+            self.logger.error(f"error parsing team coach: {e}")
+            
+        return coach_data
+
+    def __parse_vrs_data(self) -> List[Dict]:
+        """
+        parse vrs ranking data.
+        
+        returns:
+            list of vrs dicts (date, points, placements)
+        """
+        vrs_list = []
+        
+        try:
+            vrs_data = {
+                "vrs_date": self.get_text_by_xpath(Events.EventTeamStats.VRS_DATE),
+                "points_before_event": self._parse_int_safe(
+                    Events.EventTeamStats.VRS_POINTS_BEFORE_EVENT.format(team_id=self.team_id)
+                ),
+                "points_after_event": self._parse_int_safe(
+                    Events.EventTeamStats.VRS_POINTS_AFTER_EVENT.format(team_id=self.team_id)
+                ),
+                "points_acquired": self._parse_int_safe(
+                    Events.EventTeamStats.VRS_POINTS_ACQUIRED.format(team_id=self.team_id)
+                ),
+                "placement_before_event": self._parse_int_safe(
+                    Events.EventTeamStats.VRS_PLACEMENT_BEFORE_EVENT.format(team_id=self.team_id),
+                    use_clear=True
+                ),
+                "placement_after_event": self._parse_int_safe(
+                    Events.EventTeamStats.VRS_PLACEMENT_AFTER_EVENT.format(team_id=self.team_id),
+                    use_clear=True
+                )
+            }
+            
+            if any(vrs_data.values()):
+                vrs_list.append(vrs_data)
+                self.logger.debug(f"vrs data parsed: before {vrs_data['placement_before_event']} → after {vrs_data['placement_after_event']}")
+            
+        except Exception as e:
+            self.logger.error(f"error parsing vrs data: {e}")
+            
+        return vrs_list
+
+    def __parse_prize_data(self) -> List[Dict]:
+        """
+        parse prize money data.
+        
+        returns:
+            list of prize dicts (prize, club_share)
+        """
+        prize_list = []
+        
+        try:
+            prize = self._parse_int_safe(
+                Events.EventTeamStats.PRIZE.format(team_id=self.team_id),
+                use_clear=True
+            )
+            
+            club_share = self._parse_int_safe(
+                Events.EventTeamStats.PRIZE_CLUB_SHARE.format(team_id=self.team_id),
+                use_clear=True
+            )
+            
+            if prize is not None:
+                prize_list.append({
+                    "prize": prize,
+                    "club_share": club_share if club_share else None
+                })
+                self.logger.debug(f"prize: {prize}, club share: {club_share}")
+            
+        except Exception as e:
+            self.logger.error(f"error parsing prize data: {e}")
+            
+        return prize_list
+
+    def _parse_int_safe(self, xpath: str, use_clear: bool = False) -> Optional[int]:
+        """
+        safely parse integer values, returning None if not found.
+        
+        args:
+            xpath: xpath to get value
+            use_clear: whether to use clear_number_str
+            
+        returns:
+            int or None
+        """
+        try:
+            value = self.get_text_by_xpath(xpath)
+            if not value:
+                return None
+            if use_clear:
+                return clear_number_str(value)
+            else:
+                try:
+                    return int(value)
+                except Exception:
+                    return None
+        except Exception:
+            return None
+
+    def __parse_all_stats(self) -> Dict:
+        """
+        parse all team stats for the event.
+        
+        returns:
+            dict with team_placement, qualify_method, lineup, coach, vrs, prize
+        """
+        self.logger.info(f"parsing stats for team {self.team_id} at event {self.event_id}")
+        
+        try:
+            placement_data = self.__parse_team_placement()
+            lineup = self.__parse_team_lineup()
+            coach = self.__parse_team_coach()
+            vrs = self.__parse_vrs_data()
+            prize = self.__parse_prize_data()
+            
+            event_stats = {
+                "team_placement": placement_data.get("team_placement", ""),
+                "qualify_method": placement_data.get("qualify_method"),
+                "lineup": lineup,
+                "coach": coach if coach else None,
+                "vrs": vrs if vrs else None,
+                "prize": prize if prize else None
+            }
+            
+            self.logger.info(f"stats parsed: {len(lineup)} players, {len(vrs)} vrs entries")
+            return event_stats
+            
+        except Exception as e:
+            self.logger.error(f"error parsing all stats: {e}")
+            return {
+                "team_placement": "",
+                "qualify_method": None,
+                "lineup": [],
+                "coach": None,
+                "vrs": None,
+                "prize": None
             }
 
-            self.response ["team_id"] = self.team_id
-            self.response ["event_id"] = self.event_id
-            self.response ["stats"] = eventStats
-            return self.response
+    # ==================== PUBLIC METHODS ====================
+
+    def get_team_event_stats(self) -> dict:
+        """
+        get team stats for specific event.
+        
+        returns:
+            dict with team_id, event_id and stats
+        """
+        try:
+            event_stats = self.__parse_all_stats()
+            
+            self.response["team_id"] = self.team_id
+            self.response["event_id"] = self.event_id
+            self.response["stats"] = event_stats
+            
+            self.logger.info(f"returning stats for team {self.team_id} at event {self.event_id}")
+            
+        except Exception as e:
+            self.logger.error(f"error in get_team_event_stats: {e}")
+            raise HTTPException(
+                status_code=500,
+                detail=f"error processing team event stats: {str(e)}"
+            )
+        
+        return self.response
