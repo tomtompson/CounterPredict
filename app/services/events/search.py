@@ -1,5 +1,8 @@
+# app/services/events_search.py
+
 from dataclasses import dataclass
-from typing import List, Dict, Optional
+from typing import List, Dict
+
 from fastapi import HTTPException
 
 from app.services.base import HLTVBase
@@ -27,12 +30,11 @@ class HLTVEventsSearch(HLTVBase):
         
         self.logger.info(f"searching events with query: {self.query}")
         
-        # fetch data
         self.page_data = self.__fetch_json()
         
         self.logger.info("event search data fetched successfully")
 
-    # ==================== FETCH METHODS ====================
+    # ==================== PRIVATE METHODS ====================
 
     def __fetch_json(self) -> dict:
         """
@@ -40,7 +42,7 @@ class HLTVEventsSearch(HLTVBase):
         
         returns:
             dict: raw json data from hltv search
-        
+            
         raises:
             http exception if request fails
         """
@@ -52,7 +54,7 @@ class HLTVEventsSearch(HLTVBase):
             self.logger.debug(f"response status: {res.status_code}")
             
             data = res.json()
-            self.logger.debug(f"json data received")
+            self.logger.debug("json data received")
             
             return data
             
@@ -69,29 +71,17 @@ class HLTVEventsSearch(HLTVBase):
         """
         parse events from search results.
         
-        extracted data:
-            - id: unique hltv event id
-            - name: event name
-            - url: link to event profile
-            - event_location: physical location
-            - prize_pool: event prize pool
-            - flag_url: country flag url
-            - event_logo_url: event logo url
-            - event_type: type of event (major, lan, etc)
-            - event_matches_url: url to event matches
-        
         returns:
-            list of event dictionaries
+            list of event dictionaries with id, name, url, event_location,
+            prize_pool, flag_url, event_logo_url, event_type, event_matches_url
         """
         results = []
         
         try:
-            # validate data structure
             if not isinstance(self.page_data, list) or len(self.page_data) == 0:
                 self.logger.warning("unexpected data structure or empty response")
                 return []
             
-            # get events from first item
             events = self.page_data[0].get("events", [])
             self.logger.info(f"found {len(events)} events for query '{self.query}'")
             
@@ -102,7 +92,6 @@ class HLTVEventsSearch(HLTVBase):
                         self.logger.debug(f"skipping event {idx}: missing id")
                         continue
                     
-                    # extract event data
                     name = event.get("name")
                     location_path = event.get("location")
                     url = f"https://www.hltv.org{location_path}" if location_path else None
@@ -116,7 +105,6 @@ class HLTVEventsSearch(HLTVBase):
                     matches_path = event.get("eventMatchesLocation")
                     event_matches_url = f"https://www.hltv.org{matches_path}" if matches_path else None
                     
-                    # build event dict
                     event_data = {
                         "id": str(event_id),
                         "name": name,
@@ -149,7 +137,7 @@ class HLTVEventsSearch(HLTVBase):
         search events and return formatted results.
         
         returns:
-            dict with query and results list
+            dict with query, results list, total count and success flag
         """
         try:
             results = self.__parse_search_results()

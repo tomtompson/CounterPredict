@@ -1,5 +1,8 @@
+# app/services/event_team_stats.py
+
 from dataclasses import dataclass
 from typing import List, Dict, Optional
+
 from fastapi import HTTPException
 
 from app.services.base import HLTVBase
@@ -26,17 +29,14 @@ class HLTVEventTeamStats(HLTVBase):
         """setup event team stats with event and team ids."""
         super().__post_init__()
         
-        url = f"https://www.hltv.org/events/{self.event_id}/who"
-        self.URL = url
+        self.URL = f"https://www.hltv.org/events/{self.event_id}/who"
         self.response["event_id"] = self.event_id
         self.response["team_id"] = self.team_id
         
         self.logger.info(f"loading event team stats for event {self.event_id}, team {self.team_id}")
         
-        # load page
         self.page = self.request_url_page()
         
-        # check if page is valid
         self.raise_exception_if_not_found(xpath=Events.EventProfile.EVENT_URL)
         
         self.logger.info(f"event page loaded for {self.event_id}")
@@ -44,15 +44,19 @@ class HLTVEventTeamStats(HLTVBase):
     # ==================== PARSING METHODS ====================
 
     def __parse_team_placement(self) -> Dict:
-        """parse team placement data."""
+        """
+        parse team placement data.
+        
+        returns:
+            dict with team_placement (string) and qualify_method (optional)
+        """
         data = {}
         
         try:
-            # IMPORTANT: ensure we always return a string, never None
             team_placement = self.get_text_by_xpath(
                 Events.EventTeamStats.TEAM_PLACEMENT.format(team_id=self.team_id)
             )
-            data["team_placement"] = team_placement if team_placement else ""  # ← FIX: default to empty string
+            data["team_placement"] = team_placement if team_placement else ""
             
             qualify_method = self.get_text_by_xpath(
                 Events.EventTeamStats.QUALIFY_METHOD.format(team_id=self.team_id)
@@ -63,13 +67,18 @@ class HLTVEventTeamStats(HLTVBase):
             
         except Exception as e:
             self.logger.error(f"error parsing team placement: {e}")
-            data["team_placement"] = ""  # ← FIX: default on error
+            data["team_placement"] = ""
             data["qualify_method"] = None
             
         return data
 
     def __parse_team_lineup(self) -> List[Dict]:
-        """parse team lineup data."""
+        """
+        parse team lineup data.
+        
+        returns:
+            list of player dicts with id, nickname, event_stats url
+        """
         lineup = []
         
         try:
@@ -86,7 +95,7 @@ class HLTVEventTeamStats(HLTVBase):
                 try:
                     player_id = extract_from_url(url, 'id') if url else None
                     
-                    if player_id and nickname:  # only add if we have required fields
+                    if player_id and nickname:
                         lineup.append({
                             "id": player_id,
                             "nickname": nickname,
@@ -94,7 +103,6 @@ class HLTVEventTeamStats(HLTVBase):
                         })
                     else:
                         self.logger.warning(f"skipping player {i}: missing id or nickname")
-                        
                 except Exception as e:
                     self.logger.error(f"error parsing player {i}: {e}")
                     continue
@@ -105,7 +113,12 @@ class HLTVEventTeamStats(HLTVBase):
         return lineup
 
     def __parse_team_coach(self) -> List[Dict]:
-        """parse team coach data."""
+        """
+        parse team coach data.
+        
+        returns:
+            list with coach dict (id, nickname) or empty list
+        """
         coach_data = []
         
         try:
@@ -121,12 +134,11 @@ class HLTVEventTeamStats(HLTVBase):
                 coach_url = f"https://www.hltv.org{coach_url_suffix}"
                 coach_id = extract_from_url(coach_url, 'id')
                 
-                if coach_id:  # only add if we have id
+                if coach_id:
                     coach_data.append({
                         "id": coach_id,
                         "nickname": team_coach
                     })
-                    
                     self.logger.debug(f"coach: {team_coach}")
             
         except Exception as e:
@@ -135,7 +147,12 @@ class HLTVEventTeamStats(HLTVBase):
         return coach_data
 
     def __parse_vrs_data(self) -> List[Dict]:
-        """parse vrs ranking data."""
+        """
+        parse vrs ranking data.
+        
+        returns:
+            list of vrs dicts (date, points, placements)
+        """
         vrs_list = []
         
         try:
@@ -160,7 +177,6 @@ class HLTVEventTeamStats(HLTVBase):
                 )
             }
             
-            # only add if we have at least some data
             if any(vrs_data.values()):
                 vrs_list.append(vrs_data)
                 self.logger.debug(f"vrs data parsed: before {vrs_data['placement_before_event']} → after {vrs_data['placement_after_event']}")
@@ -171,7 +187,12 @@ class HLTVEventTeamStats(HLTVBase):
         return vrs_list
 
     def __parse_prize_data(self) -> List[Dict]:
-        """parse prize money data."""
+        """
+        parse prize money data.
+        
+        returns:
+            list of prize dicts (prize, club_share)
+        """
         prize_list = []
         
         try:
@@ -185,13 +206,11 @@ class HLTVEventTeamStats(HLTVBase):
                 use_clear=True
             )
             
-            # only add if we have prize data
             if prize is not None:
                 prize_list.append({
                     "prize": prize,
                     "club_share": club_share if club_share else None
                 })
-                
                 self.logger.debug(f"prize: {prize}, club share: {club_share}")
             
         except Exception as e:
@@ -214,16 +233,14 @@ class HLTVEventTeamStats(HLTVBase):
             value = self.get_text_by_xpath(xpath)
             if not value:
                 return None
-                
             if use_clear:
                 return clear_number_str(value)
             else:
-                # try direct conversion
                 try:
                     return int(value)
-                except:
+                except Exception:
                     return None
-        except:
+        except Exception:
             return None
 
     def __parse_all_stats(self) -> Dict:
@@ -231,21 +248,19 @@ class HLTVEventTeamStats(HLTVBase):
         parse all team stats for the event.
         
         returns:
-            dict with all stats organized
+            dict with team_placement, qualify_method, lineup, coach, vrs, prize
         """
         self.logger.info(f"parsing stats for team {self.team_id} at event {self.event_id}")
         
         try:
-            # parse each section
             placement_data = self.__parse_team_placement()
             lineup = self.__parse_team_lineup()
             coach = self.__parse_team_coach()
             vrs = self.__parse_vrs_data()
             prize = self.__parse_prize_data()
             
-            # build complete stats - ensure team_placement is always string
             event_stats = {
-                "team_placement": placement_data.get("team_placement", ""),  # ← FIX: default empty string
+                "team_placement": placement_data.get("team_placement", ""),
                 "qualify_method": placement_data.get("qualify_method"),
                 "lineup": lineup,
                 "coach": coach if coach else None,
@@ -254,12 +269,10 @@ class HLTVEventTeamStats(HLTVBase):
             }
             
             self.logger.info(f"stats parsed: {len(lineup)} players, {len(vrs)} vrs entries")
-            
             return event_stats
             
         except Exception as e:
             self.logger.error(f"error parsing all stats: {e}")
-            # return default structure on error
             return {
                 "team_placement": "",
                 "qualify_method": None,
@@ -276,7 +289,7 @@ class HLTVEventTeamStats(HLTVBase):
         get team stats for specific event.
         
         returns:
-            dict with team id, event id and stats
+            dict with team_id, event_id and stats
         """
         try:
             event_stats = self.__parse_all_stats()

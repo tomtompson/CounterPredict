@@ -1,5 +1,8 @@
+# app/services/event_profile.py
+
 from dataclasses import dataclass
-from typing import List, Dict, Optional
+from typing import List, Dict
+
 from fastapi import HTTPException
 
 from app.services.base import HLTVBase
@@ -24,13 +27,11 @@ class HLTVEventProfile(HLTVBase):
         """setup event profile with event id."""
         super().__post_init__()
         
-        url = f"https://www.hltv.org/events/{self.event_id}/who"
-        self.URL = url
+        self.URL = f"https://www.hltv.org/events/{self.event_id}/who"
         self.response["id"] = self.event_id
         
         self.logger.info(f"loading event profile for event {self.event_id}")
         
-        # load page
         self.page = self.request_url_page()
         
         self.logger.info(f"event page loaded for {self.event_id}")
@@ -42,12 +43,11 @@ class HLTVEventProfile(HLTVBase):
         parse event profile data from page.
         
         returns:
-            dict with all event profile data
+            dict with all event profile data (name, dates, teams, prize, location, mvp, evps)
         """
         self.logger.info("parsing event profile")
         
         try:
-            # ===== BASIC INFO =====
             event_name = self.get_text_by_xpath(Events.EventProfile.EVENT_NAME)
             team_count = self.get_text_by_xpath(Events.EventProfile.TEAM_COUNT)
             event_start_date = self.get_text_by_xpath(Events.EventProfile.EVENT_START_DATE)
@@ -61,7 +61,6 @@ class HLTVEventProfile(HLTVBase):
             
             self.logger.debug(f"basic info: {event_name}, {event_location}, prize: {prize_pool}")
             
-            # ===== MVP =====
             mvp_list = None
             event_mvp_nickname = self.get_text_by_xpath(Events.EventProfile.EVENT_MVP_NICKNAME)
             event_mvp_url_suffix = self.get_text_by_xpath(Events.EventProfile.EVENT_MVP_URL)
@@ -77,7 +76,6 @@ class HLTVEventProfile(HLTVBase):
                 }]
                 self.logger.debug(f"mvp: {event_mvp_nickname}")
             
-            # ===== TEAMS =====
             team_names = self.get_all_by_xpath(Events.EventProfile.TEAM_NAME)
             team_urls = self.get_all_by_xpath(Events.EventProfile.TEAM_URL)
             team_placements = self.get_all_by_xpath(Events.EventProfile.TEAM_PLACEMENT)
@@ -88,7 +86,6 @@ class HLTVEventProfile(HLTVBase):
             for i, (name, url, placement) in enumerate(zip(team_names, team_urls, team_placements)):
                 try:
                     team_id = extract_from_url(url, 'id') if url else None
-                    
                     team_list.append({
                         "id": team_id,
                         "name": name,
@@ -98,7 +95,6 @@ class HLTVEventProfile(HLTVBase):
                     self.logger.error(f"error parsing team {i}: {e}")
                     continue
             
-            # ===== EVPS =====
             evp_nicknames = self.get_all_by_xpath(Events.EventProfile.EVENT_EVPS_NICKNAME)
             evp_urls = self.get_all_by_xpath(Events.EventProfile.EVENT_EVPS_URL)
             
@@ -108,7 +104,6 @@ class HLTVEventProfile(HLTVBase):
             for i, (nickname, url) in enumerate(zip(evp_nicknames, evp_urls)):
                 try:
                     evp_id = extract_from_url(url, 'id') if url else None
-                    
                     evps_list.append({
                         "id": evp_id,
                         "nickname": nickname,
@@ -118,7 +113,6 @@ class HLTVEventProfile(HLTVBase):
                     self.logger.error(f"error parsing evp {i}: {e}")
                     continue
             
-            # ===== BUILD RESULT =====
             result = {
                 "name": event_name,
                 "start_date": event_start_date,
