@@ -1,5 +1,8 @@
+# app/services/live_matches.py
+
 from dataclasses import dataclass
 from typing import List, Dict, Optional
+
 from fastapi import HTTPException
 
 from app.services.base import HLTVBase
@@ -23,42 +26,47 @@ class HLTVLiveMatches(HLTVBase):
         
         self.logger.info("loading live matches")
         
-        # load page
         self.page = self.request_url_page()
         
         self.logger.info("matches page loaded successfully")
 
-    # ==================== PARSING METHODS ====================
+    # ==================== PRIVATE METHODS ====================
 
     def __get_live_match_containers(self) -> List:
         """
         find only live match containers (with live="true" attribute).
+        
+        returns:
+            list of lxml elements representing live match containers
         """
         containers = self.get_elements_by_xpath(Matches.LiveMatches.LIVE_MATCH_CONTAINER)
         self.logger.info(f"found {len(containers)} live matches")
         return containers
 
+    # ==================== PARSING METHODS ====================
+
     def __parse_match_data(self, match_element) -> Optional[Dict]:
         """
         parse data from a single live match element.
+        
+        args:
+            match_element: lxml element for the match
+            
+        returns:
+            dict with match data or None if error
         """
         try:
-            # ===== TEAM NAMES =====
             team_a_name = self.get_text_by_xpath(Matches.LiveMatches.TEAM, element=match_element)
             team_b_name = self.get_text_by_xpath(Matches.LiveMatches.TEAM, pos=1, element=match_element)
             
-            # ===== TEAM IDs =====
             team_a_id = match_element.get('team1')
             team_b_id = match_element.get('team2')
             
-            # ===== TOURNAMENT =====
             tournament_name = self.get_text_by_xpath(Matches.LiveMatches.TOURNAMENT_NAME, element=match_element)
             tournament_id = match_element.get('data-event-id')
             
-            # ===== MATCH TYPE =====
             match_type = self.get_text_by_xpath(Matches.LiveMatches.MATCH_TYPE, element=match_element)
             
-            # ===== MATCH URL =====
             match_url = self.get_text_by_xpath(Matches.LiveMatches.MATCH_URL, element=match_element)
             if match_url and not match_url.startswith('http'):
                 match_url = f"https://www.hltv.org{match_url}"
@@ -92,11 +100,13 @@ class HLTVLiveMatches(HLTVBase):
     def __parse_live_matches(self) -> List[Dict]:
         """
         parse all live matches from page.
+        
+        returns:
+            list of live match dictionaries
         """
         live_matches = []
         
         try:
-            # get ONLY live match containers
             match_containers = self.__get_live_match_containers()
             
             if not match_containers:
@@ -123,6 +133,9 @@ class HLTVLiveMatches(HLTVBase):
     def get_live_matches(self) -> dict:
         """
         get all live matches following schema.
+        
+        returns:
+            dict with liveMatchsCount and liveMatchs list
         """
         try:
             live_matches = self.__parse_live_matches()
