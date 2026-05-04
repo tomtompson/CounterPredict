@@ -1,6 +1,9 @@
 from dataclasses import dataclass
 from typing import Dict, Optional
 from fastapi import HTTPException
+import os
+import time
+from datetime import datetime
 
 from app.services.base import HLTVBase
 from app.utils.utils import extract_float_from_percentage_number, convert_minutes_to_seconds, parse_float
@@ -18,25 +21,25 @@ class HLTVPlayerStats(HLTVBase):
     
     player_id: str
 
-    # ==================== INIT METHODS ====================
-
     def __post_init__(self) -> None:
         """setup stats with player id."""
         super().__post_init__()
         
-        url = f"https://www.hltv.org/stats/players/{self.player_id}/who"
-        self.URL = url
+        self.URL = f"https://www.hltv.org/stats/players/{self.player_id}/diddy"
         self.response["id"] = self.player_id
         
         self.logger.info(f"loading stats for player {self.player_id}")
         
-        # load page
-        self.page = self.request_url_page()
-        
-        # check if page is valid
-        self.raise_exception_if_not_found(xpath=Players.Profile.URL)
+        try:
+            self.page = self.request_url_page()
+        except HTTPException as e:
+            if e.status_code == 403:
+                self.logger.error(f"403 Forbidden for player {self.player_id}. Saving response for debugging.")
+               ##self._debug_fetch_and_save(self.URL)
+            raise e
         
         self.logger.info(f"stats page loaded for player {self.player_id}")
+
 
     # ==================== PARSING METHODS ====================
 
@@ -231,7 +234,7 @@ class HLTVPlayerStats(HLTVBase):
             player_stats = self.__parse_all_stats()
             
             self.response["id"] = self.player_id
-            self.response["stats"] = [player_stats]
+            self.response["stats"] = player_stats  # note: returns dict, not list
             
             self.logger.info(f"returning stats for player {self.player_id}")
             
