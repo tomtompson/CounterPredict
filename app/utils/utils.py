@@ -1,7 +1,77 @@
 import re
+import pytz
+import requests
 
+from typing import Optional, Dict, Callable, Any
 from typing import Optional , Union
 from datetime import datetime
+from lxml import etree
+
+
+
+def extract_date_from_headline(
+    section_element: etree._Element,
+    get_text_by_xpath: Callable[[str, Any], Optional[str]]
+) -> Optional[str]:
+    """
+    extract date (YYYY-MM-DD) from section headline.
+
+    args:
+        section_element: lxml element of the section
+        get_text_by_xpath: function to extract text from element with xpath
+                           (signature: (xpath, element=...) -> Optional[str])
+
+    returns:
+        date string or None
+    """
+    headline = get_text_by_xpath(
+        ".//div[contains(@class, 'matches-list-headline')]/text()",
+        element=section_element
+    )
+    if headline:
+        match = re.search(r'(\d{4}-\d{2}-\d{2})', headline)
+        if match:
+            return match.group(1)
+    return None
+
+
+def convert_timestamp_to_user_timezone(
+    timestamp_ms: float,
+    user_timezone: str = "UTC",
+    logger: Optional[Any] = None
+) -> Optional[Dict]:
+    """
+    convert UTC timestamp (ms) to user's timezone.
+
+    args:
+        timestamp_ms: timestamp in milliseconds since epoch (UTC)
+        user_timezone: IANA timezone name (e.g., "America/Sao_Paulo")
+        logger: optional logger for error messages
+
+    returns:
+        dict with keys: date_str, time_str, datetime_str, weekday, timezone
+        or None if conversion fails.
+    """
+    if not timestamp_ms:
+        return None
+
+    try:
+        dt_utc = datetime.utcfromtimestamp(timestamp_ms / 1000)
+        dt_utc = pytz.UTC.localize(dt_utc)
+        tz = pytz.timezone(user_timezone)
+        dt_local = dt_utc.astimezone(tz)
+
+        return {
+            "date_str": dt_local.strftime("%Y-%m-%d"),
+            "time_str": dt_local.strftime("%H:%M"),
+            "datetime_str": dt_local.strftime("%Y-%m-%d %H:%M:%S"),
+            "weekday": dt_local.strftime("%A"),
+            "timezone": user_timezone
+        }
+    except Exception as e:
+        if logger:
+            logger.error(f"failed to convert timestamp {timestamp_ms} to {user_timezone}: {e}")
+        return None
 
 def trim(text: Union[list, str]) -> str:
     """
@@ -218,3 +288,11 @@ def parse_date (date: str) -> str:
             return None
 
     return None
+
+
+def get_common_timezones() -> list[str]:
+    """
+    Return a list of common IANA timezone names.
+    Useful for dropdowns in API parameters.
+    """
+    return pytz.common_timezones
