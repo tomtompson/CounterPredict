@@ -20,7 +20,7 @@ from app.services.players.careerStats import HLTVPlayerCareerStats
 
 router = APIRouter()
 
-@router.get("/search/{player_name}",  response_model = PlayerSearch, response_model_exclude_none=True)
+@router.get("/{player_name}/search",  response_model = PlayerSearch, response_model_exclude_none=True)
 def search_players(player_name: str):
  
     hltv = HLTVPlayerSearch(query= player_name)
@@ -52,14 +52,14 @@ def get_player_trophies(player_id: str):
     player_trophies = hltv.get_player_trophies()
     return player_trophies
 
-@router.get("/{player_id}/stats", response_model = PlayerStats, response_model_exclude_none=True)
-def get_player_stats(player_id: str):
+#@router.get("/{player_id}/stats", response_model = PlayerStats, response_model_exclude_none=True)
+#def get_player_stats(player_id: str):
     hltv = HLTVPlayerStats(player_id=player_id)
     player_stats = hltv.get_player_stats()
     return player_stats
 
-@router.get("/{player_id}/career_stats", response_model = PlayerCareerStats, response_model_exclude_none=True)
-def get_player_career_stats(player_id: str):
+#@router.get("/{player_id}/career_stats", response_model = PlayerCareerStats, response_model_exclude_none=True)
+#def get_player_career_stats(player_id: str):
     hltv = HLTVPlayerCareerStats(player_id=player_id)
     player_career_stats = hltv.get_player_career_stats()
     return player_career_stats

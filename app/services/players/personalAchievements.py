@@ -1,7 +1,9 @@
+# app/services/player_personal_achievements.py
+
 from dataclasses import dataclass
 from typing import List, Dict, Optional
-from fastapi import HTTPException
 
+from fastapi import HTTPException
 
 from app.services.base import HLTVBase
 from app.utils.utils import trim
@@ -25,16 +27,13 @@ class HLTVPlayerPersonalAchievements(HLTVBase):
         """setup personal achievements with player id."""
         super().__post_init__()
         
-        url = f"https://www.hltv.org/player/{self.player_id}/who#tab-trophiesBox"
-        self.URL = url
+        self.URL = f"https://www.hltv.org/player/{self.player_id}/who#tab-trophiesBox"
         self.response["id"] = self.player_id
         
         self.logger.info(f"loading personal achievements for player {self.player_id}")
         
-        # load page
         self.page = self.request_url_page()
         
-        # check if page is valid
         self.raise_exception_if_not_found(xpath=Players.Profile.URL)
         
         self.logger.info(f"page loaded for player {self.player_id}")
@@ -53,7 +52,6 @@ class HLTVPlayerPersonalAchievements(HLTVBase):
         try:
             self.logger.info("parsing personal achievements")
             
-            # ===== TOP 20 LIST =====
             placements = self.get_all_by_xpath(Players.personalAchievements.TOP_20_PLACEMENT)
             years = self.get_all_by_xpath(Players.personalAchievements.TOP_20_YEAR)
             article_urls = self.get_all_by_xpath(Players.personalAchievements.TOP_20_ARTICLE_URL)
@@ -76,28 +74,24 @@ class HLTVPlayerPersonalAchievements(HLTVBase):
                     self.logger.error(f"error parsing top20 item {i}: {e}")
                     continue
             
-            # ===== MAJOR STATS =====
             major_winner_count = self.get_text_by_xpath(Players.personalAchievements.MAJOR_WINNER_COUNT)
             major_mvp_count = self.get_text_by_xpath(Players.personalAchievements.MAJOR_MVP_COUNT)
             mvp_winner_count = self.get_text_by_xpath(Players.personalAchievements.MVP_WINNER_COUNT)
             
             self.logger.debug(f"major winner: {major_winner_count}, major mvp: {major_mvp_count}, mvp count: {mvp_winner_count}")
             
-            # ===== MVP WINNER LIST =====
             raw_mvp_winner = self.get_text_by_xpath(Players.personalAchievements.MVP_WINNER)
             
             if raw_mvp_winner:
-                mvp_winner = raw_mvp_winner.split('\n')[1:]  # skip first empty line
+                mvp_winner = raw_mvp_winner.split('\n')[1:]
                 self.logger.debug(f"mvp winner list: {len(mvp_winner)} items")
             else:
                 mvp_winner = []
                 self.logger.debug("no mvp winner list found")
             
-            # ===== EVP LIST =====
             evp_at = self.get_all_by_xpath(Players.personalAchievements.EVP)
             self.logger.debug(f"evp list: {len(evp_at)} items")
             
-            # ===== BUILD RESULT DICT =====
             achievements = {
                 "major_winner_count": major_winner_count if major_winner_count else None,
                 "major_mvp_count": major_mvp_count if major_mvp_count else None,

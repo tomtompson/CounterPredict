@@ -1,6 +1,10 @@
+# app/services/players_trophies.py
+
 from dataclasses import dataclass
-from typing import List, Dict, Optional
+from typing import List, Dict
+
 from fastapi import HTTPException
+
 from app.services.base import HLTVBase
 from app.utils.utils import trim, extract_from_url
 from app.utils.xpath import Players
@@ -23,16 +27,13 @@ class HLTVPlayersTrophies(HLTVBase):
         """setup trophies with player id."""
         super().__post_init__()
         
-        url = f"https://www.hltv.org/player/{self.player_id}/who#tab-trophiesBox"
-        self.URL = url
+        self.URL = f"https://www.hltv.org/player/{self.player_id}/who#tab-trophiesBox"
         self.response["id"] = self.player_id
         
         self.logger.info(f"loading trophies for player {self.player_id}")
         
-        # load page
         self.page = self.request_url_page()
         
-        # check if page is valid
         self.raise_exception_if_not_found(xpath=Players.Profile.URL)
         
         self.logger.info(f"page loaded for player {self.player_id}")
@@ -49,7 +50,6 @@ class HLTVPlayersTrophies(HLTVBase):
         trophies_data = []
         
         try:
-            # get all trophy data
             tournament_names = self.get_all_by_xpath(Players.Trophies.TOURNAMENT_NAME)
             trophy_images = self.get_all_by_xpath(Players.Trophies.TROPHY_IMG_URL)
             tournament_urls = self.get_all_by_xpath(Players.Trophies.TOURNAMENT_URL)
@@ -57,7 +57,6 @@ class HLTVPlayersTrophies(HLTVBase):
             self.logger.info(f"found {len(tournament_names)} trophies")
             self.logger.debug(f"images: {len(trophy_images)}, urls: {len(tournament_urls)}")
             
-            # extract ids from urls
             tournament_ids = []
             for url in tournament_urls:
                 try:
@@ -67,7 +66,6 @@ class HLTVPlayersTrophies(HLTVBase):
                     self.logger.error(f"error extracting id from url {url}: {e}")
                     tournament_ids.append(None)
             
-            # build trophy list
             for i, (name, img_url, url, tid) in enumerate(zip(
                 tournament_names, trophy_images, tournament_urls, tournament_ids
             )):
@@ -78,9 +76,7 @@ class HLTVPlayersTrophies(HLTVBase):
                         "tournament_url": f"https://www.hltv.org{url}" if url else None,
                         "tournament_id": tid if tid else None
                     }
-                    
                     trophies_data.append(trophy)
-                    
                 except Exception as e:
                     self.logger.error(f"error building trophy {i}: {e}")
                     continue

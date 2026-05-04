@@ -1,7 +1,8 @@
+# app/services/player_search.py
+
 from dataclasses import dataclass
 import json
 import brotli
-import time
 from typing import Optional, List, Dict
 
 from app.services.base import HLTVBase
@@ -13,6 +14,8 @@ from fastapi import HTTPException
 class HLTVPlayerSearch(HLTVBase):
     """
     class for searching players on hltv and getting search results.
+    attributes:
+        query: query for hltv player search
     """
     
     query: str
@@ -27,13 +30,12 @@ class HLTVPlayerSearch(HLTVBase):
         self.response["query"] = self.query
         
         # headers for ajax json requests
-        self.scraper.headers.update({
+        self._session.headers.update({
             "X-Requested-With": "XMLHttpRequest",
             "Accept": "application/json, text/javascript, */*; q=0.01",
-            "Accept-Encoding": "gzip, deflate, br",  # need brotli support
+            "Accept-Encoding": "gzip, deflate, br",
         })
         
-        # fetch the data
         self.logger.info(f"searching for players with query: {self.query}")
         self.page_data = self.__fetch_json()
 
@@ -41,68 +43,48 @@ class HLTVPlayerSearch(HLTVBase):
 
     def __fetch_json(self) -> dict:
         """
-        make get request and return json data.
-        handles brotli and retries.
+        make a single get request and return json data.
+        handles brotli and raises on failure.
+        
+        returns:
+            parsed json dict
+            
+        raises:
+            HTTPException: if blocked, invalid json, or request error
         """
-        max_retries = 3
-        
-        for attempt in range(max_retries):
+        try:
+            res = self.make_request(self.URL)
+            
+            self.logger.info(f"request completed - status: {res.status_code}")
+            self.logger.debug(f"content-type: {res.headers.get('content-type')}")
+            self.logger.debug(f"content-encoding: {res.headers.get('content-encoding')}")
+            
+            decoded = self.__decode_response(res)
+            
+            if self.__is_blocked(decoded):
+                self.logger.error("cloudflare block detected")
+                raise HTTPException(
+                    status_code=403,
+                    detail="access blocked by cloudflare"
+                )
+            
             try:
-                res = self.make_request(self.URL)
+                data = json.loads(decoded)
+                self.logger.info("successfully parsed json data")
+                return data
+            except json.JSONDecodeError as e:
+                self.logger.error(f"json decode error: {e}")
+                self.logger.debug(f"response preview: {decoded[:500]}")
+                raise HTTPException(
+                    status_code=500,
+                    detail="response is not valid json. probably blocked by cloudflare."
+                )
                 
-                self.logger.info(f"search attempt {attempt + 1}/{max_retries}")
-                self.logger.debug(f"status: {res.status_code}")
-                self.logger.debug(f"content-type: {res.headers.get('content-type')}")
-                self.logger.debug(f"content-encoding: {res.headers.get('content-encoding')}")
-                
-                # decode content
-                decoded = self.__decode_response(res)
-                
-                # check for cloudflare block
-                if self.__is_blocked(decoded):
-                    self.logger.warning(f"cloudflare block detected on attempt {attempt + 1}")
-                    
-                    if attempt < max_retries - 1:
-                        wait_time = 10 * (attempt + 1)
-                        self.logger.info(f"waiting {wait_time}s before retry...")
-                        time.sleep(wait_time)
-                        
-                        # recreate scraper on last retry
-                        if attempt == max_retries - 2:
-                            self.logger.info("recreating scraper...")
-                            self.__post_init__()
-                        continue
-                
-                # try to parse json
-                try:
-                    data = json.loads(decoded)
-                    self.logger.info(f"successfully got json data")
-                    return data
-                except json.JSONDecodeError as e:
-                    self.logger.error(f"json decode error: {e}")
-                    self.logger.debug(f"response preview: {decoded[:500]}")
-                    
-                    if attempt < max_retries - 1:
-                        wait_time = 5 * (attempt + 1)
-                        self.logger.info(f"retrying in {wait_time}s...")
-                        time.sleep(wait_time)
-                        continue
-                    
-                    raise HTTPException(
-                        status_code=500,
-                        detail="response is not valid json. probably blocked by cloudflare."
-                    )
-                    
-            except Exception as e:
-                self.logger.error(f"error on attempt {attempt + 1}: {e}")
-                if attempt < max_retries - 1:
-                    wait_time = 5 * (attempt + 1)
-                    self.logger.info(f"retrying in {wait_time}s...")
-                    time.sleep(wait_time)
-                    continue
-                raise
-        
-        raise HTTPException(status_code=500, detail="max retries exceeded")
+        except HTTPException:
+            raise
+        except Exception as e:
+            self.logger.error(f"request failed: {e}")
+            raise HTTPException(status_code=500, detail=f"failed to fetch search results: {str(e)}")
 
     def __decode_response(self, response) -> str:
         """
@@ -117,7 +99,6 @@ class HLTVPlayerSearch(HLTVBase):
         content_encoding = response.headers.get('Content-Encoding', '')
         content = response.content
         
-        # try brotli first
         if 'br' in content_encoding:
             try:
                 content = brotli.decompress(content)
@@ -126,7 +107,6 @@ class HLTVPlayerSearch(HLTVBase):
             except Exception as e:
                 self.logger.warning(f"brotli failed: {e}")
         
-        # fallback to normal decode
         try:
             return response.text
         except:
@@ -172,7 +152,6 @@ class HLTVPlayerSearch(HLTVBase):
         results = []
         
         try:
-            # check data structure
             if not isinstance(self.page_data, list):
                 self.logger.warning(f"unexpected data type: {type(self.page_data)}")
                 return []
@@ -181,7 +160,6 @@ class HLTVPlayerSearch(HLTVBase):
                 self.logger.info("empty response from api")
                 return []
             
-            # get players from first item
             first_item = self.page_data[0]
             players = first_item.get("players", [])
             
@@ -193,21 +171,17 @@ class HLTVPlayerSearch(HLTVBase):
                     if not player_id:
                         continue
                     
-                    # extract player data
                     first_name = player.get("firstName", "")
                     last_name = player.get("lastName", "")
                     full_name = f"{first_name} {last_name}".strip()
                     nickname = player.get("nickName", "")
                     flag_url = player.get("flagUrl", "")
                     
-                    # use nickname if name is empty
                     if not full_name and nickname:
                         full_name = nickname
                     
-                    # get nationality from flag
                     nationality = extract_country_name_from_flag_url(flag_url)
                     
-                    # build profile url
                     profile_url = None
                     if player.get('location'):
                         profile_url = f"https://www.hltv.org{player.get('location')}"

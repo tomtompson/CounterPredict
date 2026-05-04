@@ -1,9 +1,12 @@
+# app/services/player_team_achievements.py
+
 from dataclasses import dataclass
 from typing import List, Dict, Optional
-from fastapi import HTTPException
+
 from app.services.base import HLTVBase
 from app.utils.utils import trim, extract_from_url
 from app.utils.xpath import Players
+from fastapi import HTTPException
 
 
 @dataclass
@@ -23,16 +26,13 @@ class HLTVPlayerTeamAchievements(HLTVBase):
         """setup achievements with player id."""
         super().__post_init__()
         
-        url = f"https://www.hltv.org/player/{self.player_id}/who#tab-achievementBox"
-        self.URL = url
+        self.URL = f"https://www.hltv.org/player/{self.player_id}/who#tab-achievementBox"
         self.response["id"] = self.player_id
         
         self.logger.info(f"loading achievements for player {self.player_id}")
         
-        # load page
         self.page = self.request_url_page()
         
-        # check if page is valid
         self.raise_exception_if_not_found(xpath=Players.Profile.URL)
         
         self.logger.info(f"page loaded for player {self.player_id}")
@@ -49,40 +49,32 @@ class HLTVPlayerTeamAchievements(HLTVBase):
         achievements_data = []
         
         try:
-            # get all achievement rows
             achievement_rows = self.page.xpath(Players.teamAchievements.ROWS)
             self.logger.info(f"found {len(achievement_rows)} achievement rows")
             
             for idx, row in enumerate(achievement_rows):
                 try:
-                    # placement
                     placement_list = row.xpath(Players.teamAchievements.PLACEMENT)
                     placement = trim(placement_list[0]) if placement_list else None
                     
-                    # team name
                     team_name_list = row.xpath(Players.teamAchievements.TEAM_NAME)
                     team_name = trim(team_name_list[0]) if team_name_list else None
                     
-                    # team url
                     team_url_list = row.xpath(Players.teamAchievements.TEAM_URL)
                     team_url = trim(team_url_list[0]) if team_url_list else None
                     team_id = extract_from_url(team_url, "id") if team_url else None
                     
-                    # tournament name
                     tourney_name_list = row.xpath(Players.teamAchievements.TOURNAMENT_NAME)
                     tourney_name = trim(tourney_name_list[0]) if tourney_name_list else None
                     
-                    # tournament url
                     tourney_url_list = row.xpath(Players.teamAchievements.TOURNAMENT_URL)
                     tourney_url = trim(tourney_url_list[0]) if tourney_url_list else None
                     tourney_id = extract_from_url(tourney_url, "id") if tourney_url else None
                     
-                    # player stats url
                     stats_url_list = row.xpath(Players.teamAchievements.PLAYER_STATS_URL)
                     stats_path = trim(stats_url_list[0]) if stats_url_list else None
                     player_stats_url = f"https://www.hltv.org/{stats_path}" if stats_path else None
                     
-                    # build achievement dict
                     achievement = {
                         "placement": placement,
                         "team": {
