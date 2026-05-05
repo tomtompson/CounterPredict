@@ -3,16 +3,18 @@
 import logging
 import random
 from dataclasses import dataclass, field
-from typing import Optional, Dict, List
-from xml.etree import ElementTree
+from typing import TYPE_CHECKING
 
+import requests
 from bs4 import BeautifulSoup
 from fastapi import HTTPException
 from lxml import etree
 from requests import Response, TooManyRedirects
-import requests
 
 from app.utils.utils import trim
+
+if TYPE_CHECKING:
+    from xml.etree import ElementTree as ET
 
 logger = logging.getLogger(__name__)
 
@@ -32,12 +34,12 @@ _SEC_CH_UA = [
 _ACCEPT_LANGUAGES = ["pt-BR,pt;q=0.9,en;q=0.8", "en-US,en;q=0.9,pt;q=0.8"]
 
 
-def _get_random_headers() -> Dict[str, str]:
-    """
-    generate random HTTP headers to avoid fingerprinting.
-    
-    returns:
+def _get_random_headers() -> dict[str, str]:
+    """Generate random HTTP headers to avoid fingerprinting.
+
+    Returns:
         dict with headers
+
     """
     ua = random.choice(_USER_AGENTS)
     sec_ch_ua = random.choice(_SEC_CH_UA)
@@ -63,14 +65,15 @@ def _get_random_headers() -> Dict[str, str]:
 
 # ==================== BASE CLASS ====================
 
+
 @dataclass
 class HLTVBase:
-    """
-    class for making HTTP requests to HLTV and extracting data from web pages.
-    
-    attributes:
+    """class for making HTTP requests to HLTV and extracting data from web pages.
+
+    Attributes:
         response (dict): stores the response data (results, metadata, etc.)
         use_proxy (bool): if True, proxy support can be enabled (reserved for future)
+
     """
 
     URL: str = field(init=False)
@@ -80,53 +83,59 @@ class HLTVBase:
     # ==================== INIT METHODS ====================
 
     def __post_init__(self) -> None:
-        """initialize the session and logging after dataclass init."""
+        """Initialize the session and logging after dataclass init."""
         self._init_session()
         self._init_logging()
 
     def _init_session(self) -> None:
-        """
-        create a new HTTP session with TLS fingerprint spoofing.
+        """Create a new HTTP session with TLS fingerprint spoofing.
         uses curl_cffi if available, otherwise falls back to cloudscraper.
         """
         try:
             from curl_cffi import requests as curl_requests
+
             self._session = curl_requests.Session(impersonate="chrome124")
             logger.info("using curl_cffi session with chrome 124 impersonate")
         except ImportError:
             import cloudscraper
+
             self._session = cloudscraper.create_scraper(
-                interpreter='nodejs',
+                interpreter="nodejs",
                 delay=15,
-                browser={"browser": "chrome", "platform": "windows", "desktop": True, "mobile": False}
+                browser={
+                    "browser": "chrome",
+                    "platform": "windows",
+                    "desktop": True,
+                    "mobile": False,
+                },
             )
             logger.info("using cloudscraper fallback session")
         self._session.headers.update(_get_random_headers())
 
     def _init_logging(self) -> None:
-        """set up a logger instance for the class."""
+        """Set up a logger instance for the class."""
         self.logger = logger
 
     def _refresh_headers(self) -> None:
-        """update session headers with a fresh random set."""
+        """Update session headers with a fresh random set."""
         self._session.headers.update(_get_random_headers())
 
     # ==================== REQUEST METHODS ====================
 
-    def make_request(self, url: Optional[str] = None) -> Response:
-        """
-        perform a single HTTP GET request with fresh headers.
-        
-        args:
+    def make_request(self, url: str | None = None) -> Response:
+        """Perform a single HTTP GET request with fresh headers.
+
+        Args:
             url: target url (uses self.URL if not provided)
-            
-        returns:
+
+        Returns:
             response object with status 2xx
-            
-        raises:
+
+        Raises:
             HTTPException: on connection errors, redirect loops, or http errors
+
         """
-        url = self.URL if not url else url
+        url = url or self.URL
         self._refresh_headers()
 
         try:
@@ -140,86 +149,89 @@ class HLTVBase:
         except ConnectionError:
             raise HTTPException(status_code=500, detail=f"connection error: {url}")
         except requests.exceptions.HTTPError as e:
-            if hasattr(e.response, 'status_code') and e.response.status_code == 403:
+            if hasattr(e.response, "status_code") and e.response.status_code == 403:
                 raise HTTPException(status_code=403, detail=f"access forbidden: {url}")
-            raise HTTPException(status_code=getattr(e.response, 'status_code', 500), detail=str(e))
+            raise HTTPException(
+                status_code=getattr(e.response, "status_code", 500),
+                detail=str(e),
+            )
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"request error: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"request error: {e!s}")
 
-    def request_url_bsoup(self, url: Optional[str] = None) -> BeautifulSoup:
-        """
-        fetch a url and parse it with beautifulsoup.
-        
-        args:
+    def request_url_bsoup(self, url: str | None = None) -> BeautifulSoup:
+        """Fetch a url and parse it with beautifulsoup.
+
+        Args:
             url: target url (uses self.URL if not provided)
-            
-        returns:
+
+        Returns:
             beautifulsoup object
+
         """
         response = self.make_request(url)
         return BeautifulSoup(response.content, "html.parser")
 
-    def request_url_page(self, url: Optional[str] = None) -> ElementTree:
-        """
-        fetch a url and return an lxml elementtree for xpath queries.
-        
-        args:
+    def request_url_page(self, url: str | None = None) -> ET:
+        """Fetch a url and return an lxml elementtree for xpath queries.
+
+        Args:
             url: target url (uses self.URL if not provided)
-            
-        returns:
+
+        Returns:
             lxml elementtree
+
         """
         bsoup = self.request_url_bsoup(url)
         return self.convert_bsoup_to_page(bsoup)
 
     @staticmethod
-    def convert_bsoup_to_page(bsoup: BeautifulSoup) -> ElementTree:
-        """
-        convert beautifulsoup object to lxml elementtree.
-        
-        args:
+    def convert_bsoup_to_page(bsoup: BeautifulSoup) -> ET:
+        """Convert beautifulsoup object to lxml elementtree.
+
+        Args:
             bsoup: beautifulsoup object
-            
-        returns:
+
+        Returns:
             lxml elementtree
+
         """
         return etree.HTML(str(bsoup))
 
     # ==================== PARSING METHODS ====================
 
-    def get_all_by_xpath(self, xpath: str, element=None) -> List[str]:
-        """
-        extract all text strings matching an xpath expression.
-        
-        args:
+    def get_all_by_xpath(self, xpath: str, element=None) -> list[str]:
+        """Extract all text strings matching an xpath expression.
+
+        Args:
             xpath: xpath expression
             element: optional lxml element (uses self.page if not provided)
-            
-        returns:
+
+        Returns:
             list of trimmed strings
+
         """
         try:
             target = element if element is not None else self.page
             elements = target.xpath(xpath)
             return [trim(e) for e in elements if e]
         except Exception as e:
-            raise ValueError(f"xpath extraction error '{xpath}': {e}") from e
+            msg = f"xpath extraction error '{xpath}': {e}"
+            raise ValueError(msg) from e
 
     def get_text_by_xpath(
         self,
         xpath: str,
         pos: int = 0,
-        iloc: Optional[int] = None,
-        iloc_from: Optional[int] = None,
-        iloc_to: Optional[int] = None,
-        join_str: Optional[str] = None,
-        attribute: Optional[str] = None,
-        element=None
-    ) -> Optional[str]:
-        """
-        get text or attribute value from elements matching an xpath.
-        
-        args:
+        iloc: int | None = None,
+        iloc_from: int | None = None,
+        iloc_to: int | None = None,
+        join_str: str | None = None,
+        attribute: str | None = None,
+        element=None,
+    ) -> str | None:
+        """Get text or attribute value from elements matching an xpath.
+
+        Args:
             xpath: xpath expression
             pos: position to return (default 0)
             iloc: single index to extract
@@ -228,9 +240,10 @@ class HLTVBase:
             join_str: if provided, join all extracted strings with this separator
             attribute: if provided, get this attribute value instead of text
             element: optional lxml element (uses self.page if not provided)
-            
-        returns:
+
+        Returns:
             string or None if nothing found
+
         """
         if not hasattr(self, "page"):
             self.page = self.request_url_page()
@@ -266,29 +279,33 @@ class HLTVBase:
         except IndexError:
             return None
 
-    def get_elements_by_xpath(self, xpath: str, element=None) -> List[etree._Element]:
-        """
-        return raw lxml elements matching an xpath.
-        
-        args:
+    def get_elements_by_xpath(self, xpath: str, element=None) -> list[etree._Element]:
+        """Return raw lxml elements matching an xpath.
+
+        Args:
             xpath: xpath expression
             element: optional lxml element (uses self.page if not provided)
-            
-        returns:
+
+        Returns:
             list of lxml elements
+
         """
         base = element if element is not None else self.page
         try:
             return base.xpath(xpath)
         except Exception as e:
-            raise ValueError(f"xpath element extraction error '{xpath}': {e}") from e
+            msg = f"xpath element extraction error '{xpath}': {e}"
+            raise ValueError(msg) from e
 
     def raise_exception_if_not_found(self, xpath: str) -> None:
-        """
-        raise http 404 if the xpath returns no content.
-        
-        args:
+        """Raise http 404 if the xpath returns no content.
+
+        Args:
             xpath: xpath expression to check
+
         """
         if not self.get_text_by_xpath(xpath):
-            raise HTTPException(status_code=404, detail=f"invalid request (url: {self.URL})")
+            raise HTTPException(
+                status_code=404,
+                detail=f"invalid request (url: {self.URL})",
+            )

@@ -1,29 +1,32 @@
-from fastapi import APIRouter,Query
-from typing import List
+from typing import Annotated
 
+from fastapi import APIRouter, Query
 
-
-from app.schemas.matches.liveMatches import LiveMatches
-from app.schemas.matches.todayMatches import TodayMatches
-
-from app.services.matches.liveMatches import HLTVLiveMatches
-from app.services.matches.todayMatches import HLTVTodayMatches
-
+from app.schemas.matches.live_matches import LiveMatches
+from app.schemas.matches.today_matches import TodayMatches
+from app.services.matches.live_matches import HLTVLiveMatches
+from app.services.matches.today_matches import HLTVTodayMatches
 from app.utils.utils import get_common_timezones
 
 router = APIRouter()
 
+
 @router.get("/live", response_model=LiveMatches, response_model_exclude_none=True)
 def get_live_matches():
-    
+
     hltv = HLTVLiveMatches()
-    found_matches = hltv.get_live_matches()
-    return found_matches
+    return hltv.get_live_matches()
+
 
 @router.get("/today/", response_model=TodayMatches, response_model_exclude_none=True)
 def get_today_matches(
-    timezone: str = Query("UTC", description = "list of timezones  (first is used)", enum=get_common_timezones())
+    timezone: Annotated[
+        str,
+        Query(
+            description="list of timezones  (first is used)",
+            enum=get_common_timezones(),
+        ),
+    ] = "UTC",
 ):
     hltv = HLTVTodayMatches()
-    found_matches = hltv.get_today_matches(user_timezone=timezone)
-    return found_matches
+    return hltv.get_today_matches(user_timezone=timezone)

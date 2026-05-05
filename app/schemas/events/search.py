@@ -1,8 +1,7 @@
-from typing import List, Optional
+from app.schemas.base import AuditMixin, HLTVBaseModel
 
 from pydantic import HttpUrl
 
-from app.schemas.base import AuditMixin, HLTVBaseModel
 
 class EventsSearchResult(HLTVBaseModel):
     id: str
@@ -15,7 +14,7 @@ class EventsSearchResult(HLTVBaseModel):
     event_type: str
     event_matches_url: str
 
-class EventsSearch(HLTVBaseModel,AuditMixin):
-    query: str
-    results: Optional[List[EventsSearchResult]]
 
+class EventsSearch(HLTVBaseModel, AuditMixin):
+    query: str
+    results: list[EventsSearchResult] | None

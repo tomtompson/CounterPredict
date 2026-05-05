@@ -1,16 +1,21 @@
 import os
-import aiohttp
 from datetime import datetime
-from typing import Optional
+
+import aiohttp
 
 DISCORD_WEBHOOK_URL = os.environ.get("DISCORD_WEBHOOK_URL")
 
-async def send_discord_notification(endpoint: str, method: str, team_id: Optional[str] = None, ip: Optional[str] = None):
-    """Envia notificação para o Discord sem travar a requisição"""
-    
+
+async def send_discord_notification(
+    endpoint: str,
+    method: str,
+    team_id: str | None = None,
+    ip: str | None = None,
+) -> None:
+    """Envia notificação para o Discord sem travar a requisição."""
     if not DISCORD_WEBHOOK_URL:
-        return  
-    
+        return
+
     try:
         embed = {
             "title": "🔔 HLTV API Request",
@@ -20,13 +25,17 @@ async def send_discord_notification(endpoint: str, method: str, team_id: Optiona
                 {"name": "Method", "value": method, "inline": True},
                 {"name": "Team ID", "value": team_id or "N/A", "inline": True},
                 {"name": "IP", "value": ip or "Unknown", "inline": True},
-                {"name": "Timestamp", "value": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "inline": False}
+                {
+                    "name": "Timestamp",
+                    "value": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    "inline": False,
+                },
             ],
-            "footer": {"text": "HLTV API Monitor"}
+            "footer": {"text": "HLTV API Monitor"},
         }
-        
+
         async with aiohttp.ClientSession() as session:
             await session.post(DISCORD_WEBHOOK_URL, json={"embeds": [embed]})
-    except Exception as e:
+    except Exception:
         # não deixa a notificação quebrar a API
-        print(f"Failed to send notification: {e}")
+        pass

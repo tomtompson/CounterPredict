@@ -5,28 +5,42 @@ from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 from slowapi.util import get_remote_address
 from starlette.responses import RedirectResponse
-from app.utils.ntf import notify_request
-
 
 from app.api.api import api_router
 from app.settings import settings
+from app.utils.ntf import notify_request
 
 limiter = Limiter(
     key_func=get_remote_address,
     default_limits=[settings.RATE_LIMITING_FREQUENCY],
     enabled=settings.RATE_LIMITING_ENABLE,
 )
-app = FastAPI(title="HLTV API", description="API build to extract data from HLTV.org", version="1.0.0")
+app = FastAPI(
+    title="HLTV API",
+    description="API build to extract data from HLTV.org",
+    version="1.0.0",
+)
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 app.middleware("http")(notify_request)
 app.add_middleware(SlowAPIMiddleware)
 app.include_router(api_router)
 
+
 @app.get("/", include_in_schema=False)
 def docs_redirect():
     return RedirectResponse(url="/docs")
 
 
+def main():
+    uvicorn.run(
+        "app.main:app",
+        host="0.0.0.0",
+        port=8000,
+        reload=True,
+        log_level="debug",
+    )
+
+
 if __name__ == "__main__":
-    uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True,log_level="debug")
+    main()

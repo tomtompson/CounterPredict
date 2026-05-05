@@ -1,18 +1,17 @@
-from typing import Optional, List
+from app.schemas.base import AuditMixin, HLTVBaseModel
 
 from pydantic import HttpUrl
 
-from app.schemas.base import AuditMixin, HLTVBaseModel
 
-class PlayerProfile(HLTVBaseModel,AuditMixin):
-    id : str
+class PlayerProfile(HLTVBaseModel, AuditMixin):
+    id: str
     url: HttpUrl
     nickname: str
     name: str
-    age: int
+    age: int | None
     nationality: str
-    rating:Optional[float]
-    current_team: Optional[str]
-    current_team_url: Optional[HttpUrl]
-    image_url: Optional[HttpUrl]
-    social_media: Optional[List[str]]
+    rating: float | None
+    current_team: str | None
+    current_team_url: HttpUrl | None
+    image_url: HttpUrl | None
+    social_media: list[str] | None

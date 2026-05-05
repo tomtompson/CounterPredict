@@ -1,8 +1,7 @@
-from typing import List, Optional
+from app.schemas.base import AuditMixin, HLTVBaseModel
 
 from pydantic import HttpUrl
 
-from app.schemas.base import AuditMixin, HLTVBaseModel
 
 class LineupDetails(HLTVBaseModel):
     player_id: str
@@ -17,12 +16,11 @@ class RankingStatsDetails(HLTVBaseModel):
     placement: int
     hltv_points: int
     logo_url: HttpUrl
-    lineup: List[LineupDetails]
-    
-    
+    lineup: list[LineupDetails]
+
 
 class RankingStats(AuditMixin, HLTVBaseModel):
     start_placement: int
     end_placement: int
     ranking_date: str
-    ranking_stats: List[RankingStatsDetails]
+    ranking_stats: list[RankingStatsDetails]

@@ -1,8 +1,6 @@
-from typing import List, Optional
+from app.schemas.base import AuditMixin, HLTVBaseModel
 
 from pydantic import HttpUrl
-
-from app.schemas.base import AuditMixin, HLTVBaseModel
 
 
 class TeamSearchPlayersDetails(HLTVBaseModel):
@@ -12,16 +10,16 @@ class TeamSearchPlayersDetails(HLTVBaseModel):
     nationality: str
     profile_url: HttpUrl
 
+
 class TeamSearchResult(HLTVBaseModel):
     id: str
     name: str
     country: str
     url: HttpUrl
     team_logo_url: HttpUrl
-    lineup: Optional[List[TeamSearchPlayersDetails]]
-
+    lineup: list[TeamSearchPlayersDetails] | None
 
 
 class TeamSearch(HLTVBaseModel, AuditMixin):
     query: str
-    results: Optional[List[TeamSearchResult]]
+    results: list[TeamSearchResult] | None

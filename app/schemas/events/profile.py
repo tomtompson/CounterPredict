@@ -1,18 +1,19 @@
-from typing import List, Optional
- 
+from app.schemas.base import AuditMixin, HLTVBaseModel
+
 from pydantic import HttpUrl
 
-from app.schemas.base import HLTVBaseModel, AuditMixin
 
 class EventEvpsDetails(HLTVBaseModel):
     id: str
     nickname: str
     event_stats: HttpUrl
 
+
 class EventMvpDetail(HLTVBaseModel):
-    id: Optional[str]
-    nickname: Optional[str]
-    event_stats: Optional[HttpUrl]
+    id: str | None
+    nickname: str | None
+    event_stats: HttpUrl | None
+
 
 class EventTeamDetail(HLTVBaseModel):
     id: str
@@ -28,9 +29,11 @@ class EventProfileDetail(HLTVBaseModel):
     prize_pool: int
     location: str
     location_flag_url: HttpUrl
-    mvp: Optional[List[EventMvpDetail]]
-    evps: Optional[List[EventEvpsDetails]]
-    teams: List[EventTeamDetail]
-class EventProfile(HLTVBaseModel,AuditMixin):
+    mvp: list[EventMvpDetail] | None
+    evps: list[EventEvpsDetails] | None
+    teams: list[EventTeamDetail]
+
+
+class EventProfile(HLTVBaseModel, AuditMixin):
     id: str
     event_profile: EventProfileDetail
