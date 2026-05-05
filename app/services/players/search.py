@@ -21,7 +21,7 @@ class HLTVPlayerSearch(HLTVBase):
         Initialize the HLTVPlayerSearch class by setting up the search URL.
         """
 
-        HLTVBase.__init__(self)
+        super().__post_init__()  
         self.URL = f"https://www.hltv.org/search?term={self.query}"
         self.response["query"] = self.query
         self.page_data = self.__fetch_json()

@@ -22,7 +22,7 @@ class HLTVPlayerProfile (HLTVBase):
     def __post_init__(self) -> None:
         """ Initialize the HLTVPlayerProfile class."""
 
-        HLTVBase.__init__(self)
+        super().__post_init__()  
         url = f"https://www.hltv.org/player/{self.player_id}/who"
         self.URL = url
         self.page = self.request_url_page()
