@@ -4,7 +4,7 @@ from pydantic import HttpUrl
 
 
 class trophiesDetails(HLTVBaseModel):
-    tournament_id: str
+    tournament_id: str | None = None
     tournament_name: str
     tournament_url: HttpUrl
     tournament_img_url: HttpUrl
