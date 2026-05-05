@@ -16,7 +16,7 @@ limiter = Limiter(
     default_limits=[settings.RATE_LIMITING_FREQUENCY],
     enabled=settings.RATE_LIMITING_ENABLE,
 )
-app = FastAPI(title="HLTV API")
+app = FastAPI(title="HLTV API", description="API build to extract data from HLTV.org", version="1.0.0")
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 app.middleware("http")(notify_request)
