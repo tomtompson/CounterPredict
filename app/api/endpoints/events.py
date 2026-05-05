@@ -2,10 +2,10 @@ from fastapi import APIRouter
 
 from app.schemas.events.profile import EventProfile
 from app.schemas.events.search import EventsSearch
-from app.schemas.events.teamStats import EventTeamStats
+from app.schemas.events.team_stats import EventTeamStats
 from app.services.events.profile import HLTVEventProfile
 from app.services.events.search import HLTVEventsSearch
-from app.services.events.teamStats import HLTVEventTeamStats
+from app.services.events.team_stats import HLTVEventTeamStats
 
 router = APIRouter()
 

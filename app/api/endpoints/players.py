@@ -1,16 +1,16 @@
 from fastapi import APIRouter
 
-from app.schemas.players.personalAchievements import PlayerPersonalAchievements
+from app.schemas.players.personal_achievements import PlayerPersonalAchievements
 from app.schemas.players.profile import PlayerProfile
 from app.schemas.players.search import PlayerSearch
-from app.schemas.players.teamAchievements import PlayerTeamAchievements
+from app.schemas.players.team_achievements import PlayerTeamAchievements
 from app.schemas.players.trophies import PlayerTrophies
-from app.services.players.careerStats import HLTVPlayerCareerStats
-from app.services.players.personalAchievements import HLTVPlayerPersonalAchievements
+from app.services.players.career_stats import HLTVPlayerCareerStats
+from app.services.players.personal_achievements import HLTVPlayerPersonalAchievements
 from app.services.players.profile import HLTVPlayerProfile
 from app.services.players.search import HLTVPlayerSearch
 from app.services.players.stats import HLTVPlayerStats
-from app.services.players.teamAchievements import HLTVPlayerTeamAchievements
+from app.services.players.team_achievements import HLTVPlayerTeamAchievements
 from app.services.players.trophies import HLTVPlayersTrophies
 
 router = APIRouter()

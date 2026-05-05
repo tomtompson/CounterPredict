@@ -2,10 +2,10 @@ from typing import Annotated
 
 from fastapi import APIRouter, Query
 
-from app.schemas.matches.liveMatches import LiveMatches
-from app.schemas.matches.todayMatches import TodayMatches
-from app.services.matches.liveMatches import HLTVLiveMatches
-from app.services.matches.todayMatches import HLTVTodayMatches
+from app.schemas.matches.live_matches import LiveMatches
+from app.schemas.matches.today_matches import TodayMatches
+from app.services.matches.live_matches import HLTVLiveMatches
+from app.services.matches.today_matches import HLTVTodayMatches
 from app.utils.utils import get_common_timezones
 
 router = APIRouter()
