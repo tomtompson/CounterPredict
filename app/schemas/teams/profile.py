@@ -21,7 +21,7 @@ class TeamProfileDetails(HLTVBaseModel):
     average_player_age: float | None
     lineup: list[LineupDetails]
     coach: list[CoachDetails]
-    logo_url: HttpUrl
+    logo_url: HttpUrl | None = None
     social_media: list[HttpUrl] | None
 
 
