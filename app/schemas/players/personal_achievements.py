@@ -9,7 +9,7 @@ class Top20Achievement(HLTVBaseModel):
     article: HttpUrl
 
 
-class personalAchievementDetail(HLTVBaseModel):
+class PersonalAchievementDetail(HLTVBaseModel):
     major_winner_count: int | None = None
     major_mvp_count: int | None = None
     mvp_winner_count: int | None = None
@@ -22,4 +22,4 @@ class personalAchievementDetail(HLTVBaseModel):
 
 class PlayerPersonalAchievements(HLTVBaseModel, AuditMixin):
     id: str
-    personal_achievements: personalAchievementDetail | None = None
+    personal_achievements: PersonalAchievementDetail | None = None

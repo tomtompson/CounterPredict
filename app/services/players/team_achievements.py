@@ -51,30 +51,30 @@ class HLTVPlayerTeamAchievements(HLTVBase):
         achievements_data = []
 
         try:
-            achievement_rows = self.page.xpath(Players.teamAchievements.ROWS)
+            achievement_rows = self.page.xpath(Players.TeamAchievements.ROWS)
             self.logger.info(f"found {len(achievement_rows)} achievement rows")
 
             for idx, row in enumerate(achievement_rows):
                 try:
-                    placement_list = row.xpath(Players.teamAchievements.PLACEMENT)
+                    placement_list = row.xpath(Players.TeamAchievements.PLACEMENT)
                     placement = trim(placement_list[0]) if placement_list else None
 
-                    team_name_list = row.xpath(Players.teamAchievements.TEAM_NAME)
+                    team_name_list = row.xpath(Players.TeamAchievements.TEAM_NAME)
                     team_name = trim(team_name_list[0]) if team_name_list else None
 
-                    team_url_list = row.xpath(Players.teamAchievements.TEAM_URL)
+                    team_url_list = row.xpath(Players.TeamAchievements.TEAM_URL)
                     team_url = trim(team_url_list[0]) if team_url_list else None
                     team_id = extract_from_url(team_url, "id") if team_url else None
 
                     tourney_name_list = row.xpath(
-                        Players.teamAchievements.TOURNAMENT_NAME,
+                        Players.TeamAchievements.TOURNAMENT_NAME,
                     )
                     tourney_name = (
                         trim(tourney_name_list[0]) if tourney_name_list else None
                     )
 
                     tourney_url_list = row.xpath(
-                        Players.teamAchievements.TOURNAMENT_URL,
+                        Players.TeamAchievements.TOURNAMENT_URL,
                     )
                     tourney_url = (
                         trim(tourney_url_list[0]) if tourney_url_list else None
@@ -84,7 +84,7 @@ class HLTVPlayerTeamAchievements(HLTVBase):
                     )
 
                     stats_url_list = row.xpath(
-                        Players.teamAchievements.PLAYER_STATS_URL,
+                        Players.TeamAchievements.PLAYER_STATS_URL,
                     )
                     stats_path = trim(stats_url_list[0]) if stats_url_list else None
                     player_stats_url = (

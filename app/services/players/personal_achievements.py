@@ -49,11 +49,11 @@ class HLTVPlayerPersonalAchievements(HLTVBase):
         self.logger.info("parsing personal achievements")
 
         placements = self.get_all_by_xpath(
-            Players.personalAchievements.TOP_20_PLACEMENT,
+            Players.PersonalAchievements.TOP_20_PLACEMENT,
         )
-        years = self.get_all_by_xpath(Players.personalAchievements.TOP_20_YEAR)
+        years = self.get_all_by_xpath(Players.PersonalAchievements.TOP_20_YEAR)
         article_urls = self.get_all_by_xpath(
-            Players.personalAchievements.TOP_20_ARTICLE_URL,
+            Players.PersonalAchievements.TOP_20_ARTICLE_URL,
         )
 
         self.logger.debug(
@@ -78,20 +78,20 @@ class HLTVPlayerPersonalAchievements(HLTVBase):
             )
 
         major_winner_count = self.get_text_by_xpath(
-            Players.personalAchievements.MAJOR_WINNER_COUNT,
+            Players.PersonalAchievements.MAJOR_WINNER_COUNT,
         )
         major_mvp_count = self.get_text_by_xpath(
-            Players.personalAchievements.MAJOR_MVP_COUNT,
+            Players.PersonalAchievements.MAJOR_MVP_COUNT,
         )
         mvp_winner_count = self.get_text_by_xpath(
-            Players.personalAchievements.MVP_WINNER_COUNT,
+            Players.PersonalAchievements.MVP_WINNER_COUNT,
         )
 
         self.logger.debug(
             f"major winner: {major_winner_count}, major mvp: {major_mvp_count}, mvp count: {mvp_winner_count}",
         )
 
-        raw_mvp_winner = self.get_text_by_xpath(Players.personalAchievements.MVP_WINNER)
+        raw_mvp_winner = self.get_text_by_xpath(Players.PersonalAchievements.MVP_WINNER)
         mvp_winner = (
             [
                 e.strip()
@@ -103,7 +103,7 @@ class HLTVPlayerPersonalAchievements(HLTVBase):
         )
         self.logger.debug(f"mvp winner list: {len(mvp_winner)} items")
 
-        evp_at = self.get_all_by_xpath(Players.personalAchievements.EVP)
+        evp_at = self.get_all_by_xpath(Players.PersonalAchievements.EVP)
         self.logger.debug(f"evp list: {len(evp_at)} items")
 
         achievements = {

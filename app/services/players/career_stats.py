@@ -54,54 +54,54 @@ class HLTVPlayerCareerStats(HLTVBase):
 
             # basic stats
             stats["total_kills"] = parse_float(
-                self.get_text_by_xpath(Players.careerStats.TOTAL_KILLS),
+                self.get_text_by_xpath(Players.CareerStats.TOTAL_KILLS),
             )
             stats["headshot_percentage"] = extract_float_from_percentage_number(
-                self.get_text_by_xpath(Players.careerStats.HEADSHOT_PERCENTAGE),
+                self.get_text_by_xpath(Players.CareerStats.HEADSHOT_PERCENTAGE),
             )
             stats["total_deaths"] = parse_float(
-                self.get_text_by_xpath(Players.careerStats.TOTAL_DEATHS),
+                self.get_text_by_xpath(Players.CareerStats.TOTAL_DEATHS),
             )
             stats["kd_ratio"] = parse_float(
-                self.get_text_by_xpath(Players.careerStats.KD_RATIO),
+                self.get_text_by_xpath(Players.CareerStats.KD_RATIO),
             )
             stats["damage_per_round"] = parse_float(
-                self.get_text_by_xpath(Players.careerStats.DAMAGE_PER_ROUND),
+                self.get_text_by_xpath(Players.CareerStats.DAMAGE_PER_ROUND),
             )
             stats["grenade_dmg_per_round"] = parse_float(
-                self.get_text_by_xpath(Players.careerStats.GRENADE_DMG_PER_ROUND),
+                self.get_text_by_xpath(Players.CareerStats.GRENADE_DMG_PER_ROUND),
             )
 
             # match stats
             stats["maps_played"] = parse_int(
-                self.get_text_by_xpath(Players.careerStats.MAPS_PLAYED),
+                self.get_text_by_xpath(Players.CareerStats.MAPS_PLAYED),
             )
             stats["rounds_played"] = parse_int(
-                self.get_text_by_xpath(Players.careerStats.ROUNDS_PLAYED),
+                self.get_text_by_xpath(Players.CareerStats.ROUNDS_PLAYED),
             )
 
             # per round stats
             stats["kills_per_round"] = parse_float(
-                self.get_text_by_xpath(Players.careerStats.KILLS_PER_ROUND),
+                self.get_text_by_xpath(Players.CareerStats.KILLS_PER_ROUND),
             )
             stats["assists_per_round"] = parse_float(
-                self.get_text_by_xpath(Players.careerStats.ASSISTS_PER_ROUND),
+                self.get_text_by_xpath(Players.CareerStats.ASSISTS_PER_ROUND),
             )
             stats["deaths_per_round"] = parse_float(
-                self.get_text_by_xpath(Players.careerStats.DEATHS_PER_ROUND),
+                self.get_text_by_xpath(Players.CareerStats.DEATHS_PER_ROUND),
             )
 
             # teammate stats
             stats["saved_by_teammate_per_round"] = parse_float(
-                self.get_text_by_xpath(Players.careerStats.SAVED_BY_TEAMMATE_PER_ROUND),
+                self.get_text_by_xpath(Players.CareerStats.SAVED_BY_TEAMMATE_PER_ROUND),
             )
             stats["saved_teammates_per_round"] = parse_float(
-                self.get_text_by_xpath(Players.careerStats.SAVED_TEAMMATES_PER_ROUND),
+                self.get_text_by_xpath(Players.CareerStats.SAVED_TEAMMATES_PER_ROUND),
             )
 
             # rating
             stats["rating_1_0"] = parse_float(
-                self.get_text_by_xpath(Players.careerStats.RATING1_0),
+                self.get_text_by_xpath(Players.CareerStats.RATING1_0),
             )
 
             self.logger.debug("career stats parsed successfully")

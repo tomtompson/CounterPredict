@@ -1,21 +1,21 @@
-from app.schemas.base import AuditMixin, HLTVBaseModel
-
 from pydantic import HttpUrl
 
+from app.schemas.base import AuditMixin, HLTVBaseModel
 
-class teamAchievementDetail(HLTVBaseModel):
+
+class TeamAchievementDetail(HLTVBaseModel):
     id: str
     name: str
 
 
-class teamAchievementDetails(HLTVBaseModel):
+class TeamAchievementDetails(HLTVBaseModel):
     placement: str
-    team: teamAchievementDetail
-    tournament: teamAchievementDetail
+    team: TeamAchievementDetail
+    tournament: TeamAchievementDetail
     player_stats_url: HttpUrl
 
 
 class PlayerTeamAchievements(HLTVBaseModel, AuditMixin):
     id: str
     achievement_count: int | None = None
-    achievements: list[teamAchievementDetails] | None = None
+    achievements: list[TeamAchievementDetails] | None = None

@@ -19,7 +19,7 @@ class Players:
         URL = RESULTS + "/td/a/@href"
         NATIONALITY = RESULTS + "//img/@alt"
 
-    class teamAchievements:
+    class TeamAchievements:
         ROWS = "//table[contains(@class, 'achievement-table')]//tr[contains(@class, 'team')]"
         PLACEMENT = ".//div[contains(@class, 'achievement')]/text()"
         TEAM_NAME = (
@@ -30,7 +30,7 @@ class Players:
         TOURNAMENT_URL = ".//td[contains(@class, 'tournament-name-cell')]/a/@href"
         PLAYER_STATS_URL = ".//td[contains(@class, 'stats-button-cell')]/a/@href"
 
-    class personalAchievements:
+    class PersonalAchievements:
         TOP_20_PLACEMENT = "//div[contains(@class,'playerTop20')]//span[contains(@class, 'top20ListRight')]/a/text()"
         TOP_20_YEAR = "//div[contains(@class,'playerTop20')]//span[contains(@class, 'top20ListRight')]/span/text()"
         TOP_20_ARTICLE_URL = "//div[contains(@class,'playerTop20')]//span[contains(@class, 'top20ListRight')]/a/@href"
@@ -100,7 +100,7 @@ class Players:
         FLASH_ASSISTS_PER_ROUND = "//div[contains(@data-per-round-title, 'Flash assists per round') and contains(@class, 'stats-side-combined')]//div[contains(@class, 'role-stats-data')]//text()"
         TIME_OPPONENT_FLASHED_PER_ROUND = "//div[contains(@data-per-round-title, 'Time opponent flashed per round') and contains(@class, 'stats-side-combined')]//div[contains(@class, 'role-stats-data')]//text()"
 
-    class careerStats:
+    class CareerStats:
         TOTAL_KILLS = "//div[contains(@class, 'stats-row')]/span[contains(text(),'Total kills')]/following-sibling::span[1]/text()"
         HEADSHOT_PERCENTAGE = "//div[contains(@class, 'stats-row')]/span[contains(text(),'Headshot %')]/following-sibling::span[1]/text()"
         TOTAL_DEATHS = "//div[contains(@class, 'stats-row')]/span[contains(text(),'Total deaths')]/following-sibling::span[1]/text()"
