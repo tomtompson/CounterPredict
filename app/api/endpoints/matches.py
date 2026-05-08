@@ -11,14 +11,20 @@ from app.utils.utils import get_common_timezones
 router = APIRouter()
 
 
-@router.get("/live", response_model=LiveMatches, response_model_exclude_none=True)
+@router.get(
+    "/live",
+    response_model=LiveMatches,
+)
 def get_live_matches():
 
     hltv = HLTVLiveMatches()
     return hltv.get_live_matches()
 
 
-@router.get("/today/", response_model=TodayMatches, response_model_exclude_none=True)
+@router.get(
+    "/today/",
+    response_model=TodayMatches,
+)
 def get_today_matches(
     timezone: Annotated[
         str,

@@ -21,7 +21,6 @@ router = APIRouter()
 @router.get(
     "/{player_name}/search",
     response_model=PlayerSearch,
-    response_model_exclude_none=True,
 )
 def search_players(player_name: str):
 
@@ -32,7 +31,6 @@ def search_players(player_name: str):
 @router.get(
     "/{player_id}/profile",
     response_model=PlayerProfile,
-    response_model_exclude=None,
 )
 def get_player_profile(player_id: str):
     hltv = HLTVPlayerProfile(player_id=player_id)
@@ -40,9 +38,8 @@ def get_player_profile(player_id: str):
 
 
 @router.get(
-    "/{player_id}/team_achievements",
+    "/{player_id}/team-achievements",
     response_model=PlayerTeamAchievements,
-    response_model_exclude_none=True,
 )
 def get_player_team_achievements(player_id: str):
     hltv = HLTVPlayerTeamAchievements(player_id=player_id)
@@ -50,9 +47,8 @@ def get_player_team_achievements(player_id: str):
 
 
 @router.get(
-    "/{player_id}/personal_achievements",
+    "/{player_id}/personal-achievements",
     response_model=PlayerPersonalAchievements,
-    response_model_exclude_none=True,
 )
 def get_player_personal_achievements(player_id: str):
     hltv = HLTVPlayerPersonalAchievements(player_id=player_id)
@@ -62,7 +58,6 @@ def get_player_personal_achievements(player_id: str):
 @router.get(
     "/{player_id}/trophies",
     response_model=PlayerTrophies,
-    response_model_exclude_none=True,
 )
 def get_player_trophies(player_id: str):
     hltv = HLTVPlayersTrophies(player_id=player_id)
@@ -72,7 +67,6 @@ def get_player_trophies(player_id: str):
 @router.get(
     "/{player_id}/stats",
     response_model=PlayerStats,
-    response_model_exclude_none=True,
 )
 def get_player_stats(player_id: str):
     hltv = HLTVPlayerStats(player_id=player_id)
@@ -80,9 +74,8 @@ def get_player_stats(player_id: str):
 
 
 @router.get(
-    "/{player_id}/career_stats",
+    "/{player_id}/career-stats",
     response_model=PlayerCareerStats,
-    response_model_exclude_none=True,
 )
 def get_player_career_stats(player_id: str):
     hltv = HLTVPlayerCareerStats(player_id=player_id)
