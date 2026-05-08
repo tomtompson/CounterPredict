@@ -1,22 +1,23 @@
-services:
-  flaresolverr:
-    image: anilcancakir/flaresolverr:v3.6.0
-    environment:
-      - LOG_LEVEL=info
-      - DRIVER=nodriver
-      - BROWSER_TIMEOUT=60000
-    ports:
-      - "8191:8191"
-    restart: unless-stopped
+  services:
+    flaresolverr:
+      image: ghcr.io/flaresolverr/flaresolverr:latest
+      environment:
+        - LOG_LEVEL=info
+        - BROWSER_TIMEOUT=60000
+      ports:
+        - "8191:8191"
+      restart: unless-stopped
 
-  hltv-api:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "8000:8000"
-    environment:
-      - FLARESOLVERR_URL=http://flaresolverr:8191/v1
-    depends_on:
-      - flaresolverr
-    restart: unless-stopped
+    hltv-api:
+      build:
+        context: .
+        dockerfile: Dockerfile
+      extra_hosts:
+        - "host.docker.internal:host-gateway"
+      ports:
+        - "8000:8000"
+      environment:
+        - FLARESOLVERR_URL=http://flaresolverr:8191/v1
+      depends_on:
+        - flaresolverr
+      restart: unless-stopped

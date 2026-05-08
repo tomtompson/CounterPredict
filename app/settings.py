@@ -5,7 +5,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env")
     RATE_LIMITING_ENABLE: bool = False
     RATE_LIMITING_FREQUENCY: str = "2/3seconds"
-    FLARESOLVERR_URL: str = "http://localhost:8191/v1"
+    FLARESOLVERR_URL: str = "http://flaresolverr:8191/v1"
 
 
 settings = Settings()
