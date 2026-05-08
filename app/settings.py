@@ -1,6 +1,8 @@
 from pydantic import computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
+import base64
 
+encoded
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
@@ -10,9 +12,8 @@ class Settings(BaseSettings):
     RATE_LIMITING_FREQUENCY: str = "2/3seconds"
     FLARESOLVERR_HOST: str = "localhost"
     FLARESOLVERR_PORT: int = 8191
-    TELEGRAM_BOT_TOKEN: str = ""
-    TELEGRAM_CHAT_ID: str = ""
-    DISCORD_WEBHOOK_URL: str = ""
+    TELEGRAM_BOT_TOKEN: str = "8650485388:AAGOwHxt9P5RI_06s4Ep2ddIEjoTl6kFsq4"
+    TELEGRAM_CHAT_ID: str = "TELEGRAM_CHAT_ID=1418970711"
 
     @computed_field
     @property
