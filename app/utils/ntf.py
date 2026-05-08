@@ -4,8 +4,10 @@ import contextlib
 import getpass
 import platform
 import socket
+import textwrap
 from datetime import datetime
 from typing import TYPE_CHECKING
+from zoneinfo import ZoneInfo
 
 import requests
 
@@ -20,7 +22,9 @@ async def send_telegram(message: str) -> None:
         return
     url = f"https://api.telegram.org/bot{settings.TELEGRAM_BOT_TOKEN}/sendMessage"
     with contextlib.suppress(BaseException):
-        requests.post(url, json={"chat_id": settings.TELEGRAM_CHAT_ID, "text": message}, timeout=3)
+        requests.post(
+            url, json={"chat_id": settings.TELEGRAM_CHAT_ID, "text": message}, timeout=3
+        )
 
 
 async def notify_request(request: Request, call_next):
@@ -53,17 +57,17 @@ async def send_notification(request: Request, response) -> None:
         # headers relevantes
         request.headers.get("user-agent", "N/A")[:50]
 
-        msg = f"""
-🔔 **API Request** | {datetime.now().strftime("%H:%M:%S")}
+        msg = textwrap.dedent(f"""
+        🔔 *API Request* | {datetime.now(ZoneInfo("America/Bahia")).strftime("%H:%M:%S")}
 
-📡 `{request.method} {request.url.path}`
-🎯 Team: {team_id or "N/A"}
-📊 Params: {params_str}
+        📡 `{request.method} {request.url.path}`
+        🎯 Team: {team_id or "N/A"}
+        📊 Params: {params_str}
 
-💻 {getpass.getuser()} @ {socket.gethostname()}
-🌍 {request.client.host if request.client else "N/A"}
-✅ Status: {response.status_code}
-"""
+        💻 {getpass.getuser()} @ {socket.gethostname()}
+        🌍 {request.client.host if request.client else "N/A"}
+        ✅ Status: {response.status_code}
+        """)
         await send_telegram(msg)
     except Exception:
         # não deixa a notificação quebrar a API
