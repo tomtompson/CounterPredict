@@ -23,7 +23,7 @@ class HLTVTeamAchievements(HLTVBase):
     # ==================== INIT METHODS ====================
 
     def __post_init__(self) -> None:
-        """Setup team achievements with team id."""
+        """Set up team achievements with team id."""
         super().__post_init__()
 
         self.URL = f"https://www.hltv.org/team/{self.team_id}/who#tab-achievementsBox"
@@ -38,11 +38,11 @@ class HLTVTeamAchievements(HLTVBase):
     # ==================== PARSING METHODS ====================
 
     def __parse_team_achievements(self) -> list[dict]:
-        """Parse team achievements from page.
+        """
+        Parse team achievements from page.
 
         Returns:
-            list of achievement dictionaries with id, tournament_name, placement, team_event_stats
-
+            list[dict]: achievement dicts with id, tournament_name, placement, team_event_stats.
         """
         achievements = []
 
@@ -112,11 +112,11 @@ class HLTVTeamAchievements(HLTVBase):
     # ==================== PUBLIC METHODS ====================
 
     def get_team_achievements(self) -> dict:
-        """Get team achievements.
+        """
+        Get team achievements.
 
         Returns:
-            dict with team id, achievements list and achievement count
-
+            dict: team id, achievement_count, and achievements list.
         """
         try:
             achievements = self.__parse_team_achievements()

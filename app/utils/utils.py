@@ -14,16 +14,16 @@ def extract_date_from_headline(
     section_element: etree._Element,
     get_text_by_xpath: Callable[[str, Any], str | None],
 ) -> str | None:
-    """Extract date (YYYY-MM-DD) from section headline.
+    """
+    Extract date (YYYY-MM-DD) from section headline.
 
     Args:
-        section_element: lxml element of the section
-        get_text_by_xpath: function to extract text from element with xpath
-                           (signature: (xpath, element=...) -> Optional[str])
+        section_element (etree._Element): lxml element of the section.
+        get_text_by_xpath (Callable[[str, Any], str | None]): function to extract
+            text from element with xpath (signature: (xpath, element=...) -> str | None).
 
     Returns:
-        date string or None
-
+        str | None: date string or None.
     """
     headline = get_text_by_xpath(
         ".//div[contains(@class, 'matches-list-headline')]/text()",
@@ -41,17 +41,17 @@ def convert_timestamp_to_user_timezone(
     user_timezone: str = "UTC",
     logger: Any | None = None,
 ) -> dict | None:
-    """Convert UTC timestamp (ms) to user's timezone.
+    """
+    Convert UTC timestamp (ms) to user's timezone.
 
     Args:
-        timestamp_ms: timestamp in milliseconds since epoch (UTC)
-        user_timezone: IANA timezone name (e.g., "America/Sao_Paulo")
-        logger: optional logger for error messages
+        timestamp_ms (float): timestamp in milliseconds since epoch (UTC).
+        user_timezone (str, optional): IANA timezone name. Defaults to "UTC".
+        logger (Any | None, optional): logger for error messages. Defaults to None.
 
     Returns:
-        dict with keys: date_str, time_str, datetime_str, weekday, timezone
-        or None if conversion fails.
-
+        dict | None: dict with keys date_str, time_str, datetime_str, weekday, timezone,
+            or None if conversion fails.
     """
     if not timestamp_ms:
         return None
@@ -78,14 +78,14 @@ def convert_timestamp_to_user_timezone(
 
 
 def trim(text: list | str) -> str:
-    """Trims the input text by removing extra spaces and special characters like non-breaking spaces.
+    """
+    Trim input text by removing extra spaces and non-breaking spaces.
 
     Args:
-        text (Union[list, str]): The text to be trimmed. It can be a list or a string.
+        text (list | str): text to trim; list elements are joined before trimming.
 
     Returns:
-        str: The trimmed text.
-
+        str: trimmed text.
     """
     if isinstance(text, list):
         text = "".join(text)
@@ -94,15 +94,15 @@ def trim(text: list | str) -> str:
 
 
 def extract_from_url(hltv_url: str | None, element: str) -> str | None:
-    """Extracts specific elements (like player/team/event ID or nickname/name ) from a given HLTV URL using regex.
+    """
+    Extract a named element from an HLTV URL using regex.
 
     Args:
-        hltv_url (Optional[str]): The HLTV profile URL to extract information from.
-        element (str): The element to extract from the URL (e.g., "id", "nickname", "team_name", "event_name", "team_id", "event_id").
+        hltv_url (str | None): HLTV profile URL to extract information from.
+        element (str): named group to extract (e.g., "id", "nickname", "team_name").
 
     Returns:
-        Optional[str]: The extracted value, or None if the element cannot be found.
-
+        str | None: extracted value, or None if not found.
     """
     if not hltv_url:
         return None
@@ -124,28 +124,28 @@ def extract_from_url(hltv_url: str | None, element: str) -> str | None:
 
 
 def extract_nickname_from_name(full_name: str) -> str | None:
-    """Extracts the nickname from a player's full name enclosed in single quotes.
+    """
+    Extract the nickname from a player's full name enclosed in single quotes.
 
     Args:
-        full_name (str): The full name of the player.
+        full_name (str): full name of the player.
 
     Returns:
-        Optional[str]: The extracted nickname, or None if not found.
-
+        str | None: extracted nickname, or None if not found.
     """
     match = re.search(r"'([^']+)'", full_name)
     return match.group(1) if match else None
 
 
 def extract_country_name_from_flag_url(flag_url: str) -> str | None:
-    """Extracts the country name based on the flag URL from HLTV.
+    """
+    Extract the country name from an HLTV flag image URL.
 
     Args:
-        flag_url (str): The URL of the flag image.
+        flag_url (str): URL of the flag image.
 
     Returns:
-        Optional[str]: The country name associated with the flag, or None if not found.
-
+        str | None: country name, or None if not found.
     """
     country_names = {
         "AE": "United Arab Emirates",
@@ -325,15 +325,15 @@ def extract_country_name_from_flag_url(flag_url: str) -> str | None:
     return None
 
 
-def extract_age(age_str: str) -> int | None:
-    """Extracts the numeric age from a string in the format 'XX years'.
+def extract_age(age_str: str | None) -> int | None:
+    """
+    Extract the numeric age from a string in the format 'XX years'.
 
     Args:
-        age_str (str): The age string in the format 'XX years' (e.g., '28 years').
+        age_str (str | None): age string (e.g., '28 years').
 
     Returns:
-        Optional[int]: The extracted age as an integer, or None if the extraction fails.
-
+        int | None: extracted age, or None if extraction fails.
     """
     if age_str:
         match = re.match(r"(\d+)\s+years", age_str)
@@ -344,14 +344,14 @@ def extract_age(age_str: str) -> int | None:
 
 
 def extract_float_from_percentage_number(percentage_str: str) -> float | None:
-    """Extracts the numeric percentage from a string in the format 'XX%'.
+    """
+    Extract the numeric value from a percentage string in the format 'XX%'.
 
     Args:
-        percentage_str (str): The percentage string in the format 'XX%' (e.g., '28%').
+        percentage_str (str): percentage string (e.g., '28%').
 
     Returns:
-        Optional[int]: The extracted percentage as an integer, or None if the extraction fails.
-
+        float | None: extracted float value, or None if extraction fails.
     """
     if percentage_str:
         match = re.match(r"(\d+(?:\.\d+)?)%", percentage_str)
@@ -362,14 +362,14 @@ def extract_float_from_percentage_number(percentage_str: str) -> float | None:
 
 
 def convert_minutes_to_seconds(minutes_str: str) -> int | None:
-    """Converts the minutes from a string in the format 'Xm Xs' and converts to total seconds integer.
+    """
+    Convert a duration string in the format 'Xm Xs' to total seconds.
 
     Args:
-        minutes_str (str): The raw minutes string in the format 'Xm Xs' (e.g., '1m 2s').
+        minutes_str (str): duration string (e.g., '1m 2s').
 
     Returns:
-        Optional[int]: The converted seconds as an integer, or None if the conversion fails.
-
+        int | None: total seconds, or None if conversion fails.
     """
     if minutes_str:
         minutes = 0
@@ -389,15 +389,18 @@ def convert_minutes_to_seconds(minutes_str: str) -> int | None:
 
 
 def parse_float(value: str | None, silent: bool = True) -> float | None:
-    """Attempts to convert a string value to a float.
+    """
+    Convert a string value to a float.
 
     Args:
-        value (str | None): The string to parse.
-        silent (bool): If True, returns None on failure instead of raising an error.
+        value (str | None): string to parse.
+        silent (bool, optional): if True, returns None on failure instead of raising. Defaults to True.
+
+    Raises:
+        ValueError: if the value cannot be parsed and silent is False.
 
     Returns:
-        Optional[float]: The parsed float value, or None if conversion fails or the input is empty/'-'.
-
+        float | None: parsed float, or None if conversion fails or input is empty/'-'.
     """
     if value is None or value.strip() in {"", "-"}:
         return None
@@ -411,15 +414,18 @@ def parse_float(value: str | None, silent: bool = True) -> float | None:
 
 
 def parse_int(value: str | None, silent: bool = True) -> int | None:
-    """Attempts to convert a string value to an integer.
+    """
+    Convert a string value to an integer.
 
     Args:
-        value (str | None): The string to parse.
-        silent (bool): If True, returns None on failure instead of raising an error.
+        value (str | None): string to parse.
+        silent (bool, optional): if True, returns None on failure instead of raising. Defaults to True.
+
+    Raises:
+        ValueError: if the value cannot be parsed and silent is False.
 
     Returns:
-        Optional[int]: The parsed integer value, or None if conversion fails or the input is empty/'-'.
-
+        int | None: parsed integer, or None if conversion fails or input is empty/'-'.
     """
     if value is None or value.strip() in {"", "-"}:
         return None
@@ -433,14 +439,14 @@ def parse_int(value: str | None, silent: bool = True) -> int | None:
 
 
 def clear_number_str(value: str | None) -> str | None:
-    """Clear an str to only numeric digits.
+    """
+    Strip all non-digit characters from a string.
 
     Args:
-        value (str): The string to clear
+        value (str | None): string to clear.
 
     Returns:
-        Clear str only with numeric digits.
-
+        str | None: string containing only numeric digits, or None if input is falsy.
     """
     if value:
         return re.sub(r"\D", "", value)
@@ -464,7 +470,10 @@ def parse_date(date: str) -> str | None:
 
 
 def get_common_timezones() -> list[str]:
-    """Return a list of common IANA timezone names.
-    Useful for dropdowns in API parameters.
+    """
+    Return a list of common IANA timezone names.
+
+    Returns:
+        list[str]: list of IANA timezone strings.
     """
     return pytz.common_timezones

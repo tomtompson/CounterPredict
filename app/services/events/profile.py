@@ -23,7 +23,7 @@ class HLTVEventProfile(HLTVBase):
     # ==================== INIT METHODS ====================
 
     def __post_init__(self) -> None:
-        """Setup event profile with event id."""
+        """Set up event profile with event id."""
         super().__post_init__()
 
         self.URL = f"https://www.hltv.org/events/{self.event_id}/who"
@@ -38,11 +38,11 @@ class HLTVEventProfile(HLTVBase):
     # ==================== PARSING METHODS ====================
 
     def __parse_event_profile(self) -> dict:
-        """Parse event profile data from page.
+        """
+        Parse event profile data from page.
 
         Returns:
-            dict with all event profile data (name, dates, teams, prize, location, mvp, evps)
-
+            dict: event profile data with name, dates, teams, prize, location, mvp, evps.
         """
         self.logger.info("parsing event profile")
 
@@ -161,11 +161,11 @@ class HLTVEventProfile(HLTVBase):
     # ==================== PUBLIC METHODS ====================
 
     def get_event_profile(self) -> dict:
-        """Get event profile data.
+        """
+        Get event profile data.
 
         Returns:
-            dict with event id and profile data
-
+            dict: event id and profile data.
         """
         try:
             event_data = self.__parse_event_profile()

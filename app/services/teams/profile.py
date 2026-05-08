@@ -23,7 +23,7 @@ class HLTVTeamProfile(HLTVBase):
     # ==================== INIT METHODS ====================
 
     def __post_init__(self) -> None:
-        """Setup team profile with team id."""
+        """Set up team profile with team id."""
         super().__post_init__()
 
         self.URL = f"https://www.hltv.org/team/{self.team_id}/who"
@@ -38,11 +38,11 @@ class HLTVTeamProfile(HLTVBase):
     # ==================== PARSING METHODS ====================
 
     def __parse_team_profile(self) -> dict:
-        """Parse team profile data from page.
+        """
+        Parse team profile data from page.
 
         Returns:
-            dict with all team profile data (name, rankings, lineup, coach, logo, social)
-
+            dict: team profile data with name, rankings, lineup, coach, logo, social.
         """
         self.logger.info("parsing team profile")
 
@@ -143,11 +143,11 @@ class HLTVTeamProfile(HLTVBase):
     # ==================== PUBLIC METHODS ====================
 
     def get_team_profile(self) -> dict:
-        """Get team profile data.
+        """
+        Get team profile data.
 
         Returns:
-            dict with team id and profile data
-
+            dict: team id and profile data.
         """
         try:
             team_data = self.__parse_team_profile()

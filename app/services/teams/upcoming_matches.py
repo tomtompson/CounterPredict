@@ -26,7 +26,7 @@ class HLTVTeamUpcomingMatches(HLTVBase):
     # ==================== INIT METHODS ====================
 
     def __post_init__(self) -> None:
-        """Setup upcoming matches with team id."""
+        """Set up upcoming matches with team id."""
         super().__post_init__()
 
         self.URL = f"https://www.hltv.org/team/{self.team_id}/who#tab-matchesBox"
@@ -39,11 +39,11 @@ class HLTVTeamUpcomingMatches(HLTVBase):
     # ==================== PRIVATE METHODS ====================
 
     def __get_upcoming_match_ids(self) -> list[str]:
-        """Extract upcoming match ids from the team page.
+        """
+        Extract upcoming match ids from the team page.
 
         Returns:
-            list of match id strings
-
+            list[str]: match id strings.
         """
         match_ids = []
         try:
@@ -81,15 +81,15 @@ class HLTVTeamUpcomingMatches(HLTVBase):
         match_id: str,
         user_timezone: str = "UTC",
     ) -> dict | None:
-        """Parse a single match page into a dictionary with local date fields.
+        """
+        Parse a single match page into a dictionary with local date fields.
 
         Args:
-            match_id: hltv match id
-            user_timezone: IANA timezone for date conversion
+            match_id (str): HLTV match id.
+            user_timezone (str, optional): IANA timezone for date conversion. Defaults to "UTC".
 
         Returns:
-            dict with match data or None
-
+            dict | None: match data dict, or None on error.
         """
         match_url = f"https://www.hltv.org/matches/{match_id}/who"
         self.logger.debug(f"fetching match page: {match_url}")
@@ -207,14 +207,14 @@ class HLTVTeamUpcomingMatches(HLTVBase):
             return None
 
     def __parse_upcoming_matches(self, user_timezone: str = "UTC") -> list[dict]:
-        """Parse all upcoming matches for the team.
+        """
+        Parse all upcoming matches for the team.
 
         Args:
-            user_timezone: IANA timezone for date conversion
+            user_timezone (str, optional): IANA timezone for date conversion. Defaults to "UTC".
 
         Returns:
-            list of match dictionaries
-
+            list[dict]: match dictionaries.
         """
         matches = []
         match_ids = self.__get_upcoming_match_ids()
@@ -232,14 +232,14 @@ class HLTVTeamUpcomingMatches(HLTVBase):
     # ==================== PUBLIC METHODS ====================
 
     def get_team_upcoming_matches(self, user_timezone: str = "UTC") -> dict:
-        """Get upcoming matches for the team with timezone conversion.
+        """
+        Get upcoming matches for the team with timezone conversion.
 
         Args:
-            user_timezone: IANA timezone name (e.g., "America/Sao_Paulo")
+            user_timezone (str, optional): IANA timezone name. Defaults to "UTC".
 
         Returns:
-            dict with team_id, upcoming_matches, match_count, timezone
-
+            dict: team_id, upcoming_matches, match_count, timezone.
         """
         try:
             matches = self.__parse_upcoming_matches(user_timezone)

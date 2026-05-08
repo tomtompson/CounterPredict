@@ -23,7 +23,7 @@ class HLTVPlayerStats(HLTVBase):
     player_id: str
 
     def __post_init__(self) -> None:
-        """Setup stats with player id."""
+        """Set up stats with player id."""
         super().__post_init__()
 
         self.use_flaresolverr = True
@@ -47,7 +47,12 @@ class HLTVPlayerStats(HLTVBase):
     # ==================== PARSING METHODS ====================
 
     def __parse_firepower_stats(self) -> dict:
-        """Parse firepower stats section."""
+        """
+        Parse firepower stats section.
+
+        Returns:
+            dict: firepower stats.
+        """
         stats = {}
 
         try:
@@ -89,7 +94,12 @@ class HLTVPlayerStats(HLTVBase):
         return stats
 
     def __parse_entrying_stats(self) -> dict:
-        """Parse entrying stats section."""
+        """
+        Parse entrying stats section.
+
+        Returns:
+            dict: entrying stats.
+        """
         stats = {}
 
         try:
@@ -123,7 +133,12 @@ class HLTVPlayerStats(HLTVBase):
         return stats
 
     def __parse_trading_stats(self) -> dict:
-        """Parse trading stats section."""
+        """
+        Parse trading stats section.
+
+        Returns:
+            dict: trading stats.
+        """
         stats = {}
 
         try:
@@ -150,7 +165,12 @@ class HLTVPlayerStats(HLTVBase):
         return stats
 
     def __parse_opening_stats(self) -> dict:
-        """Parse opening stats section."""
+        """
+        Parse opening stats section.
+
+        Returns:
+            dict: opening stats.
+        """
         stats = {}
 
         try:
@@ -184,7 +204,12 @@ class HLTVPlayerStats(HLTVBase):
         return stats
 
     def __parse_clutching_stats(self) -> dict:
-        """Parse clutching stats section."""
+        """
+        Parse clutching stats section.
+
+        Returns:
+            dict: clutching stats.
+        """
         stats = {}
 
         try:
@@ -215,7 +240,12 @@ class HLTVPlayerStats(HLTVBase):
         return stats
 
     def __parse_sniping_stats(self) -> dict:
-        """Parse sniping stats section."""
+        """
+        Parse sniping stats section.
+
+        Returns:
+            dict: sniping stats.
+        """
         stats = {}
 
         try:
@@ -246,7 +276,12 @@ class HLTVPlayerStats(HLTVBase):
         return stats
 
     def __parse_utility_stats(self) -> dict:
-        """Parse utility stats section."""
+        """
+        Parse utility stats section.
+
+        Returns:
+            dict: utility stats.
+        """
         stats = {}
 
         try:
@@ -273,11 +308,11 @@ class HLTVPlayerStats(HLTVBase):
         return stats
 
     def __parse_all_stats(self) -> dict:
-        """Parse all player stats sections.
+        """
+        Parse all player stats sections.
 
         Returns:
-            dict with all stats organized by category
-
+            dict: all stats organized by category.
         """
         self.logger.info("parsing all player stats")
 
@@ -297,11 +332,11 @@ class HLTVPlayerStats(HLTVBase):
     # ==================== PUBLIC METHODS ====================
 
     def get_player_stats(self) -> dict:
-        """Get all stats for player.
+        """
+        Get all stats for player.
 
         Returns:
-            dict with player id and stats by category
-
+            dict: player id and stats by category.
         """
         try:
             player_stats = self.__parse_all_stats()

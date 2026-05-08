@@ -97,14 +97,12 @@ class HLTVBase:
     # ==================== INIT METHODS ====================
 
     def __post_init__(self) -> None:
-        """Initialize the session and logging after dataclass init."""
+        """Initialize session and logging after dataclass init."""
         self._init_session()
         self._init_logging()
 
     def _init_session(self) -> None:
-        """Create a new HTTP session with TLS fingerprint spoofing.
-        uses curl_cffi if available, otherwise falls back to cloudscraper.
-        """
+        """Create HTTP session with TLS fingerprint spoofing."""
         try:
             from curl_cffi import requests as curl_requests
 
@@ -127,27 +125,27 @@ class HLTVBase:
         self._session.headers.update(_get_random_headers())
 
     def _init_logging(self) -> None:
-        """Set up a logger instance for the class."""
+        """Set up logger instance."""
         self.logger = logger
 
     def _refresh_headers(self) -> None:
-        """Update session headers with a fresh random set."""
+        """Update session headers with fresh random set."""
         self._session.headers.update(_get_random_headers())
 
     # ==================== REQUEST METHODS ====================
 
     def make_request(self, url: str | None = None) -> CurlResponse | RequestsResponse:
-        """Perform a single HTTP GET request, routing through FlareSolverr if available.
+        """
+        Perform a single HTTP GET request, routing through FlareSolverr if enabled.
 
         Args:
-            url: target url (uses self.URL if not provided)
-
-        Returns:
-            response object with status 2xx
+            url (str | None, optional): target URL; uses self.URL if not provided. Defaults to None.
 
         Raises:
-            HTTPException: on connection errors, redirect loops, or http errors
+            HTTPException: on connection errors, redirect loops, or HTTP errors.
 
+        Returns:
+            CurlResponse | RequestsResponse: response object with 2xx status.
         """
         url = url or self.URL
         self._refresh_headers()
@@ -213,56 +211,56 @@ class HLTVBase:
             raise HTTPException(status_code=500, detail=f"request error: {e!s}")
 
     def request_url_bsoup(self, url: str | None = None) -> BeautifulSoup:
-        """Fetch a url and parse it with beautifulsoup.
+        """
+        Fetch a URL and parse it with BeautifulSoup.
 
         Args:
-            url: target url (uses self.URL if not provided)
+            url (str | None, optional): target URL; uses self.URL if not provided. Defaults to None.
 
         Returns:
-            beautifulsoup object
-
+            BeautifulSoup: parsed document.
         """
         response = self.make_request(url)
         return BeautifulSoup(response.content, "html.parser")
 
     def request_url_page(self, url: str | None = None) -> _Element:
-        """Fetch a url and return an lxml elementtree for xpath queries.
+        """
+        Fetch a URL and return an lxml element tree for XPath queries.
 
         Args:
-            url: target url (uses self.URL if not provided)
+            url (str | None, optional): target URL; uses self.URL if not provided. Defaults to None.
 
         Returns:
-            lxml elementtree
-
+            _Element: lxml element tree.
         """
         bsoup = self.request_url_bsoup(url)
         return self.convert_bsoup_to_page(bsoup)
 
     @staticmethod
     def convert_bsoup_to_page(bsoup: BeautifulSoup) -> _Element:
-        """Convert beautifulsoup object to lxml elementtree.
+        """
+        Convert a BeautifulSoup object to an lxml element tree.
 
         Args:
-            bsoup: beautifulsoup object
+            bsoup (BeautifulSoup): parsed BeautifulSoup document.
 
         Returns:
-            lxml elementtree
-
+            _Element: lxml element tree.
         """
         return etree.HTML(str(bsoup))
 
     # ==================== PARSING METHODS ====================
 
     def get_all_by_xpath(self, xpath: str, element=None) -> list[str]:
-        """Extract all text strings matching an xpath expression.
+        """
+        Extract all text strings matching an XPath expression.
 
         Args:
-            xpath: xpath expression
-            element: optional lxml element (uses self.page if not provided)
+            xpath (str): XPath expression.
+            element (_type_, optional): lxml element to query; uses self.page if not provided. Defaults to None.
 
         Returns:
-            list of trimmed strings
-
+            list[str]: list of trimmed strings.
         """
         try:
             target = element if element is not None else self.page
@@ -283,21 +281,21 @@ class HLTVBase:
         attribute: str | None = None,
         element=None,
     ) -> str | None:
-        """Get text or attribute value from elements matching an xpath.
+        """
+        Get text or attribute value from elements matching an XPath expression.
 
         Args:
-            xpath: xpath expression
-            pos: position to return (default 0)
-            iloc: single index to extract
-            iloc_from: start index for slicing
-            iloc_to: end index for slicing
-            join_str: if provided, join all extracted strings with this separator
-            attribute: if provided, get this attribute value instead of text
-            element: optional lxml element (uses self.page if not provided)
+            xpath (str): XPath expression.
+            pos (int, optional): position to return when no slicing is used. Defaults to 0.
+            iloc (int | None, optional): single index to extract. Defaults to None.
+            iloc_from (int | None, optional): start index for slicing. Defaults to None.
+            iloc_to (int | None, optional): end index for slicing. Defaults to None.
+            join_str (str | None, optional): separator to join all extracted strings. Defaults to None.
+            attribute (str | None, optional): attribute name to read instead of text. Defaults to None.
+            element (_type_, optional): lxml element to query; uses self.page if not provided. Defaults to None.
 
         Returns:
-            string or None if nothing found
-
+            str | None: extracted string, or None if nothing found.
         """
         if not hasattr(self, "page"):
             self.page = self.request_url_page()
@@ -334,15 +332,15 @@ class HLTVBase:
             return None
 
     def get_elements_by_xpath(self, xpath: str, element=None) -> list[etree._Element]:
-        """Return raw lxml elements matching an xpath.
+        """
+        Return raw lxml elements matching an XPath expression.
 
         Args:
-            xpath: xpath expression
-            element: optional lxml element (uses self.page if not provided)
+            xpath (str): XPath expression.
+            element (_type_, optional): lxml element to query; uses self.page if not provided. Defaults to None.
 
         Returns:
-            list of lxml elements
-
+            list[etree._Element]: list of matching lxml elements.
         """
         base = element if element is not None else self.page
         try:
@@ -352,11 +350,11 @@ class HLTVBase:
             raise ValueError(msg) from e
 
     def raise_exception_if_not_found(self, xpath: str) -> None:
-        """Raise http 404 if the xpath returns no content.
+        """
+        Raise HTTP 404 if the XPath returns no content.
 
         Args:
-            xpath: xpath expression to check
-
+            xpath (str): XPath expression to check.
         """
         if not self.get_text_by_xpath(xpath):
             raise HTTPException(

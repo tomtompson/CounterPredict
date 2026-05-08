@@ -36,15 +36,15 @@ class HLTVTodayMatches(HLTVBase):
         match_element,
         fallback_timestamp: float | None = None,
     ) -> dict | None:
-        """Parse a single match element into a dictionary.
+        """
+        Parse a single match element into a dictionary.
 
         Args:
-            match_element: lxml element of the match wrapper
-            fallback_timestamp: timestamp from section if not found in match
+            match_element (_type_): lxml element of the match wrapper.
+            fallback_timestamp (float | None, optional): timestamp from section used when not found in the match element. Defaults to None.
 
         Returns:
-            dict with match data or None
-
+            dict | None: match data dict, or None on error.
         """
         try:
             match_id = match_element.get("data-match-id")
@@ -158,14 +158,14 @@ class HLTVTodayMatches(HLTVBase):
             return None
 
     def __parse_section(self, section_element) -> list[dict]:
-        """Parse a single day section and return list of matches.
+        """
+        Parse a single day section and return list of matches.
 
         Args:
-            section_element: lxml element of the section
+            section_element (_type_): lxml element of the section.
 
         Returns:
-            list of match dictionaries
-
+            list[dict]: match dictionaries.
         """
         matches = []
         match_zones = section_element.xpath(
@@ -194,16 +194,14 @@ class HLTVTodayMatches(HLTVBase):
     # ==================== PUBLIC METHODS ====================
 
     def get_today_matches(self, user_timezone: str = "UTC") -> dict:
-        """Get matches from the first two sections (today and tomorrow in HLTV timezone),
-        convert times to the user's timezone, and filter only matches that fall on the current day
-        (based on that timezone).
+        """
+        Get today's matches converted to the user's timezone.
 
         Args:
-            user_timezone: IANA timezone name (e.g., "America/Sao_Paulo", "America/New_York").
+            user_timezone (str, optional): IANA timezone name. Defaults to "UTC".
 
         Returns:
-            dict with keys: matches (list) and match_count (int)
-
+            dict: matches list and match_count.
         """
         try:
             self.logger.info(f"using timezone: {user_timezone}")

@@ -23,7 +23,7 @@ class HLTVPlayersTrophies(HLTVBase):
     # ==================== INIT METHODS ====================
 
     def __post_init__(self) -> None:
-        """Setup trophies with player id."""
+        """Set up trophies with player id."""
         super().__post_init__()
 
         self.URL = f"https://www.hltv.org/player/{self.player_id}/who#tab-trophiesBox"
@@ -40,11 +40,11 @@ class HLTVPlayersTrophies(HLTVBase):
     # ==================== PARSING METHODS ====================
 
     def __parse_player_trophies(self) -> list[dict]:
-        """Parse personal trophies from player profile.
+        """
+        Parse personal trophies from player profile.
 
         Returns:
-            list of trophy dictionaries
-
+            list[dict]: trophy dictionaries.
         """
         trophies_data = []
 
@@ -100,11 +100,11 @@ class HLTVPlayersTrophies(HLTVBase):
     # ==================== PUBLIC METHODS ====================
 
     def get_player_trophies(self) -> dict:
-        """Get personal trophies for player.
+        """
+        Get personal trophies for player.
 
         Returns:
-            dict with player id and trophies list
-
+            dict: player id, trophy_count, and trophies list.
         """
         try:
             trophies = self.__parse_player_trophies()

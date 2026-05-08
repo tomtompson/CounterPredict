@@ -35,8 +35,8 @@ def docs_redirect():
 def main():
     uvicorn.run(
         "app.main:app",
-        host="0.0.0.0",
-        port=8000,
+        host=settings.API_HOST,
+        port=settings.API_PORT,
         reload=True,
         log_level="debug",
     )

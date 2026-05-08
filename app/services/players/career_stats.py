@@ -21,7 +21,7 @@ class HLTVPlayerCareerStats(HLTVBase):
     # ==================== INIT METHODS ====================
 
     def __post_init__(self) -> None:
-        """Setup career stats with player id."""
+        """Set up career stats with player id."""
         super().__post_init__()
 
         self.use_flaresolverr = True
@@ -42,11 +42,11 @@ class HLTVPlayerCareerStats(HLTVBase):
     # ==================== PARSING METHODS ====================
 
     def __parse_career_stats(self) -> dict:
-        """Parse career stats from player profile.
+        """
+        Parse career stats from player profile.
 
         Returns:
-            dict with all career stats
-
+            dict: all career stats.
         """
         stats = {}
 
@@ -115,11 +115,11 @@ class HLTVPlayerCareerStats(HLTVBase):
     # ==================== PUBLIC METHODS ====================
 
     def get_player_career_stats(self) -> dict:
-        """Get career stats for player.
+        """
+        Get career stats for player.
 
         Returns:
-            dict with player id and career stats
-
+            dict: player id and career stats.
         """
         try:
             career_stats = self.__parse_career_stats()

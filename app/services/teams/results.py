@@ -22,7 +22,7 @@ class HLTVTeamResults(HLTVBase):
     # ==================== INIT METHODS ====================
 
     def __post_init__(self) -> None:
-        """Initialize response."""
+        """Initialize response dict and URL."""
         super().__post_init__()
         self.response["team_id"] = self.team_id
         self.URL = ""
@@ -30,15 +30,29 @@ class HLTVTeamResults(HLTVBase):
     # ==================== PRIVATE METHODS ====================
 
     def _get_results_url(self, offset: int = 0) -> str:
-        """Build url for the results page with optional offset."""
+        """
+        Build URL for the results page with optional offset.
+
+        Args:
+            offset (int, optional): page offset (0, 100, 200, ...). Defaults to 0.
+
+        Returns:
+            str: full results page URL.
+        """
         params = {"team": self.team_id}
         if offset > 0:
             params["offset"] = offset
         return f"https://www.hltv.org/results?{urlencode(params)}"
 
     def _parse_match_won(self, container) -> bool | None:
-        """Determine if the team won based on which score has class 'score-won'.
-        returns True if first score (team1) has class 'score-won', False otherwise.
+        """
+        Determine if the team won based on which score has class 'score-won'.
+
+        Args:
+            container (_type_): lxml element for the result container.
+
+        Returns:
+            bool | None: True if team1 has 'score-won' class, False otherwise, or None on error.
         """
         try:
             first_span_class = self.get_text_by_xpath(
@@ -50,16 +64,29 @@ class HLTVTeamResults(HLTVBase):
             return None
 
     def _parse_match_type(self, match_type: str | None) -> str:
-        """Normalize match type:
-        - if contains 'bo' (bo3, bo5), keep as is
-        - otherwise, return 'bo1'.
+        """
+        Normalize match type string to a 'boN' format.
+
+        Args:
+            match_type (str | None): raw match type string.
+
+        Returns:
+            str: 'bo3', 'bo5', etc. if 'bo' is present, otherwise 'bo1'.
         """
         if match_type and "bo" in match_type.lower():
             return match_type.lower()
         return "bo1"
 
     def _parse_match_container(self, container) -> dict | None:
-        """Parse a single result container into a match dictionary."""
+        """
+        Parse a single result container into a match dictionary.
+
+        Args:
+            container (_type_): lxml element for the result container.
+
+        Returns:
+            dict | None: match data dict, or None if URL is missing.
+        """
         # match url
         match_url_rel = self.get_text_by_xpath(
             Teams.Results.MATCH_URL,
@@ -159,14 +186,14 @@ class HLTVTeamResults(HLTVBase):
         }
 
     def _fetch_page_results(self, offset: int) -> list[dict]:
-        """Fetch and parse a single results page.
+        """
+        Fetch and parse a single results page.
 
         Args:
-            offset: page offset (0, 100, 200, ...)
+            offset (int): page offset (0, 100, 200, ...).
 
         Returns:
-            list of match dictionaries for that page
-
+            list[dict]: match dictionaries for that page.
         """
         url = self._get_results_url(offset)
         self.logger.info(f"fetching results page (offset={offset}): {url}")
@@ -196,11 +223,11 @@ class HLTVTeamResults(HLTVBase):
         return results
 
     def _fetch_all_results(self) -> list[dict]:
-        """Fetch all results pages until no more matches are found.
+        """
+        Fetch all results pages until no more matches are found.
 
         Returns:
-            combined list of all matches from all pages
-
+            list[dict]: combined matches from all pages.
         """
         all_matches = []
         offset = 0
@@ -232,7 +259,12 @@ class HLTVTeamResults(HLTVBase):
     # ==================== PUBLIC METHODS ====================
 
     def get_team_results(self) -> dict:
-        """Retrieve all past results for the team (all pages)."""
+        """
+        Retrieve all past results for the team across all pages.
+
+        Returns:
+            dict: team_id, results list, and result_count.
+        """
         self.logger.info(f"fetching all results for team {self.team_id}")
         results = self._fetch_all_results()
 

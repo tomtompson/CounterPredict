@@ -25,7 +25,7 @@ class HLTVEventTeamStats(HLTVBase):
     # ==================== INIT METHODS ====================
 
     def __post_init__(self) -> None:
-        """Setup event team stats with event and team ids."""
+        """Set up event team stats with event and team ids."""
         super().__post_init__()
 
         self.URL = f"https://www.hltv.org/events/{self.event_id}/who"
@@ -45,11 +45,11 @@ class HLTVEventTeamStats(HLTVBase):
     # ==================== PARSING METHODS ====================
 
     def __parse_team_placement(self) -> dict:
-        """Parse team placement data.
+        """
+        Parse team placement data.
 
         Returns:
-            dict with team_placement (string) and qualify_method (optional)
-
+            dict: team_placement (str) and qualify_method (str or None).
         """
         data = {}
 
@@ -76,11 +76,11 @@ class HLTVEventTeamStats(HLTVBase):
         return data
 
     def __parse_team_lineup(self) -> list[dict]:
-        """Parse team lineup data.
+        """
+        Parse team lineup data.
 
         Returns:
-            list of player dicts with id, nickname, event_stats url
-
+            list[dict]: player dicts with id, nickname, event_stats url.
         """
         lineup = []
 
@@ -122,11 +122,11 @@ class HLTVEventTeamStats(HLTVBase):
         return lineup
 
     def __parse_team_coach(self) -> list[dict]:
-        """Parse team coach data.
+        """
+        Parse team coach data.
 
         Returns:
-            list with coach dict (id, nickname) or empty list
-
+            list[dict]: list with coach dict (id, nickname), or empty list.
         """
         coach_data = []
 
@@ -153,11 +153,11 @@ class HLTVEventTeamStats(HLTVBase):
         return coach_data
 
     def __parse_vrs_data(self) -> list[dict]:
-        """Parse vrs ranking data.
+        """
+        Parse VRS ranking data.
 
         Returns:
-            list of vrs dicts (date, points, placements)
-
+            list[dict]: VRS dicts with date, points, placements.
         """
         vrs_list = []
 
@@ -205,11 +205,11 @@ class HLTVEventTeamStats(HLTVBase):
         return vrs_list
 
     def __parse_prize_data(self) -> list[dict]:
-        """Parse prize money data.
+        """
+        Parse prize money data.
 
         Returns:
-            list of prize dicts (prize, club_share)
-
+            list[dict]: prize dicts with prize and club_share.
         """
         prize_list = []
 
@@ -236,15 +236,15 @@ class HLTVEventTeamStats(HLTVBase):
         return prize_list
 
     def _parse_int_safe(self, xpath: str, use_clear: bool = False) -> int | None:
-        """Safely parse integer values, returning None if not found.
+        """
+        Safely parse an integer from an XPath result.
 
         Args:
-            xpath: xpath to get value
-            use_clear: whether to use clear_number_str
+            xpath (str): XPath expression to get value.
+            use_clear (bool, optional): strip non-digit characters before parsing. Defaults to False.
 
         Returns:
-            int or None
-
+            int | None: parsed integer, or None if not found.
         """
         try:
             value = self.get_text_by_xpath(xpath)
@@ -261,11 +261,11 @@ class HLTVEventTeamStats(HLTVBase):
             return None
 
     def __parse_all_stats(self) -> dict:
-        """Parse all team stats for the event.
+        """
+        Parse all team stats for the event.
 
         Returns:
-            dict with team_placement, qualify_method, lineup, coach, vrs, prize
-
+            dict: team_placement, qualify_method, lineup, coach, vrs, prize.
         """
         self.logger.info(
             f"parsing stats for team {self.team_id} at event {self.event_id}",
@@ -306,11 +306,11 @@ class HLTVEventTeamStats(HLTVBase):
     # ==================== PUBLIC METHODS ====================
 
     def get_team_event_stats(self) -> dict:
-        """Get team stats for specific event.
+        """
+        Get team stats for specific event.
 
         Returns:
-            dict with team_id, event_id and stats
-
+            dict: team_id, event_id, and stats.
         """
         try:
             event_stats = self.__parse_all_stats()

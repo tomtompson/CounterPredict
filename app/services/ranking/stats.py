@@ -25,7 +25,7 @@ class HLTVRankingStats(HLTVBase):
     # ==================== INIT METHODS ====================
 
     def __post_init__(self) -> None:
-        """Setup ranking stats with placement range."""
+        """Set up ranking stats with placement range."""
         super().__post_init__()
 
         self.URL = "https://www.hltv.org/ranking/teams"
@@ -50,14 +50,14 @@ class HLTVRankingStats(HLTVBase):
     # ==================== PRIVATE METHODS ====================
 
     def _make_absolute_url(self, url: str | None) -> str | None:
-        """Convert relative url to absolute url.
+        """
+        Convert a relative URL to an absolute URL.
 
         Args:
-            url: relative or absolute url
+            url (str | None): relative or absolute URL.
 
         Returns:
-            absolute url or None
-
+            str | None: absolute URL, or None if input is falsy.
         """
         if not url:
             return None
@@ -70,14 +70,14 @@ class HLTVRankingStats(HLTVBase):
     # ==================== PARSING METHODS ====================
 
     def __parse_team_lineup(self, team_element) -> list[dict]:
-        """Parse team lineup from ranking.
+        """
+        Parse team lineup from ranking.
 
         Args:
-            team_element: lxml element for the team
+            team_element (_type_): lxml element for the team.
 
         Returns:
-            list of player dictionaries with player_id, nickname, nationality, picture_url
-
+            list[dict]: player dicts with player_id, nickname, nationality, picture_url.
         """
         lineup = []
 
@@ -135,11 +135,11 @@ class HLTVRankingStats(HLTVBase):
         return lineup
 
     def __parse_ranking_stats(self) -> list[dict]:
-        """Parse ranking stats within placement range.
+        """
+        Parse ranking stats within placement range.
 
         Returns:
-            list of team ranking dictionaries with team_id, team_name, placement, hltv_points, logo_url, lineup
-
+            list[dict]: team ranking dicts with team_id, team_name, placement, hltv_points, logo_url, lineup.
         """
         ranking_data = []
 
@@ -218,11 +218,11 @@ class HLTVRankingStats(HLTVBase):
     # ==================== PUBLIC METHODS ====================
 
     def get_ranking_stats(self) -> dict:
-        """Get ranking stats for specified placement range.
+        """
+        Get ranking stats for specified placement range.
 
         Returns:
-            dict with start_placement, end_placement, ranking_date, ranking_stats, total_teams
-
+            dict: start_placement, end_placement, ranking_date, ranking_stats, total_teams.
         """
         try:
             ranking_date_raw = self.get_text_by_xpath(Ranking.Stats.RANKING_DATE)

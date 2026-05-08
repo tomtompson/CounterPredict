@@ -21,7 +21,7 @@ class HLTVEventsSearch(HLTVBase):
     # ==================== INIT METHODS ====================
 
     def __post_init__(self) -> None:
-        """Setup event search with query."""
+        """Set up event search with query."""
         super().__post_init__()
 
         self.URL = f"https://www.hltv.org/search?term={self.query}"
@@ -36,14 +36,14 @@ class HLTVEventsSearch(HLTVBase):
     # ==================== PRIVATE METHODS ====================
 
     def __fetch_json(self) -> dict:
-        """Make get request and return json response.
-
-        Returns:
-            dict: raw json data from hltv search
+        """
+        Make GET request and return JSON response.
 
         Raises:
-            http exception if request fails
+            HTTPException: if the request fails.
 
+        Returns:
+            dict: raw JSON data from HLTV search.
         """
         try:
             self.logger.debug(f"fetching json from {self.URL}")
@@ -67,12 +67,12 @@ class HLTVEventsSearch(HLTVBase):
     # ==================== PARSING METHODS ====================
 
     def __parse_search_results(self) -> list[dict]:
-        """Parse events from search results.
+        """
+        Parse events from search results.
 
         Returns:
-            list of event dictionaries with id, name, url, event_location,
-            prize_pool, flag_url, event_logo_url, event_type, event_matches_url
-
+            list[dict]: event dicts with id, name, url, event_location, prize_pool,
+                flag_url, event_logo_url, event_type, event_matches_url.
         """
         results = []
 
@@ -138,11 +138,11 @@ class HLTVEventsSearch(HLTVBase):
     # ==================== PUBLIC METHODS ====================
 
     def search_events(self) -> dict:
-        """Search events and return formatted results.
+        """
+        Search events and return formatted results.
 
         Returns:
-            dict with query, results list, total count and success flag
-
+            dict: query, results list, total count, and success flag.
         """
         try:
             results = self.__parse_search_results()

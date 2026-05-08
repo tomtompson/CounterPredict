@@ -16,7 +16,7 @@ class HLTVLiveMatches(HLTVBase):
     # ==================== INIT METHODS ====================
 
     def __post_init__(self) -> None:
-        """Setup live matches fetch."""
+        """Set up live matches fetch."""
         super().__post_init__()
 
         self.URL = "https://www.hltv.org/matches"
@@ -30,11 +30,11 @@ class HLTVLiveMatches(HLTVBase):
     # ==================== PRIVATE METHODS ====================
 
     def __get_live_match_containers(self) -> list:
-        """Find only live match containers (with live="true" attribute).
+        """
+        Find live match containers (with live="true" attribute).
 
         Returns:
-            list of lxml elements representing live match containers
-
+            list: lxml elements representing live match containers.
         """
         containers = self.get_elements_by_xpath(
             Matches.LiveMatches.LIVE_MATCH_CONTAINER,
@@ -45,14 +45,14 @@ class HLTVLiveMatches(HLTVBase):
     # ==================== PARSING METHODS ====================
 
     def __parse_match_data(self, match_element) -> dict | None:
-        """Parse data from a single live match element.
+        """
+        Parse data from a single live match element.
 
         Args:
-            match_element: lxml element for the match
+            match_element (_type_): lxml element for the match.
 
         Returns:
-            dict with match data or None if error
-
+            dict | None: match data dict, or None on error.
         """
         try:
             team_a_name = self.get_text_by_xpath(
@@ -111,11 +111,11 @@ class HLTVLiveMatches(HLTVBase):
             return None
 
     def __parse_live_matches(self) -> list[dict]:
-        """Parse all live matches from page.
+        """
+        Parse all live matches from page.
 
         Returns:
-            list of live match dictionaries
-
+            list[dict]: live match dictionaries.
         """
         live_matches = []
 
@@ -146,11 +146,11 @@ class HLTVLiveMatches(HLTVBase):
     # ==================== PUBLIC METHODS ====================
 
     def get_live_matches(self) -> dict:
-        """Get all live matches following schema.
+        """
+        Get all live matches.
 
         Returns:
-            dict with liveMatchsCount and liveMatchs list
-
+            dict: liveMatchsCount and liveMatchs list.
         """
         try:
             live_matches = self.__parse_live_matches()

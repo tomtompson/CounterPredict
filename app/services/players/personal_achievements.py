@@ -23,7 +23,7 @@ class HLTVPlayerPersonalAchievements(HLTVBase):
     # ==================== INIT METHODS ====================
 
     def __post_init__(self) -> None:
-        """Setup personal achievements with player id."""
+        """Set up personal achievements with player id."""
         super().__post_init__()
 
         self.URL = f"https://www.hltv.org/player/{self.player_id}/who#tab-trophiesBox"
@@ -40,11 +40,11 @@ class HLTVPlayerPersonalAchievements(HLTVBase):
     # ==================== PARSING METHODS ====================
 
     def __parse_player_personal_achievements(self) -> dict:
-        """Parse personal achievements from player profile.
+        """
+        Parse personal achievements from player profile.
 
         Returns:
-            dict with all personal achievements data
-
+            dict: all personal achievements data.
         """
         self.logger.info("parsing personal achievements")
 
@@ -126,11 +126,11 @@ class HLTVPlayerPersonalAchievements(HLTVBase):
     # ==================== PUBLIC METHODS ====================
 
     def get_player_personal_achievements(self) -> dict:
-        """Get personal achievements for player.
+        """
+        Get personal achievements for player.
 
         Returns:
-            dict with player id and personal achievements
-
+            dict: player id and personal achievements.
         """
         try:
             achievements = self.__parse_player_personal_achievements()

@@ -22,7 +22,7 @@ class HLTVTeamSearch(HLTVBase):
     # ==================== INIT METHODS ====================
 
     def __post_init__(self) -> None:
-        """Setup team search with query."""
+        """Set up team search with query."""
         super().__post_init__()
 
         self.URL = f"https://www.hltv.org/search?term={self.query}"
@@ -37,14 +37,14 @@ class HLTVTeamSearch(HLTVBase):
     # ==================== PRIVATE METHODS ====================
 
     def __fetch_json(self) -> dict:
-        """Make get request and return json response.
-
-        Returns:
-            dict: raw json data from hltv search
+        """
+        Make GET request and return JSON response.
 
         Raises:
-            http exception if request fails
+            HTTPException: if the request fails.
 
+        Returns:
+            dict: raw JSON data from HLTV search.
         """
         try:
             self.logger.debug(f"fetching json from {self.URL}")
@@ -68,12 +68,11 @@ class HLTVTeamSearch(HLTVBase):
     # ==================== PARSING METHODS ====================
 
     def __parse_search_results(self) -> list[dict]:
-        """Parse teams from search results.
+        """
+        Parse teams from search results.
 
         Returns:
-            list of team dictionaries with id, name, country, url,
-            team_logo_url and lineup (list of players)
-
+            list[dict]: team dicts with id, name, country, url, team_logo_url, lineup.
         """
         results = []
 
@@ -172,11 +171,11 @@ class HLTVTeamSearch(HLTVBase):
     # ==================== PUBLIC METHODS ====================
 
     def search_teams(self) -> dict:
-        """Search teams and return formatted results.
+        """
+        Search teams and return formatted results.
 
         Returns:
-            dict with query, results list, total count and success flag
-
+            dict: query, results list, total count, and success flag.
         """
         try:
             results = self.__parse_search_results()

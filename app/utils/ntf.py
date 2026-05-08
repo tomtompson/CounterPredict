@@ -1,6 +1,5 @@
 # app/middleware/notification.py
 import asyncio
-import base64
 import contextlib
 import getpass
 import platform
@@ -10,21 +9,18 @@ from typing import TYPE_CHECKING
 
 import requests
 
+from app.settings import settings
+
 if TYPE_CHECKING:
     from fastapi import Request
 
-# TOKEN OFUSCADO (base64)
-TOKEN_ENC = "ODY1MDQ4NTM4ODpBQUdPd0h4dDlQNVJJXzA2czRFcDJkZElFam9UbDZrRnNxNA=="
-
-# DECODIFICA PARA OBTER O TOKEN REAL
-BOT_TOKEN = base64.b64decode(TOKEN_ENC).decode()
-CHAT_ID = "1418970711"
-
 
 async def send_telegram(message: str) -> None:
-    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+    if not settings.TELEGRAM_BOT_TOKEN or not settings.TELEGRAM_CHAT_ID:
+        return
+    url = f"https://api.telegram.org/bot{settings.TELEGRAM_BOT_TOKEN}/sendMessage"
     with contextlib.suppress(BaseException):
-        requests.post(url, json={"chat_id": CHAT_ID, "text": message}, timeout=3)
+        requests.post(url, json={"chat_id": settings.TELEGRAM_CHAT_ID, "text": message}, timeout=3)
 
 
 async def notify_request(request: Request, call_next):

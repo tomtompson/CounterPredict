@@ -16,36 +16,28 @@ class HLTVPlayerSearch(HLTVBase):
     query: str
 
     def __post_init__(self) -> None:
-        """Initialize the HLTVPlayerSearch class by setting up the search URL."""
+        """Set up player search URL and fetch initial data."""
         super().__post_init__()
         self.URL = f"https://www.hltv.org/search?term={self.query}"
         self.response["query"] = self.query
         self.page_data = self.__fetch_json()
 
     def __fetch_json(self) -> dict:
-        """Makes a GET request to the HLTV search URL and returns the JSON response.
+        """
+        Make GET request and return JSON response.
 
         Returns:
-            dict: Raw JSON data returned from the HLTV search endpoint.
-
+            dict: raw JSON data from HLTV search endpoint.
         """
         res = self.make_request(self.URL)
         return res.json()
 
     def __parse_search_results(self) -> list:
-        """Parses the list of players from the HLTV search results.
-
-        Extracted data includes:
-            - id: Unique HLTV player ID
-            - name: Full name (first + last)
-            - nickname: In-game nickname
-            - nationality: Country derived from flag URL
-            - flag_url: URL to the player's country flag
-            - url: Link to the player profile page
+        """
+        Parse the list of players from HLTV search results.
 
         Returns:
-            list: A list of dictionaries, each representing a player.
-
+            list: player dicts with id, name, nickname, nationality, flag_url, url.
         """
         results = []
 
@@ -73,11 +65,11 @@ class HLTVPlayerSearch(HLTVBase):
         return results
 
     def search_players(self) -> dict:
-        """Retrieves and parses player search results based on the provided query.
+        """
+        Retrieve and parse player search results.
 
         Returns:
-            dict: A dictionary containing the original search query and a list of results.
-
+            dict: search query and results list.
         """
         self.response["query"] = self.query
         self.response["results"] = self.__parse_search_results()

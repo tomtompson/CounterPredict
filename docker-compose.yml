@@ -1,23 +1,37 @@
-  services:
-    flaresolverr:
-      image: ghcr.io/flaresolverr/flaresolverr:latest
-      environment:
-        - LOG_LEVEL=info
-        - BROWSER_TIMEOUT=60000
-      ports:
-        - "8191:8191"
-      restart: unless-stopped
+services:
+  flaresolverr:
+    image: anilcancakir/flaresolverr:${FLARESOLVERR_IMAGE_VERSION}
+    ports:
+      - "${FLARESOLVERR_PORT}:${FLARESOLVERR_PORT}"
+    environment:
+      - LOG_LEVEL=${FLARESOLVERR_LOG_LEVEL}
+      - DRIVER=${FLARESOLVERR_DRIVER}
+      - BROWSER_TIMEOUT=${FLARESOLVERR_BROWSER_TIMEOUT}
+    networks:
+      - internal
+    restart: unless-stopped
 
-    hltv-api:
-      build:
-        context: .
-        dockerfile: Dockerfile
-      extra_hosts:
-        - "host.docker.internal:host-gateway"
-      ports:
-        - "8000:8000"
-      environment:
-        - FLARESOLVERR_URL=http://flaresolverr:8191/v1
-      depends_on:
-        - flaresolverr
-      restart: unless-stopped
+  hltv-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "${API_PORT}:${API_PORT}"
+    environment:
+      - API_PORT=${API_PORT}
+      - FLARESOLVERR_HOST=flaresolverr
+      - FLARESOLVERR_PORT=${FLARESOLVERR_PORT}
+      - RATE_LIMITING_ENABLE=${RATE_LIMITING_ENABLE}
+      - RATE_LIMITING_FREQUENCY=${RATE_LIMITING_FREQUENCY}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
+      - DISCORD_WEBHOOK_URL=${DISCORD_WEBHOOK_URL}
+    depends_on:
+      - flaresolverr
+    networks:
+      - internal
+    restart: unless-stopped
+
+networks:
+  internal:
+    driver: bridge
