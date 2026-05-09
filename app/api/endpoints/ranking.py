@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
-from app.schemas.ranking.stats import RankingStats
-from app.services.ranking.stats import HLTVRankingStats
+from app.schemas.ranking import RankingStats
+from app.services.ranking import HLTVRankingStats
 
 router = APIRouter()
 

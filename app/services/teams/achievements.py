@@ -6,7 +6,7 @@ from fastapi import HTTPException
 
 from app.services.base import HLTVBase
 from app.utils.utils import extract_from_url, trim
-from app.utils.xpath import Teams
+from app.xpaths import Teams
 
 
 @dataclass

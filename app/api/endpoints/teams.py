@@ -2,16 +2,20 @@ from typing import Annotated
 
 from fastapi import APIRouter, Query
 
-from app.schemas.teams.achievements import TeamAchievements
-from app.schemas.teams.profile import TeamProfile
-from app.schemas.teams.results import TeamResults
-from app.schemas.teams.search import TeamSearch
-from app.schemas.teams.upcoming_matches import UpcomingMatches
-from app.services.teams.achievements import HLTVTeamAchievements
-from app.services.teams.profile import HLTVTeamProfile
-from app.services.teams.results import HLTVTeamResults
-from app.services.teams.search import HLTVTeamSearch
-from app.services.teams.upcoming_matches import HLTVTeamUpcomingMatches
+from app.schemas.teams import (
+    TeamAchievements,
+    TeamProfile,
+    TeamResults,
+    TeamSearch,
+    UpcomingMatches,
+)
+from app.services.teams import (
+    HLTVTeamAchievements,
+    HLTVTeamProfile,
+    HLTVTeamResults,
+    HLTVTeamSearch,
+    HLTVTeamUpcomingMatches,
+)
 from app.utils.utils import get_common_timezones
 
 router = APIRouter()

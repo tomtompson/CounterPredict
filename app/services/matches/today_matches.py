@@ -12,7 +12,7 @@ from app.utils.utils import (
     convert_timestamp_to_user_timezone,
     extract_date_from_headline,
 )
-from app.utils.xpath import Matches
+from app.xpaths import Matches
 
 
 @dataclass

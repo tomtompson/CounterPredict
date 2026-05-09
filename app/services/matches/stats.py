@@ -6,7 +6,7 @@ from fastapi import HTTPException
 
 from app.services.base import HLTVBase
 from app.utils.utils import extract_from_url
-from app.utils.xpath import Matches
+from app.xpaths import Matches
 
 
 @dataclass
@@ -190,7 +190,9 @@ class HLTVMatchStats(HLTVBase):
         map_stats_list = []
 
         try:
-            map_containers = self.get_elements_by_xpath(Matches.MatchStats.MAP_CONTAINERS)
+            map_containers = self.get_elements_by_xpath(
+                Matches.MatchStats.MAP_CONTAINERS
+            )
             self.logger.debug(f"found {len(map_containers)} map containers")
 
             for map_idx, map_container in enumerate(map_containers):
@@ -200,7 +202,12 @@ class HLTVMatchStats(HLTVBase):
                     raw_id = map_container.get("id", "")
                     map_stats_id = raw_id.replace("-content", "") if raw_id else None
                     map_stats = self.__parse_single_map_stats(
-                        map_container, map_idx, map_name, map_stats_id, team1_score, team2_score
+                        map_container,
+                        map_idx,
+                        map_name,
+                        map_stats_id,
+                        team1_score,
+                        team2_score,
                     )
                     if map_stats:
                         map_stats_list.append(map_stats)
@@ -353,7 +360,9 @@ class HLTVMatchStats(HLTVBase):
                     strict=False,
                 ),
             ):
-                player_id_clean = extract_from_url(player_id, "id") if player_id else None
+                player_id_clean = (
+                    extract_from_url(player_id, "id") if player_id else None
+                )
                 players_stats.append(
                     {
                         "index": idx,
@@ -434,5 +443,5 @@ class HLTVMatchStats(HLTVBase):
             self.logger.exception(f"error getting match stats: {e}")
             raise HTTPException(
                 status_code=500,
-                detail=f"failed to retrieve match stats: {str(e)}",
+                detail=f"failed to retrieve match stats: {e!s}",
             )
