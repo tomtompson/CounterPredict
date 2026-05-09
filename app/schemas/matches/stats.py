@@ -1,15 +1,13 @@
 # app/schemas/matches/stats.py
 
-from typing import List, Optional
-from pydantic import HttpUrl
-
-from app.schemas.base import HLTVBaseModel, AuditMixin
+from app.schemas.base import AuditMixin, HLTVBaseModel
 
 
 class PlayerStatSide(HLTVBaseModel):
-
     index: int
     side: str
+    nick: str
+    player_id: str | None
     kd: str
     swing: str
     adr: str
@@ -18,51 +16,53 @@ class PlayerStatSide(HLTVBaseModel):
 
 
 class TeamSideStats(HLTVBaseModel):
+    ct_side: list[PlayerStatSide]
+    t_side: list[PlayerStatSide]
 
-    ct_side: List[PlayerStatSide]
-    t_side: List[PlayerStatSide]
+
+class MapScore(HLTVBaseModel):
+    score: str | None
+    ct: str | None
+    tr: str | None
 
 
 class MapStats(HLTVBaseModel):
-
     map_index: int
+    map_stats_id: str | None
+    map_name: str | None
+    team1_score: MapScore
+    team2_score: MapScore
     team1: TeamSideStats
     team2: TeamSideStats
 
 
 class TeamInfo(HLTVBaseModel):
-
     name: str
-    id: Optional[str]
+    id: str | None
     score: str
 
 
 class EventInfo(HLTVBaseModel):
-    """Event information."""
-
-    name: Optional[str]
-    id: Optional[str]
+    name: str | None
+    id: str | None
 
 
 class MatchInfo(HLTVBaseModel):
-    """Match information."""
-
     team1: TeamInfo
     team2: TeamInfo
-    match_date: Optional[str]
+    match_date: str | None
+    match_time: str | None
+    unix_timestamp: str | None
     event: EventInfo
 
 
 class MatchStatsData(HLTVBaseModel):
-    """Complete match statistics."""
-
     match_info: MatchInfo
-    map_pool: List[str]
-    map_stats: List[MapStats]
+    map_pool: list[str]
+    map_stats: list[MapStats]
 
 
 class MatchStats(HLTVBaseModel, AuditMixin):
-    """Match stats API response."""
-
-    match_id: str
+    match_id: int | None
+    match_url: str | None
     stats: MatchStatsData

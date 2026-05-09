@@ -117,9 +117,6 @@ class Players:
         RATING1_0 = "//div[contains(@class, 'stats-row')]/span[contains(text(),'Rating 1.0')]/following-sibling::span[1]/text()"
 
 
-
-        
-
 class Events:
     class EventProfile:
         EVENT_URL = "//div[@class ='event-hub']//a/@href"
@@ -181,22 +178,21 @@ class Events:
     class EventResults:
         RESULT_CONTAINER = "//div[contains(@class, 'results-all')]//div[contains(@class, 'result-con') and @data-zonedgrouping-entry-unix]"
         MATCH_ID = ".//a[contains(@class, 'a-reset')]/@href"
-        TIMESTAMP = "@data-zonedgrouping-entry-unix" 
+        TIMESTAMP = "@data-zonedgrouping-entry-unix"
         TEAM1_NAME = ".//td[contains(@class, 'team-cell')][1]//div[contains(@class, 'team')]/text()"
         TEAM1_LOGO = ".//td[contains(@class, 'team-cell')][1]//img[contains(@class, 'team-logo')]/@src"
         TEAM1_SCORE = ".//td[contains(@class, 'result-score')]/span[1]/text()"
         TEAM1_SCORE_CLASS = ".//td[contains(@class, 'result-score')]/span[1]/@class"
-        
+
         TEAM2_NAME = ".//td[contains(@class, 'team-cell')][2]//div[contains(@class, 'team')]/text()"
         TEAM2_LOGO = ".//td[contains(@class, 'team-cell')][2]//img[contains(@class, 'team-logo')]/@src"
         TEAM2_SCORE = ".//td[contains(@class, 'result-score')]/span[2]/text()"
         TEAM2_SCORE_CLASS = ".//td[contains(@class, 'result-score')]/span[2]/@class"
-        
+
         MATCH_TYPE = ".//div[contains(@class, 'map-text')]/text()"
-        
+
         MATCH_URL = ".//a[contains(@class, 'a-reset')]/@href"
 
-    
 
 class Teams:
     class TeamProfile:
@@ -305,163 +301,138 @@ class Matches:
         # wraper team xpath
         TEAM1_ID = "./@team1"
         TEAM2_ID = "./@team2"
-        
-    class MatchStats:
-        URL = "//link[@rel='canonical']//@href"
-        MATCH_ID = "//a[contains(@href, '/matches/')]/@href"
-        
-        TEAM1_NAME = "//div[@class='teamName'][1]//a/text()"
-        TEAM1_ID = "//div[@class='team team1']//a/@href"
-        TEAM1_SCORE = "//div[@class='score']//span[@class='scoreLine'][1]/text()"
-        
-        TEAM2_NAME = "//div[@class='teamName'][2]//a/text()"
-        TEAM2_ID = "//div[@class='team team2']//a/@href"
-        TEAM2_SCORE = "//div[@class='score']//span[@class='scoreLine'][2]/text()"
-        
-        
-        MATCH_DATE = "//div[contains(@class, 'matchDate')]//text()"
-        MATCH_TIME = "//div[contains(@class, 'matchTime')]//text()"
-        UNIX_TIMESTAMP = "//div[@class='matchDate']/@data-unix"
-        
-        EVENT_NAME = "//div[contains(@class, 'event')]//a/text()"
-        EVENT_ID = "//div[contains(@class, 'event')]//a/@href"
-        
-        
-        SERIES_TYPE = "//div[contains(@class, 'series-type')]//text()"
-        
-        
-        MAP_POOL = "//div[contains(@class, 'map-pool')]//span[@class='map-name']/text()"
-        MAP_POOL_CONTAINER = "//div[contains(@class, 'map-pool-container')]"
-        
-        
-        MAP1_NAME = "(//div[contains(@class, 'team-map-score-container')]//span[contains(@class, 'map-name')])[1]/text()"
-        MAP2_NAME = "(//div[contains(@class, 'team-map-score-container')]//span[contains(@class, 'map-name')])[2]/text()"
-        MAP3_NAME = "(//div[contains(@class, 'team-map-score-container')]//span[contains(@class, 'map-name')])[3]/text()"
-        MAP4_NAME = "(//div[contains(@class, 'team-map-score-container')]//span[contains(@class, 'map-name')])[4]/text()"
-        MAP5_NAME = "(//div[contains(@class, 'team-map-score-container')]//span[contains(@class, 'map-name')])[5]/text()"
-        
-        MAP1_TEAM1_SCORE = "(//div[contains(@class, 'team-map-score-container')][1]//div[@class='team1']//span[@class='score'])[1]/text()"
-        MAP1_TEAM1_TR = "(//div[contains(@class, 'team-map-score-container')][1]//div[@class='team1']//span[@class='tr'])[1]/text()"
-        MAP1_TEAM1_CT = "(//div[contains(@class, 'team-map-score-container')][1]//div[@class='team1']//span[@class='ct'])[1]/text()"
-        
-        
-        MAP1_TEAM2_SCORE = "(//div[contains(@class, 'team-map-score-container')][1]//div[@class='team2']//span[@class='score'])[1]/text()"
-        MAP1_TEAM2_TR = "(//div[contains(@class, 'team-map-score-container')][1]//div[@class='team2']//span[@class='tr'])[1]/text()"
-        MAP1_TEAM2_CT = "(//div[contains(@class, 'team-map-score-container')][1]//div[@class='team2']//span[@class='ct'])[1]/text()"
-        
-       
-        MAP2_TEAM1_SCORE = "(//div[contains(@class, 'team-map-score-container')][2]//div[@class='team1']//span[@class='score'])[1]/text()"
-        MAP2_TEAM1_TR = "(//div[contains(@class, 'team-map-score-container')][2]//div[@class='team1']//span[@class='tr'])[1]/text()"
-        MAP2_TEAM1_CT = "(//div[contains(@class, 'team-map-score-container')][2]//div[@class='team1']//span[@class='ct'])[1]/text()"
-        
-       
-        MAP2_TEAM2_SCORE = "(//div[contains(@class, 'team-map-score-container')][2]//div[@class='team2']//span[@class='score'])[1]/text()"
-        MAP2_TEAM2_TR = "(//div[contains(@class, 'team-map-score-container')][2]//div[@class='team2']//span[@class='tr'])[1]/text()"
-        MAP2_TEAM2_CT = "(//div[contains(@class, 'team-map-score-container')][2]//div[@class='team2']//span[@class='ct'])[1]/text()"
-        
-        
-        MAP3_TEAM1_SCORE = "(//div[contains(@class, 'team-map-score-container')][3]//div[@class='team1']//span[@class='score'])[1]/text()"
-        MAP3_TEAM1_TR = "(//div[contains(@class, 'team-map-score-container')][3]//div[@class='team1']//span[@class='tr'])[1]/text()"
-        MAP3_TEAM1_CT = "(//div[contains(@class, 'team-map-score-container')][3]//div[@class='team1']//span[@class='ct'])[1]/text()"
-        
-        
-        MAP3_TEAM2_SCORE = "(//div[contains(@class, 'team-map-score-container')][3]//div[@class='team2']//span[@class='score'])[1]/text()"
-        MAP3_TEAM2_TR = "(//div[contains(@class, 'team-map-score-container')][3]//div[@class='team2']//span[@class='tr'])[1]/text()"
-        MAP3_TEAM2_CT = "(//div[contains(@class, 'team-map-score-container')][3]//div[@class='team2']//span[@class='ct'])[1]/text()"
-        
-    
-        MAP4_TEAM1_SCORE = "(//div[contains(@class, 'team-map-score-container')][4]//div[@class='team1']//span[@class='score'])[1]/text()"
-        MAP4_TEAM1_TR = "(//div[contains(@class, 'team-map-score-container')][4]//div[@class='team1']//span[@class='tr'])[1]/text()"
-        MAP4_TEAM1_CT = "(//div[contains(@class, 'team-map-score-container')][4]//div[@class='team1']//span[@class='ct'])[1]/text()"
-        
-        
-        MAP4_TEAM2_SCORE = "(//div[contains(@class, 'team-map-score-container')][4]//div[@class='team2']//span[@class='score'])[1]/text()"
-        MAP4_TEAM2_TR = "(//div[contains(@class, 'team-map-score-container')][4]//div[@class='team2']//span[@class='tr'])[1]/text()"
-        MAP4_TEAM2_CT = "(//div[contains(@class, 'team-map-score-container')][4]//div[@class='team2']//span[@class='ct'])[1]/text()"
-        
-       
-        MAP5_TEAM1_SCORE = "(//div[contains(@class, 'team-map-score-container')][5]//div[@class='team1']//span[@class='score'])[1]/text()"
-        MAP5_TEAM1_TR = "(//div[contains(@class, 'team-map-score-container')][5]//div[@class='team1']//span[@class='tr'])[1]/text()"
-        MAP5_TEAM1_CT = "(//div[contains(@class, 'team-map-score-container')][5]//div[@class='team1']//span[@class='ct'])[1]/text()"
-        
-        
-        MAP5_TEAM2_SCORE = "(//div[contains(@class, 'team-map-score-container')][5]//div[@class='team2']//span[@class='score'])[1]/text()"
-        MAP5_TEAM2_TR = "(//div[contains(@class, 'team-map-score-container')][5]//div[@class='team2']//span[@class='tr'])[1]/text()"
-        MAP5_TEAM2_CT = "(//div[contains(@class, 'team-map-score-container')][5]//div[@class='team2']//span[@class='ct'])[1]/text()"
 
-        MAP_CONTAINERS = "//div[@class='stats-content']"
-        
-        TEAM1_TOTAL_TABLE = ".//table[@class='table totalstats'][1]"
-        TEAM1_CT_TABLE = ".//table[@class='table ctstats hidden'][1]"
-        TEAM1_T_TABLE = ".//table[@class='table tstats hidden'][1]"
-        
-        TEAM2_TOTAL_TABLE = ".//table[@class='table totalstats'][2]"
-        TEAM2_CT_TABLE = ".//table[@class='table ctstats hidden'][2]"
-        TEAM2_T_TABLE = ".//table[@class='table tstats hidden'][2]"
-        
-    # ==================== PLAYER INFO ====================
-        # Para capturar nome do player (contém o nick dentro de <span class="player-nick">)
-        PLAYER_NAME = ".//td[@class='players']//a//div[@class='gtSmartphone-only statsPlayerName text-ellipsis']/text()"
-        PLAYER_NAME_SMARTPHONE = ".//td[@class='players']//a//div[@class='smartphone-only statsPlayerName text-ellipsis']/text()"
-        
-        # Para capturar o ID do player (do href do link)
+    class MatchStats:
+        URL = "//link[@rel='canonical']/@href"
+
+        TEAM1_NAME = (
+            "(//div[@class='standard-box teamsBox']//div[@class='teamName'])[1]/text()"
+        )
+        TEAM1_ID = "//a[contains(@class,'dropdownTeam team1')]/@href"
+        TEAM1_SCORE = "//div[@class='score']/span[1]/text()"
+
+        TEAM2_NAME = (
+            "(//div[@class='standard-box teamsBox']//div[@class='teamName'])[2]/text()"
+        )
+        TEAM2_ID = "//a[contains(@class,'dropdownTeam team2')]/@href"
+        TEAM2_SCORE = "//div[@class='score']/span[2]/text()"
+
+        MATCH_DATE = "//div[@class='standard-box teamsBox']//div[@class='timeAndEvent']//div[@class='date']/text()"
+        MATCH_TIME = "//div[@class='standard-box teamsBox']//div[@class='timeAndEvent']//div[@class='time']/text()"
+        UNIX_TIMESTAMP = "//div[@class='standard-box teamsBox']//div[@class='timeAndEvent']//div[@class='date']/@data-unix"
+
+        EVENT_NAME = "//div[@class='standard-box teamsBox']//div[@class='timeAndEvent']//a/text()"
+        EVENT_ID = (
+            "//div[@class='standard-box teamsBox']//div[@class='timeAndEvent']//a/@href"
+        )
+
+        MAP_POOL = "//div[@class='mapholder']//div[@class='mapname']/text()"
+
+        MAP1_NAME = "(//div[@class='mapholder']//div[@class='mapname'])[1]/text()"
+        MAP2_NAME = "(//div[@class='mapholder']//div[@class='mapname'])[2]/text()"
+        MAP3_NAME = "(//div[@class='mapholder']//div[@class='mapname'])[3]/text()"
+        MAP4_NAME = "(//div[@class='mapholder']//div[@class='mapname'])[4]/text()"
+        MAP5_NAME = "(//div[@class='mapholder']//div[@class='mapname'])[5]/text()"
+
+        MAP1_TEAM1_SCORE = "((//div[@class='mapholder'])[1]//div[@class='results-team-score'])[1]/text()"
+        MAP1_TEAM1_CT = "(//div[@class='mapholder'])[1]//div[@class='results-center-half-score']/span[@class='ct'][1]/text()"
+        MAP1_TEAM1_TR = "(//div[@class='mapholder'])[1]//div[@class='results-center-half-score']/span[@class='t'][1]/text()"
+
+        MAP1_TEAM2_SCORE = "((//div[@class='mapholder'])[1]//div[@class='results-team-score'])[2]/text()"
+        MAP1_TEAM2_CT = "(//div[@class='mapholder'])[1]//div[@class='results-center-half-score']/span[@class='ct'][2]/text()"
+        MAP1_TEAM2_TR = "(//div[@class='mapholder'])[1]//div[@class='results-center-half-score']/span[@class='t'][2]/text()"
+
+        MAP2_TEAM1_SCORE = "((//div[@class='mapholder'])[2]//div[@class='results-team-score'])[1]/text()"
+        MAP2_TEAM1_CT = "(//div[@class='mapholder'])[2]//div[@class='results-center-half-score']/span[@class='ct'][1]/text()"
+        MAP2_TEAM1_TR = "(//div[@class='mapholder'])[2]//div[@class='results-center-half-score']/span[@class='t'][1]/text()"
+
+        MAP2_TEAM2_SCORE = "((//div[@class='mapholder'])[2]//div[@class='results-team-score'])[2]/text()"
+        MAP2_TEAM2_CT = "(//div[@class='mapholder'])[2]//div[@class='results-center-half-score']/span[@class='ct'][2]/text()"
+        MAP2_TEAM2_TR = "(//div[@class='mapholder'])[2]//div[@class='results-center-half-score']/span[@class='t'][2]/text()"
+
+        MAP3_TEAM1_SCORE = "((//div[@class='mapholder'])[3]//div[@class='results-team-score'])[1]/text()"
+        MAP3_TEAM1_CT = "(//div[@class='mapholder'])[3]//div[@class='results-center-half-score']/span[@class='ct'][1]/text()"
+        MAP3_TEAM1_TR = "(//div[@class='mapholder'])[3]//div[@class='results-center-half-score']/span[@class='t'][1]/text()"
+
+        MAP3_TEAM2_SCORE = "((//div[@class='mapholder'])[3]//div[@class='results-team-score'])[2]/text()"
+        MAP3_TEAM2_CT = "(//div[@class='mapholder'])[3]//div[@class='results-center-half-score']/span[@class='ct'][2]/text()"
+        MAP3_TEAM2_TR = "(//div[@class='mapholder'])[3]//div[@class='results-center-half-score']/span[@class='t'][2]/text()"
+
+        MAP4_TEAM1_SCORE = "((//div[@class='mapholder'])[4]//div[@class='results-team-score'])[1]/text()"
+        MAP4_TEAM1_CT = "(//div[@class='mapholder'])[4]//div[@class='results-center-half-score']/span[@class='ct'][1]/text()"
+        MAP4_TEAM1_TR = "(//div[@class='mapholder'])[4]//div[@class='results-center-half-score']/span[@class='t'][1]/text()"
+
+        MAP4_TEAM2_SCORE = "((//div[@class='mapholder'])[4]//div[@class='results-team-score'])[2]/text()"
+        MAP4_TEAM2_CT = "(//div[@class='mapholder'])[4]//div[@class='results-center-half-score']/span[@class='ct'][2]/text()"
+        MAP4_TEAM2_TR = "(//div[@class='mapholder'])[4]//div[@class='results-center-half-score']/span[@class='t'][2]/text()"
+
+        MAP5_TEAM1_SCORE = "((//div[@class='mapholder'])[5]//div[@class='results-team-score'])[1]/text()"
+        MAP5_TEAM1_CT = "(//div[@class='mapholder'])[5]//div[@class='results-center-half-score']/span[@class='ct'][1]/text()"
+        MAP5_TEAM1_TR = "(//div[@class='mapholder'])[5]//div[@class='results-center-half-score']/span[@class='t'][1]/text()"
+
+        MAP5_TEAM2_SCORE = "((//div[@class='mapholder'])[5]//div[@class='results-team-score'])[2]/text()"
+        MAP5_TEAM2_CT = "(//div[@class='mapholder'])[5]//div[@class='results-center-half-score']/span[@class='ct'][2]/text()"
+        MAP5_TEAM2_TR = "(//div[@class='mapholder'])[5]//div[@class='results-center-half-score']/span[@class='t'][2]/text()"
+
+        # Per-map stats containers (excludes the aggregate 'all-content' container)
+        MAP_CONTAINERS = "//div[@class='stats-content' and @id!='all-content']"
+        MAP_CONTAINER_ID = "@id"
+
+        # Each map container has 6 tables: team1 total/ct/t, team2 total/ct/t
+        TEAM1_TOTAL_TABLE = "(.//table[@class='table totalstats'])[1]"
+        TEAM1_CT_TABLE = "(.//table[@class='table ctstats hidden'])[1]"
+        TEAM1_T_TABLE = "(.//table[@class='table tstats hidden'])[1]"
+
+        TEAM2_TOTAL_TABLE = "(.//table[@class='table totalstats'])[2]"
+        TEAM2_CT_TABLE = "(.//table[@class='table ctstats hidden'])[2]"
+        TEAM2_T_TABLE = "(.//table[@class='table tstats hidden'])[2]"
+
+        # Player rows — tables have no thead/tbody, header row has class="header-row"
+        PLAYER_ROWS = ".//tr[not(@class='header-row')]"
+
+        # Player nick (clean nickname from span)
+        PLAYER_NICK = ".//td[@class='players']//span[@class='player-nick']/text()"
         PLAYER_ID = ".//td[@class='players']//a/@href"
-        
-        # ==================== TABLES CONTAINERS ====================
-        # Stats content container por mapa
-        MAP_CONTAINERS = "//div[@class='stats-content']"
-        
-        # Cada mapa tem 6 tables: 
-        # Team1: totalstats, ctstats, tstats
-        # Team2: totalstats, ctstats, tstats
-        
-        # Team 1 tables (primeiro bloco)
-        TEAM1_TOTAL_TABLE = ".//table[@class='table totalstats'][1]"
-        TEAM1_CT_TABLE = ".//table[@class='table ctstats hidden'][1]"
-        TEAM1_T_TABLE = ".//table[@class='table tstats hidden'][1]"
-        
-        # Team 2 tables (segundo bloco)
-        TEAM2_TOTAL_TABLE = ".//table[@class='table totalstats'][2]"
-        TEAM2_CT_TABLE = ".//table[@class='table ctstats hidden'][2]"
-        TEAM2_T_TABLE = ".//table[@class='table tstats hidden'][2]"
-        
-        # ==================== PLAYER ROWS ====================
-        # Linhas de players (pula o header row)
-        PLAYER_ROWS = ".//tbody/tr[position() > 1]"
-        
-        # ==================== STATS POR SIDE ====================
-        # Para CT side - Team 1
-        TEAM1_CT_PLAYER_NAME = ".//table[@class='table ctstats hidden'][1]//tbody/tr[position() > 1]//td[@class='players']//a//div[@class='gtSmartphone-only statsPlayerName text-ellipsis']/text()"
-        TEAM1_CT_PLAYER_ID = ".//table[@class='table ctstats hidden'][1]//tbody/tr[position() > 1]//td[@class='players']//a/@href"
-        TEAM1_CT_PLAYER_KD = ".//table[@class='table ctstats hidden'][1]//tbody/tr[position() > 1]//td[@class='kd text-center traditional-data']/text()"
-        TEAM1_CT_PLAYER_SWING = ".//table[@class='table ctstats hidden'][1]//tbody/tr[position() > 1]//td[@class='roundSwing text-center']/text()"
-        TEAM1_CT_PLAYER_ADR = ".//table[@class='table ctstats hidden'][1]//tbody/tr[position() > 1]//td[@class='adr text-center traditional-data']/text()"
-        TEAM1_CT_PLAYER_KAST = ".//table[@class='table ctstats hidden'][1]//tbody/tr[position() > 1]//td[@class='kast text-center traditional-data']/text()"
-        TEAM1_CT_PLAYER_RATING = ".//table[@class='table ctstats hidden'][1]//tbody/tr[position() > 1]//td[@class='rating text-center']/text()"
-        
-        # Para T side - Team 1
-        TEAM1_T_PLAYER_NAME = ".//table[@class='table tstats hidden'][1]//tbody/tr[position() > 1]//td[@class='players']//a//div[@class='gtSmartphone-only statsPlayerName text-ellipsis']/text()"
-        TEAM1_T_PLAYER_ID = ".//table[@class='table tstats hidden'][1]//tbody/tr[position() > 1]//td[@class='players']//a/@href"
-        TEAM1_T_PLAYER_KD = ".//table[@class='table tstats hidden'][1]//tbody/tr[position() > 1]//td[@class='kd text-center traditional-data']/text()"
-        TEAM1_T_PLAYER_SWING = ".//table[@class='table tstats hidden'][1]//tbody/tr[position() > 1]//td[@class='roundSwing text-center']/text()"
-        TEAM1_T_PLAYER_ADR = ".//table[@class='table tstats hidden'][1]//tbody/tr[position() > 1]//td[@class='adr text-center traditional-data']/text()"
-        TEAM1_T_PLAYER_KAST = ".//table[@class='table tstats hidden'][1]//tbody/tr[position() > 1]//td[@class='kast text-center traditional-data']/text()"
-        TEAM1_T_PLAYER_RATING = ".//table[@class='table tstats hidden'][1]//tbody/tr[position() > 1]//td[@class='rating text-center']/text()"
-        
-        # Para CT side - Team 2
-        TEAM2_CT_PLAYER_NAME = ".//table[@class='table ctstats hidden'][2]//tbody/tr[position() > 1]//td[@class='players']//a//div[@class='gtSmartphone-only statsPlayerName text-ellipsis']/text()"
-        TEAM2_CT_PLAYER_ID = ".//table[@class='table ctstats hidden'][2]//tbody/tr[position() > 1]//td[@class='players']//a/@href"
-        TEAM2_CT_PLAYER_KD = ".//table[@class='table ctstats hidden'][2]//tbody/tr[position() > 1]//td[@class='kd text-center traditional-data']/text()"
-        TEAM2_CT_PLAYER_SWING = ".//table[@class='table ctstats hidden'][2]//tbody/tr[position() > 1]//td[@class='roundSwing text-center']/text()"
-        TEAM2_CT_PLAYER_ADR = ".//table[@class='table ctstats hidden'][2]//tbody/tr[position() > 1]//td[@class='adr text-center traditional-data']/text()"
-        TEAM2_CT_PLAYER_KAST = ".//table[@class='table ctstats hidden'][2]//tbody/tr[position() > 1]//td[@class='kast text-center traditional-data']/text()"
-        TEAM2_CT_PLAYER_RATING = ".//table[@class='table ctstats hidden'][2]//tbody/tr[position() > 1]//td[@class='rating text-center']/text()"
-        
-        # Para T side - Team 2
-        TEAM2_T_PLAYER_NAME = ".//table[@class='table tstats hidden'][2]//tbody/tr[position() > 1]//td[@class='players']//a//div[@class='gtSmartphone-only statsPlayerName text-ellipsis']/text()"
-        TEAM2_T_PLAYER_ID = ".//table[@class='table tstats hidden'][2]//tbody/tr[position() > 1]//td[@class='players']//a/@href"
-        TEAM2_T_PLAYER_KD = ".//table[@class='table tstats hidden'][2]//tbody/tr[position() > 1]//td[@class='kd text-center traditional-data']/text()"
-        TEAM2_T_PLAYER_SWING = ".//table[@class='table tstats hidden'][2]//tbody/tr[position() > 1]//td[@class='roundSwing text-center']/text()"
-        TEAM2_T_PLAYER_ADR = ".//table[@class='table tstats hidden'][2]//tbody/tr[position() > 1]//td[@class='adr text-center traditional-data']/text()"
-        TEAM2_T_PLAYER_KAST = ".//table[@class='table tstats hidden'][2]//tbody/tr[position() > 1]//td[@class='kast text-center traditional-data']/text()"
-        TEAM2_T_PLAYER_RATING = ".//table[@class='table tstats hidden'][2]//tbody/tr[position() > 1]//td[@class='rating text-center']/text()"
+
+        # Per-side stat columns (swing class varies: won/lost suffix)
+        PLAYER_KD = ".//td[@class='kd text-center traditional-data']/text()"
+        PLAYER_SWING = ".//td[contains(@class,'roundSwing text-center')]/text()"
+        PLAYER_ADR = ".//td[@class='adr text-center traditional-data']/text()"
+        PLAYER_KAST = ".//td[@class='kast text-center traditional-data']/text()"
+        PLAYER_RATING = ".//td[contains(@class,'rating text-center')]/text()"
+
+        # CT side — Team 1
+        TEAM1_CT_PLAYER_NICK = "(.//table[@class='table ctstats hidden'])[1]//tr[not(@class='header-row')]//span[@class='player-nick']/text()"
+        TEAM1_CT_PLAYER_ID = "(.//table[@class='table ctstats hidden'])[1]//tr[not(@class='header-row')]//td[@class='players']//a/@href"
+        TEAM1_CT_PLAYER_KD = "(.//table[@class='table ctstats hidden'])[1]//tr[not(@class='header-row')]//td[@class='kd text-center traditional-data']/text()"
+        TEAM1_CT_PLAYER_SWING = "(.//table[@class='table ctstats hidden'])[1]//tr[not(@class='header-row')]//td[contains(@class,'roundSwing text-center')]/text()"
+        TEAM1_CT_PLAYER_ADR = "(.//table[@class='table ctstats hidden'])[1]//tr[not(@class='header-row')]//td[@class='adr text-center traditional-data']/text()"
+        TEAM1_CT_PLAYER_KAST = "(.//table[@class='table ctstats hidden'])[1]//tr[not(@class='header-row')]//td[@class='kast text-center traditional-data']/text()"
+        TEAM1_CT_PLAYER_RATING = "(.//table[@class='table ctstats hidden'])[1]//tr[not(@class='header-row')]//td[contains(@class,'rating text-center')]/text()"
+
+        # T side — Team 1
+        TEAM1_T_PLAYER_NICK = "(.//table[@class='table tstats hidden'])[1]//tr[not(@class='header-row')]//span[@class='player-nick']/text()"
+        TEAM1_T_PLAYER_ID = "(.//table[@class='table tstats hidden'])[1]//tr[not(@class='header-row')]//td[@class='players']//a/@href"
+        TEAM1_T_PLAYER_KD = "(.//table[@class='table tstats hidden'])[1]//tr[not(@class='header-row')]//td[@class='kd text-center traditional-data']/text()"
+        TEAM1_T_PLAYER_SWING = "(.//table[@class='table tstats hidden'])[1]//tr[not(@class='header-row')]//td[contains(@class,'roundSwing text-center')]/text()"
+        TEAM1_T_PLAYER_ADR = "(.//table[@class='table tstats hidden'])[1]//tr[not(@class='header-row')]//td[@class='adr text-center traditional-data']/text()"
+        TEAM1_T_PLAYER_KAST = "(.//table[@class='table tstats hidden'])[1]//tr[not(@class='header-row')]//td[@class='kast text-center traditional-data']/text()"
+        TEAM1_T_PLAYER_RATING = "(.//table[@class='table tstats hidden'])[1]//tr[not(@class='header-row')]//td[contains(@class,'rating text-center')]/text()"
+
+        # CT side — Team 2
+        TEAM2_CT_PLAYER_NICK = "(.//table[@class='table ctstats hidden'])[2]//tr[not(@class='header-row')]//span[@class='player-nick']/text()"
+        TEAM2_CT_PLAYER_ID = "(.//table[@class='table ctstats hidden'])[2]//tr[not(@class='header-row')]//td[@class='players']//a/@href"
+        TEAM2_CT_PLAYER_KD = "(.//table[@class='table ctstats hidden'])[2]//tr[not(@class='header-row')]//td[@class='kd text-center traditional-data']/text()"
+        TEAM2_CT_PLAYER_SWING = "(.//table[@class='table ctstats hidden'])[2]//tr[not(@class='header-row')]//td[contains(@class,'roundSwing text-center')]/text()"
+        TEAM2_CT_PLAYER_ADR = "(.//table[@class='table ctstats hidden'])[2]//tr[not(@class='header-row')]//td[@class='adr text-center traditional-data']/text()"
+        TEAM2_CT_PLAYER_KAST = "(.//table[@class='table ctstats hidden'])[2]//tr[not(@class='header-row')]//td[@class='kast text-center traditional-data']/text()"
+        TEAM2_CT_PLAYER_RATING = "(.//table[@class='table ctstats hidden'])[2]//tr[not(@class='header-row')]//td[contains(@class,'rating text-center')]/text()"
+
+        # T side — Team 2
+        TEAM2_T_PLAYER_NICK = "(.//table[@class='table tstats hidden'])[2]//tr[not(@class='header-row')]//span[@class='player-nick']/text()"
+        TEAM2_T_PLAYER_ID = "(.//table[@class='table tstats hidden'])[2]//tr[not(@class='header-row')]//td[@class='players']//a/@href"
+        TEAM2_T_PLAYER_KD = "(.//table[@class='table tstats hidden'])[2]//tr[not(@class='header-row')]//td[@class='kd text-center traditional-data']/text()"
+        TEAM2_T_PLAYER_SWING = "(.//table[@class='table tstats hidden'])[2]//tr[not(@class='header-row')]//td[contains(@class,'roundSwing text-center')]/text()"
+        TEAM2_T_PLAYER_ADR = "(.//table[@class='table tstats hidden'])[2]//tr[not(@class='header-row')]//td[@class='adr text-center traditional-data']/text()"
+        TEAM2_T_PLAYER_KAST = "(.//table[@class='table tstats hidden'])[2]//tr[not(@class='header-row')]//td[@class='kast text-center traditional-data']/text()"
+        TEAM2_T_PLAYER_RATING = "(.//table[@class='table tstats hidden'])[2]//tr[not(@class='header-row')]//td[contains(@class,'rating text-center')]/text()"
