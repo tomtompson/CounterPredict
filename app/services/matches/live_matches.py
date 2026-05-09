@@ -6,7 +6,7 @@ from fastapi import HTTPException
 
 from app.services.base import HLTVBase
 from app.utils.utils import extract_from_url
-from app.utils.xpath import Matches
+from app.xpaths import Matches
 
 
 @dataclass

@@ -64,4 +64,5 @@ class MatchStatsData(HLTVBaseModel):
 class MatchStats(HLTVBaseModel, AuditMixin):
     match_id: int | None
     match_url: str | None
+    is_live: bool = False
     stats: MatchStatsData

@@ -6,7 +6,7 @@ from fastapi import HTTPException
 
 from app.services.base import HLTVBase
 from app.utils.utils import trim
-from app.utils.xpath import Players
+from app.xpaths import Players
 
 
 @dataclass

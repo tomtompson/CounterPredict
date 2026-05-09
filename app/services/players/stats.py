@@ -8,7 +8,7 @@ from app.utils.utils import (
     extract_float_from_percentage_number,
     parse_float,
 )
-from app.utils.xpath import Players
+from app.xpaths import Players
 
 
 @dataclass

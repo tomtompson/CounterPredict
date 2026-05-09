@@ -4,7 +4,7 @@ from fastapi import HTTPException
 
 from app.services.base import HLTVBase
 from app.utils.utils import extract_float_from_percentage_number, parse_float, parse_int
-from app.utils.xpath import Players
+from app.xpaths import Players
 
 
 @dataclass

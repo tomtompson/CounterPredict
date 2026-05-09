@@ -6,7 +6,7 @@ from fastapi import HTTPException
 
 from app.services.base import HLTVBase
 from app.utils.utils import clear_number_str, extract_from_url, parse_date
-from app.utils.xpath import Ranking
+from app.xpaths import Ranking
 
 
 @dataclass

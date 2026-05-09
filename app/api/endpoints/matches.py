@@ -2,12 +2,8 @@ from typing import Annotated
 
 from fastapi import APIRouter, Query
 
-from app.schemas.matches.live_matches import LiveMatches
-from app.schemas.matches.stats import MatchStats
-from app.schemas.matches.today_matches import TodayMatches
-from app.services.matches.live_matches import HLTVLiveMatches
-from app.services.matches.stats import HLTVMatchStats
-from app.services.matches.today_matches import HLTVTodayMatches
+from app.schemas.matches import LiveMatches, MatchStats, TodayMatches
+from app.services.matches import HLTVLiveMatches, HLTVMatchStats, HLTVTodayMatches
 from app.utils.utils import get_common_timezones
 
 router = APIRouter()

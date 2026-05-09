@@ -4,13 +4,13 @@ from dataclasses import dataclass
 
 from app.services.base import HLTVBase
 from app.utils.utils import convert_timestamp_to_user_timezone, extract_from_url
-from app.utils.xpath import Events
+from app.xpaths import Events
 
 
 @dataclass
 class HLTVEventResults(HLTVBase):
     """class for getting results from a specific event.
-    
+
     Attributes:
         event_id: hltv event id
     """

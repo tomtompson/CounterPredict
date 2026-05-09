@@ -9,7 +9,7 @@ from fastapi import HTTPException
 
 from app.services.base import HLTVBase
 from app.utils.utils import convert_timestamp_to_user_timezone, extract_from_url
-from app.utils.xpath import Teams
+from app.xpaths import Teams
 
 
 @dataclass

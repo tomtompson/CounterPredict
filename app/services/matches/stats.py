@@ -6,7 +6,7 @@ from fastapi import HTTPException
 
 from app.services.base import HLTVBase
 from app.utils.utils import extract_from_url, parse_float,extract_float_from_percentage_number
-from app.utils.xpath import Matches
+from app.xpaths import Matches
 
 
 @dataclass
@@ -190,7 +190,9 @@ class HLTVMatchStats(HLTVBase):
         map_stats_list = []
 
         try:
-            map_containers = self.get_elements_by_xpath(Matches.MatchStats.MAP_CONTAINERS)
+            map_containers = self.get_elements_by_xpath(
+                Matches.MatchStats.MAP_CONTAINERS
+            )
             self.logger.debug(f"found {len(map_containers)} map containers")
 
             for map_idx, map_container in enumerate(map_containers):
@@ -200,7 +202,12 @@ class HLTVMatchStats(HLTVBase):
                     raw_id = map_container.get("id", "")
                     map_stats_id = raw_id.replace("-content", "") if raw_id else None
                     map_stats = self.__parse_single_map_stats(
-                        map_container, map_idx, map_name, map_stats_id, team1_score, team2_score
+                        map_container,
+                        map_idx,
+                        map_name,
+                        map_stats_id,
+                        team1_score,
+                        team2_score,
                     )
                     if map_stats:
                         map_stats_list.append(map_stats)
@@ -353,8 +360,9 @@ class HLTVMatchStats(HLTVBase):
                     strict=False,
                 ),
             ):
-                player_id_clean = extract_from_url(player_id, "id") if player_id else None
-
+                player_id_clean = (
+                    extract_from_url(player_id, "id") if player_id else None
+                )
                 adr_float = parse_float(adr) if adr else None
                 rating_float = parse_float(rating) if rating else None
                 swing_float = extract_float_from_percentage_number(swing) if swing else None
@@ -426,18 +434,32 @@ class HLTVMatchStats(HLTVBase):
             dict: match_id and detailed stats including teams, maps, and player performance.
         """
         try:
+            has_stats = bool(self.get_elements_by_xpath(Matches.MatchStats.HAS_STATS))
+
+            if not has_stats:
+                raise HTTPException(
+                    status_code=425,
+                    detail=f"match {self.match_id} has not started yet — no stats available",
+                )
+
+            has_score = bool(self.get_elements_by_xpath(Matches.MatchStats.WITH_SCORE))
+            is_live = not has_score
+
             match_stats = self.__parse_all_match_stats()
 
             self.response["match_id"] = self.match_id
             self.response["match_url"] = self.get_text_by_xpath(Matches.MatchStats.URL)
+            self.response["is_live"] = is_live
             self.response["stats"] = match_stats
 
             self.logger.info(f"match stats retrieved successfully for {self.match_id}")
             return self.response
 
+        except HTTPException:
+            raise
         except Exception as e:
             self.logger.exception(f"error getting match stats: {e}")
             raise HTTPException(
                 status_code=500,
-                detail=f"failed to retrieve match stats: {str(e)}",
+                detail=f"failed to retrieve match stats: {e!s}",
             )

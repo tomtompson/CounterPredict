@@ -1,19 +1,23 @@
 from fastapi import APIRouter
 
-from app.schemas.players.career_stats import PlayerCareerStats
-from app.schemas.players.personal_achievements import PlayerPersonalAchievements
-from app.schemas.players.profile import PlayerProfile
-from app.schemas.players.search import PlayerSearch
-from app.schemas.players.stats import PlayerStats
-from app.schemas.players.team_achievements import PlayerTeamAchievements
-from app.schemas.players.trophies import PlayerTrophies
-from app.services.players.career_stats import HLTVPlayerCareerStats
-from app.services.players.personal_achievements import HLTVPlayerPersonalAchievements
-from app.services.players.profile import HLTVPlayerProfile
-from app.services.players.search import HLTVPlayerSearch
-from app.services.players.stats import HLTVPlayerStats
-from app.services.players.team_achievements import HLTVPlayerTeamAchievements
-from app.services.players.trophies import HLTVPlayersTrophies
+from app.schemas.players import (
+    PlayerCareerStats,
+    PlayerPersonalAchievements,
+    PlayerProfile,
+    PlayerSearch,
+    PlayerStats,
+    PlayerTeamAchievements,
+    PlayerTrophies,
+)
+from app.services.players import (
+    HLTVPlayerCareerStats,
+    HLTVPlayerPersonalAchievements,
+    HLTVPlayerProfile,
+    HLTVPlayerSearch,
+    HLTVPlayerStats,
+    HLTVPlayersTrophies,
+    HLTVPlayerTeamAchievements,
+)
 
 router = APIRouter()
 

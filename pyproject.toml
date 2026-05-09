@@ -27,5 +27,9 @@ hltv-api = "app.main:main"
 [tool.ty.environment]
 python = ".venv"
 
+[tool.ruff]
+[tool.ruff.lint]
+select = ["I", "RUF022"]
+
 [dependency-groups]
 dev = ["lxml-stubs>=0.5.1", "ruff>=0.15.12", "ty>=0.0.34"]
