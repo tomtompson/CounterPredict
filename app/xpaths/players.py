@@ -31,9 +31,10 @@ class Players:
         PLAYER_STATS_URL = ".//td[contains(@class, 'stats-button-cell')]/a/@href"
 
     class PersonalAchievements:
-        TOP_20_PLACEMENT = "//div[contains(@class,'playerTop20')]//span[contains(@class, 'top20ListRight')]/a/text()"
-        TOP_20_YEAR = "//div[contains(@class,'playerTop20')]//span[contains(@class, 'top20ListRight')]/span/text()"
-        TOP_20_ARTICLE_URL = "//div[contains(@class,'playerTop20')]//span[contains(@class, 'top20ListRight')]/a/@href"
+        _TOP_20_BASE = "//div[contains(@class,'playerTop20')]//span[contains(@class, 'top20ListRight')]"
+        TOP_20_PLACEMENT = _TOP_20_BASE + "/a/text()"
+        TOP_20_YEAR = _TOP_20_BASE + "/span/text()"
+        TOP_20_ARTICLE_URL = _TOP_20_BASE + "/a/@href"
         MAJOR_WINNER_COUNT = "//div[contains(@class, 'majorWinner')]/b"
         MAJOR_MVP_COUNT = "//div[contains(@class, 'majorMVP')]/b"
         MVP_WINNER_COUNT = "//div[contains(@class, 'mvp-count')]//text()"
@@ -41,77 +42,137 @@ class Players:
         EVP = "//div[contains(@id, 'EVPs')]//tr[contains(@class,'trophy-row')]//div[contains(@class,'trophy-event')]/a/text()"
 
     class Trophies:
-        TOURNAMENT_NAME = "//div[contains(@id, 'Trophies')]//tr[contains(@class, 'trophy-row')]//div[contains(@class, 'trophy-event')]/a/text()"
+        _TROPHY_BASE = "//div[contains(@id, 'Trophies')]//tr[contains(@class, 'trophy-row')]//div[contains(@class, 'trophy-event')]/a"
+        TOURNAMENT_NAME = _TROPHY_BASE + "/text()"
+        TOURNAMENT_URL = _TROPHY_BASE + "/@href"
         TROPHY_IMG_URL = "//div[contains(@id, 'Trophies')]//tr[contains(@class, 'trophy-row')]//div[contains(@class, 'trophy-detail')]/img/@src"
-        TOURNAMENT_URL = "//div[contains(@id, 'Trophies')]//tr[contains(@class, 'trophy-row')]//div[contains(@class, 'trophy-event')]/a/@href"
 
     class Stats:
+        # Base patterns
+        _STATS_SIDE_COMBINED = "//div[contains(@class, 'stats-side-combined')]"
+        _PER_ROUND_BASE = (
+            _STATS_SIDE_COMBINED
+            + "//div[contains(@data-per-round-title, '{title}') and contains(@class, 'stats-side-combined')]//div[contains(@class, 'role-stats-data')]//text()"
+        )
+        _TITLED_STAT_BASE = (
+            _STATS_SIDE_COMBINED
+            + "//div[contains(@class, 'role-stats-top')][.//div[contains(@class, 'role-stats-title') and contains(text(), '{title}')]]//div[contains(@class, 'role-stats-data')]/text()"
+        )
+
         # firepower stats
-        KILLS_PER_ROUND = "//div[contains(@data-per-round-title, 'Kills per round') and not(contains(@data-per-round-title, 'Kills per round win')) and contains(@class, 'stats-side-combined')]//div[contains(@class, 'role-stats-data')]//text()"
-        KILLS_PER_ROUND_WIN = "//div[contains(@data-per-round-title, 'Kills per round win') and contains(@class, 'stats-side-combined')]//div[contains(@class, 'role-stats-data')]//text()"
+        KILLS_PER_ROUND = _PER_ROUND_BASE.format(title="Kills per round")
+        KILLS_PER_ROUND_WIN = _PER_ROUND_BASE.format(title="Kills per round win")
         DAMAGE_PER_ROUND = "//div[contains(@data-per-round-title, 'Damage per round') and not(contains(@data-per-round-title, 'Damage per round win')) and contains(@class, 'stats-side-combined')]//div[contains(@class, 'role-stats-data')]//text()"
-        DAMAGE_PER_ROUND_WIN = "//div[contains(@data-per-round-title, 'Damage per round win') and contains(@class, 'stats-side-combined')]//div[contains(@class, 'role-stats-data')]//text()"
-        ROUNDS_WITH_A_KILL_PERCENTAGE = "//div[contains(@data-per-round-title, 'Rounds with a kill') and contains(@class, 'stats-side-combined')]//div[contains(@class, 'role-stats-data')]//text()"
-        RATING_1_0 = "//div[contains(@class, 'stats-side-combined')]//div[contains(@class, 'role-stats-top')][.//div[contains(@class, 'role-stats-title') and contains(text(), 'Rating 1.0')]]//div[contains(@class, 'role-stats-data')]/text()"
-        ROUNDS_WITH_MULTI_KILL_PERCENTAGE = "//div[contains(@data-per-round-title, 'Rounds with a multi-kill') and contains(@class, 'stats-side-combined')]//div[contains(@class, 'role-stats-data')]//text()"
-        PISTOL_ROUND_RATING = "//div[contains(@class, 'stats-side-combined')]//div[contains(@class, 'role-stats-top')][.//div[contains(@class, 'role-stats-title') and contains(text(), 'Pistol round rating')]]//div[contains(@class, 'role-stats-data')]/text()"
+        DAMAGE_PER_ROUND_WIN = _PER_ROUND_BASE.format(title="Damage per round win")
+        ROUNDS_WITH_A_KILL_PERCENTAGE = _PER_ROUND_BASE.format(
+            title="Rounds with a kill"
+        )
+        RATING_1_0 = _TITLED_STAT_BASE.format(title="Rating 1.0")
+        ROUNDS_WITH_MULTI_KILL_PERCENTAGE = _PER_ROUND_BASE.format(
+            title="Rounds with a multi-kill"
+        )
+        PISTOL_ROUND_RATING = _TITLED_STAT_BASE.format(title="Pistol round rating")
 
         # entrying stats
-        SAVED_BY_TEAMMATE_PER_ROUND = "//div[contains(@class, 'stats-side-combined')]//div[contains(@class, 'role-stats-top')][.//div[contains(@class, 'role-stats-title') and contains(text(), 'Saved by teammate per round')]]//div[contains(@class, 'role-stats-data')]/text()"
-        TRADED_DEATHS_PER_ROUND = "//div[contains(@class, 'stats-side-combined')]//div[contains(@class, 'role-stats-top')][.//div[contains(@class, 'role-stats-title') and contains(text(), 'Traded deaths per round')]]//div[contains(@class, 'role-stats-data')]/text()"
-        TRADED_DEATHS_PERCENTAGE = "//div[contains(@class, 'stats-side-combined')]//div[contains(@class, 'role-stats-top')][.//div[contains(@class, 'role-stats-title') and contains(text(), 'Traded deaths percentage')]]//div[contains(@class, 'role-stats-data')]/text()"
-        OPENING_DEATHS_TRADED_PERCENTAGE = "//div[contains(@class, 'stats-side-combined')]//div[contains(@class, 'role-stats-top')][.//div[contains(@class, 'role-stats-title') and contains(text(), 'Opening deaths traded percentage')]]//div[contains(@class, 'role-stats-data')]/text()"
-        ASSISTS_PER_ROUND = "//div[contains(@data-per-round-title, 'Assists per round') and contains(@class, 'stats-side-combined')]//div[contains(@class, 'role-stats-data')]//text()"
-        SUPPORT_ROUNDS_PERCENTAGE = "//div[contains(@class, 'stats-side-combined')]//div[contains(@class, 'role-stats-top')][.//div[contains(@class, 'role-stats-title') and contains(text(), 'Support rounds')]]//div[contains(@class, 'role-stats-data')]/text()"
+        SAVED_BY_TEAMMATE_PER_ROUND = _TITLED_STAT_BASE.format(
+            title="Saved by teammate per round"
+        )
+        TRADED_DEATHS_PER_ROUND = _TITLED_STAT_BASE.format(
+            title="Traded deaths per round"
+        )
+        TRADED_DEATHS_PERCENTAGE = _TITLED_STAT_BASE.format(
+            title="Traded deaths percentage"
+        )
+        OPENING_DEATHS_TRADED_PERCENTAGE = _TITLED_STAT_BASE.format(
+            title="Opening deaths traded percentage"
+        )
+        ASSISTS_PER_ROUND = _PER_ROUND_BASE.format(title="Assists per round")
+        SUPPORT_ROUNDS_PERCENTAGE = _TITLED_STAT_BASE.format(title="Support rounds")
 
         # trading stats
-        SAVED_TEAMMATE_PER_ROUND = "//div[contains(@data-per-round-title, 'Saved teammate per round') and contains(@class, 'stats-side-combined')]//div[contains(@class, 'role-stats-data')]//text()"
-        TRADE_KILLS_PER_ROUND = "//div[contains(@data-per-round-title, 'Trade kills per round') and contains(@class, 'stats-side-combined')]//div[contains(@class, 'role-stats-data')]//text()"
-        TRADE_KILLS_PERCENTAGE = "//div[contains(@class, 'stats-side-combined')]//div[contains(@class, 'role-stats-top')][.//div[contains(@class, 'role-stats-title') and contains(text(), 'Trade kills percentage')]]//div[contains(@class, 'role-stats-data')]/text()"
-        ASSISTED_KILLS_PERCENTAGE = "//div[contains(@class, 'stats-side-combined')]//div[contains(@class, 'role-stats-top')][.//div[contains(@class, 'role-stats-title') and contains(text(), 'Assisted kills percentage')]]//div[contains(@class, 'role-stats-data')]/text()"
-        DAMAGE_PER_KILL = "//div[contains(@class, 'stats-side-combined')]//div[contains(@class, 'role-stats-top')][.//div[contains(@class, 'role-stats-title') and contains(text(), 'Damage per kill')]]//div[contains(@class, 'role-stats-data')]/text()"
+        SAVED_TEAMMATE_PER_ROUND = _PER_ROUND_BASE.format(
+            title="Saved teammate per round"
+        )
+        TRADE_KILLS_PER_ROUND = _PER_ROUND_BASE.format(title="Trade kills per round")
+        TRADE_KILLS_PERCENTAGE = _TITLED_STAT_BASE.format(
+            title="Trade kills percentage"
+        )
+        ASSISTED_KILLS_PERCENTAGE = _TITLED_STAT_BASE.format(
+            title="Assisted kills percentage"
+        )
+        DAMAGE_PER_KILL = _TITLED_STAT_BASE.format(title="Damage per kill")
 
         # opening stats
-        OPENING_KILLS_PER_ROUND = "//div[contains(@data-per-round-title, 'Opening kills per round') and contains(@class, 'stats-side-combined')]//div[contains(@class, 'role-stats-data')]//text()"
-        OPENING_DEATHS_PER_ROUND = "//div[contains(@data-per-round-title, 'Opening deaths per round') and contains(@class, 'stats-side-combined')]//div[contains(@class, 'role-stats-data')]//text()"
-        OPENING_ATTEMPTS_PERCENTAGE = "//div[contains(@data-per-round-title, 'Opening attempts') and contains(@class, 'stats-side-combined')]//div[contains(@class, 'role-stats-data')]//text()"
-        OPENING_SUCCESS_PERCENTAGE = "//div[contains(@class, 'stats-side-combined')]//div[contains(@class, 'role-stats-top')][.//div[contains(@class, 'role-stats-title') and contains(text(), 'Opening success')]]//div[contains(@class, 'role-stats-data')]/text()"
-        WIN_AFTER_OPENING_KILL_PERCENTAGE = "//div[contains(@class, 'stats-side-combined')]//div[contains(@class, 'role-stats-top')][.//div[contains(@class, 'role-stats-title') and contains(text(), 'Win% after opening kill')]]//div[contains(@class, 'role-stats-data')]/text()"
-        ATTACKS_PER_ROUND = "//div[contains(@data-per-round-title, 'Attacks per round') and contains(@class, 'stats-side-combined')]//div[contains(@class, 'role-stats-data')]//text()"
+        OPENING_KILLS_PER_ROUND = _PER_ROUND_BASE.format(
+            title="Opening kills per round"
+        )
+        OPENING_DEATHS_PER_ROUND = _PER_ROUND_BASE.format(
+            title="Opening deaths per round"
+        )
+        OPENING_ATTEMPTS_PERCENTAGE = _PER_ROUND_BASE.format(title="Opening attempts")
+        OPENING_SUCCESS_PERCENTAGE = _TITLED_STAT_BASE.format(title="Opening success")
+        WIN_AFTER_OPENING_KILL_PERCENTAGE = _TITLED_STAT_BASE.format(
+            title="Win% after opening kill"
+        )
+        ATTACKS_PER_ROUND = _PER_ROUND_BASE.format(title="Attacks per round")
 
         # clutching stats
-        CLUTCH_POINTS_PER_ROUND = "//div[contains(@data-per-round-title, 'Clutch points per round') and contains(@class, 'stats-side-combined')]//div[contains(@class, 'role-stats-data')]//text()"
-        LAST_ALIVE_PERCENTAGE = "//div[contains(@class, 'stats-side-combined')]//div[contains(@class, 'role-stats-top')][.//div[contains(@class, 'role-stats-title') and contains(text(), 'Last alive percentage')]]//div[contains(@class, 'role-stats-data')]/text()"
-        _1v1_WIN_PERCENTAGE = "//div[contains(@class, 'stats-side-combined')]//div[contains(@class, 'role-stats-top')][.//div[contains(@class, 'role-stats-title') and contains(text(), '1on1 win percentage')]]//div[contains(@class, 'role-stats-data')]/text()"
-        TIME_ALIVE_PER_ROUND = "//div[contains(@data-per-round-title, 'Time alive per round') and contains(@class, 'stats-side-combined')]//div[contains(@class, 'role-stats-data')]//text()"
-        SAVES_PER_ROUND_LOSS_PERCENTAGE = "//div[contains(@class, 'stats-side-combined')]//div[contains(@class, 'role-stats-top')][.//div[contains(@class, 'role-stats-title') and contains(text(), 'Saves per round loss')]]//div[contains(@class, 'role-stats-data')]/text()"
+        CLUTCH_POINTS_PER_ROUND = _PER_ROUND_BASE.format(
+            title="Clutch points per round"
+        )
+        LAST_ALIVE_PERCENTAGE = _TITLED_STAT_BASE.format(title="Last alive percentage")
+        _1v1_WIN_PERCENTAGE = _TITLED_STAT_BASE.format(title="1on1 win percentage")
+        TIME_ALIVE_PER_ROUND = _PER_ROUND_BASE.format(title="Time alive per round")
+        SAVES_PER_ROUND_LOSS_PERCENTAGE = _TITLED_STAT_BASE.format(
+            title="Saves per round loss"
+        )
 
         # sniping stats
-        SNIPER_KILLS_PER_ROUND = "//div[contains(@data-per-round-title, 'Sniper kills per round') and contains(@class, 'stats-side-combined')]//div[contains(@class, 'role-stats-data')]//text()"
-        SNIPER_KILLS_PERCENTAGE = "//div[contains(@class, 'stats-side-combined')]//div[contains(@class, 'role-stats-top')][.//div[contains(@class, 'role-stats-title') and contains(text(), 'Sniper kills percentage')]]//div[contains(@class, 'role-stats-data')]/text()"
-        ROUNDS_WITH_SNIPER_KILLS_PERCENTAGE = "//div[contains(@data-per-round-title, 'Rounds with sniper kills percentage') and contains(@class, 'stats-side-combined')]//div[contains(@class, 'role-stats-data')]//text()"
-        SNIPER_MULTI_KILL_ROUNDS = "//div[contains(@data-per-round-title, 'Sniper multi-kill rounds') and contains(@class, 'stats-side-combined')]//div[contains(@class, 'role-stats-data')]//text()"
-        SNIPER_OPENING_KILLS_PER_ROUND = "//div[contains(@data-per-round-title, 'Sniper opening kills per round') and contains(@class, 'stats-side-combined')]//div[contains(@class, 'role-stats-data')]//text()"
+        SNIPER_KILLS_PER_ROUND = _PER_ROUND_BASE.format(title="Sniper kills per round")
+        SNIPER_KILLS_PERCENTAGE = _TITLED_STAT_BASE.format(
+            title="Sniper kills percentage"
+        )
+        ROUNDS_WITH_SNIPER_KILLS_PERCENTAGE = _PER_ROUND_BASE.format(
+            title="Rounds with sniper kills percentage"
+        )
+        SNIPER_MULTI_KILL_ROUNDS = _PER_ROUND_BASE.format(
+            title="Sniper multi-kill rounds"
+        )
+        SNIPER_OPENING_KILLS_PER_ROUND = _PER_ROUND_BASE.format(
+            title="Sniper opening kills per round"
+        )
 
         # utility stats
-        UTILITY_DAMAGE_PER_ROUND = "//div[contains(@data-per-round-title, 'Utility damage per round') and contains(@class, 'stats-side-combined')]//div[contains(@class, 'role-stats-data')]//text()"
-        UTILITY_KILLS_PER_100_ROUNDS = "//div[contains(@data-per-round-title, 'Utility kills per 100 rounds') and contains(@class, 'stats-side-combined')]//div[contains(@class, 'role-stats-data')]//text()"
-        FLASHES_THROWN_PER_ROUND = "//div[contains(@data-per-round-title, 'Flashes thrown per round') and contains(@class, 'stats-side-combined')]//div[contains(@class, 'role-stats-data')]//text()"
-        FLASH_ASSISTS_PER_ROUND = "//div[contains(@data-per-round-title, 'Flash assists per round') and contains(@class, 'stats-side-combined')]//div[contains(@class, 'role-stats-data')]//text()"
-        TIME_OPPONENT_FLASHED_PER_ROUND = "//div[contains(@data-per-round-title, 'Time opponent flashed per round') and contains(@class, 'stats-side-combined')]//div[contains(@class, 'role-stats-data')]//text()"
+        UTILITY_DAMAGE_PER_ROUND = _PER_ROUND_BASE.format(
+            title="Utility damage per round"
+        )
+        UTILITY_KILLS_PER_100_ROUNDS = _PER_ROUND_BASE.format(
+            title="Utility kills per 100 rounds"
+        )
+        FLASHES_THROWN_PER_ROUND = _PER_ROUND_BASE.format(
+            title="Flashes thrown per round"
+        )
+        FLASH_ASSISTS_PER_ROUND = _PER_ROUND_BASE.format(
+            title="Flash assists per round"
+        )
+        TIME_OPPONENT_FLASHED_PER_ROUND = _PER_ROUND_BASE.format(
+            title="Time opponent flashed per round"
+        )
 
     class CareerStats:
-        TOTAL_KILLS = "//div[contains(@class, 'stats-row')]/span[contains(text(),'Total kills')]/following-sibling::span[1]/text()"
-        HEADSHOT_PERCENTAGE = "//div[contains(@class, 'stats-row')]/span[contains(text(),'Headshot %')]/following-sibling::span[1]/text()"
-        TOTAL_DEATHS = "//div[contains(@class, 'stats-row')]/span[contains(text(),'Total deaths')]/following-sibling::span[1]/text()"
-        KD_RATIO = "//div[contains(@class, 'stats-row')]/span[contains(text(),'K/D Ratio')]/following-sibling::span[1]/text()"
-        DAMAGE_PER_ROUND = "//div[contains(@class, 'stats-row')]/span[contains(text(),'Damage / Round')]/following-sibling::span[1]/text()"
-        GRENADE_DMG_PER_ROUND = "//div[contains(@class, 'stats-row')]/span[contains(text(),'Grenade dmg / Round')]/following-sibling::span[1]/text()"
-        MAPS_PLAYED = "//div[contains(@class, 'stats-row')]/span[contains(text(),'Maps played')]/following-sibling::span[1]/text()"
-        ROUNDS_PLAYED = "//div[contains(@class, 'stats-row')]/span[contains(text(),'Rounds played')]/following-sibling::span[1]/text()"
-        KILLS_PER_ROUND = "//div[contains(@class, 'stats-row')]/span[contains(text(),'Kills / round')]/following-sibling::span[1]/text()"
-        ASSISTS_PER_ROUND = "//div[contains(@class, 'stats-row')]/span[contains(text(),'Assists / round')]/following-sibling::span[1]/text()"
-        DEATHS_PER_ROUND = "//div[contains(@class, 'stats-row')]/span[contains(text(),'Deaths / round')]/following-sibling::span[1]/text()"
-        SAVED_BY_TEAMMATE_PER_ROUND = "//div[contains(@class, 'stats-row')]/span[contains(text(),'Saved by teammate / round')]/following-sibling::span[1]/text()"
-        SAVED_TEAMMATES_PER_ROUND = "//div[contains(@class, 'stats-row')]/span[contains(text(),'Saved teammates / round')]/following-sibling::span[1]/text()"
-        RATING1_0 = "//div[contains(@class, 'stats-row')]/span[contains(text(),'Rating 1.0')]/following-sibling::span[1]/text()"
+        _STAT_BASE = "//div[contains(@class, 'stats-row')]/span[contains(text(),'{label}')]/following-sibling::span[1]/text()"
+
+        TOTAL_KILLS = _STAT_BASE.format(label="Total kills")
+        HEADSHOT_PERCENTAGE = _STAT_BASE.format(label="Headshot %")
+        TOTAL_DEATHS = _STAT_BASE.format(label="Total deaths")
+        KD_RATIO = _STAT_BASE.format(label="K/D Ratio")
+        DAMAGE_PER_ROUND = _STAT_BASE.format(label="Damage / Round")
+        GRENADE_DMG_PER_ROUND = _STAT_BASE.format(label="Grenade dmg / Round")
+        MAPS_PLAYED = _STAT_BASE.format(label="Maps played")
+        ROUNDS_PLAYED = _STAT_BASE.format(label="Rounds played")
+        KILLS_PER_ROUND = _STAT_BASE.format(label="Kills / round")
+        ASSISTS_PER_ROUND = _STAT_BASE.format(label="Assists / round")
+        DEATHS_PER_ROUND = _STAT_BASE.format(label="Deaths / round")
+        SAVED_BY_TEAMMATE_PER_ROUND = _STAT_BASE.format(label="Saved by teammate / round")
+        SAVED_TEAMMATES_PER_ROUND = _STAT_BASE.format(label="Saved teammates / round")
+        RATING1_0 = _STAT_BASE.format(label="Rating 1.0")

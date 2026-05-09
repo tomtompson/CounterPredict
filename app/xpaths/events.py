@@ -36,12 +36,29 @@ class Events:
         TEAM_PLACEMENT = "//div[contains(@class,'placement')]/div[not(@class)]/text()"
 
     class EventTeamStats:
+        # Base pattern
+        _TEAM_BOX_BASE = "//div[contains(@class, 'team-box') and .//a[contains(@href, '/team/{team_id}/')]]"
+
         #'teams attended' box
-        TEAM_LINEUP = "//div[contains(@class, 'team-box') and .//a[contains(@href, '/team/{team_id}/')]]//div[contains(@class, 'lineup-box')]//div[contains(@class , 'flag-align player')]//text()"
-        TEAM_PLAYER_URL = "//div[contains(@class, 'team-box') and .//a[contains(@href, '/team/{team_id}/')]]//div[contains(@class, 'lineup-box')]//div[contains(@class , 'flag-align player')]//a/@href"
-        TEAM_COACH = "//div[contains(@class, 'team-box') and .//a[contains(@href, '/team/{team_id}/')]]//div[contains(@class,'coach-text')]/parent::div//div[contains(@class, 'flag-align player')]//text()"
-        TEAM_COACH_URL = "//div[contains(@class, 'team-box') and .//a[contains(@href, '/team/{team_id}/')]]//div[contains(@class,'coach-text')]/parent::div//div[contains(@class, 'flag-align player')]//a/@href"
-        QUALIFY_METHOD = "//div[contains(@class, 'team-box') and .//a[contains(@href, '/team/{team_id}/')]]//div[contains(@class, 'sub-text event-text')]//text()"
+        TEAM_LINEUP = (
+            _TEAM_BOX_BASE
+            + "//div[contains(@class, 'lineup-box')]//div[contains(@class , 'flag-align player')]//text()"
+        )
+        TEAM_PLAYER_URL = (
+            _TEAM_BOX_BASE
+            + "//div[contains(@class, 'lineup-box')]//div[contains(@class , 'flag-align player')]//a/@href"
+        )
+        TEAM_COACH = (
+            _TEAM_BOX_BASE
+            + "//div[contains(@class,'coach-text')]/parent::div//div[contains(@class, 'flag-align player')]//text()"
+        )
+        TEAM_COACH_URL = (
+            _TEAM_BOX_BASE
+            + "//div[contains(@class,'coach-text')]/parent::div//div[contains(@class, 'flag-align player')]//a/@href"
+        )
+        QUALIFY_METHOD = (
+            _TEAM_BOX_BASE + "//div[contains(@class, 'sub-text event-text')]//text()"
+        )
 
         #'vrs ranking' box
         VRS_DATE = "//th[contains(text(), 'VRS date')]/following-sibling::td//span"
@@ -57,18 +74,21 @@ class Events:
         TEAM_PLACEMENT = "//div[@class = 'team' and .//a[contains(@href,'/team/{team_id}/')]]/following-sibling::div[not(@class)]/text()"
 
     class EventResults:
+        _TEAM_CELL_BASE = ".//td[contains(@class, 'team-cell')]"
+        _RESULT_SCORE_BASE = ".//td[contains(@class, 'result-score')]"
+
         RESULT_CONTAINER = "//div[contains(@class, 'results-all')]//div[contains(@class, 'result-con') and @data-zonedgrouping-entry-unix]"
         MATCH_ID = ".//a[contains(@class, 'a-reset')]/@href"
         TIMESTAMP = "@data-zonedgrouping-entry-unix"
-        TEAM1_NAME = ".//td[contains(@class, 'team-cell')][1]//div[contains(@class, 'team')]/text()"
-        TEAM1_LOGO = ".//td[contains(@class, 'team-cell')][1]//img[contains(@class, 'team-logo')]/@src"
-        TEAM1_SCORE = ".//td[contains(@class, 'result-score')]/span[1]/text()"
-        TEAM1_SCORE_CLASS = ".//td[contains(@class, 'result-score')]/span[1]/@class"
+        TEAM1_NAME = _TEAM_CELL_BASE + "[1]//div[contains(@class, 'team')]/text()"
+        TEAM1_LOGO = _TEAM_CELL_BASE + "[1]//img[contains(@class, 'team-logo')]/@src"
+        TEAM1_SCORE = _RESULT_SCORE_BASE + "/span[1]/text()"
+        TEAM1_SCORE_CLASS = _RESULT_SCORE_BASE + "/span[1]/@class"
 
-        TEAM2_NAME = ".//td[contains(@class, 'team-cell')][2]//div[contains(@class, 'team')]/text()"
-        TEAM2_LOGO = ".//td[contains(@class, 'team-cell')][2]//img[contains(@class, 'team-logo')]/@src"
-        TEAM2_SCORE = ".//td[contains(@class, 'result-score')]/span[2]/text()"
-        TEAM2_SCORE_CLASS = ".//td[contains(@class, 'result-score')]/span[2]/@class"
+        TEAM2_NAME = _TEAM_CELL_BASE + "[2]//div[contains(@class, 'team')]/text()"
+        TEAM2_LOGO = _TEAM_CELL_BASE + "[2]//img[contains(@class, 'team-logo')]/@src"
+        TEAM2_SCORE = _RESULT_SCORE_BASE + "/span[2]/text()"
+        TEAM2_SCORE_CLASS = _RESULT_SCORE_BASE + "/span[2]/@class"
 
         MATCH_TYPE = ".//div[contains(@class, 'map-text')]/text()"
 

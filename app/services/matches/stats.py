@@ -5,7 +5,11 @@ from dataclasses import dataclass
 from fastapi import HTTPException
 
 from app.services.base import HLTVBase
-from app.utils.utils import extract_from_url, parse_float,extract_float_from_percentage_number
+from app.utils.utils import (
+    extract_float_from_percentage_number,
+    extract_from_url,
+    parse_float,
+)
 from app.xpaths import Matches
 
 
@@ -365,21 +369,22 @@ class HLTVMatchStats(HLTVBase):
                 )
                 adr_float = parse_float(adr) if adr else None
                 rating_float = parse_float(rating) if rating else None
-                swing_float = extract_float_from_percentage_number(swing) if swing else None
-                kast_float = extract_float_from_percentage_number(kast) if kast else None
-                players_stats.append(
-                    {
-                
-                        "side": side,
-                        "nickname": nick or "",
-                        "id": player_id_clean,
-                        "kd": kd or "",
-                        "swing": swing_float,
-                        "adr": adr_float,
-                        "kast": kast_float,
-                        "rating": rating_float,
-                    }
+                swing_float = (
+                    extract_float_from_percentage_number(swing) if swing else None
                 )
+                kast_float = (
+                    extract_float_from_percentage_number(kast) if kast else None
+                )
+                players_stats.append({
+                    "side": side,
+                    "nickname": nick or "",
+                    "id": player_id_clean,
+                    "kd": kd or "",
+                    "swing": swing_float,
+                    "adr": adr_float,
+                    "kast": kast_float,
+                    "rating": rating_float,
+                })
 
             self.logger.debug(f"parsed {len(players_stats)} players for {side} side")
 
