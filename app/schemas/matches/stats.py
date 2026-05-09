@@ -4,15 +4,14 @@ from app.schemas.base import AuditMixin, HLTVBaseModel
 
 
 class PlayerStatSide(HLTVBaseModel):
-    index: int
+    nickname: str
+    id: str | None
     side: str
-    nick: str
-    player_id: str | None
     kd: str
-    swing: str
-    adr: str
-    kast: str
-    rating: str
+    swing: float
+    adr: float
+    kast: float
+    rating: float
 
 
 class TeamSideStats(HLTVBaseModel):

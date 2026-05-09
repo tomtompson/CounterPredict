@@ -345,21 +345,20 @@ def extract_age(age_str: str | None) -> int | None:
 
 def extract_float_from_percentage_number(percentage_str: str) -> float | None:
     """
-    Extract the numeric value from a percentage string in the format 'XX%'.
+    Extract the numeric value from a percentage string in the format '+XX%' or '-XX%'.
 
     Args:
-        percentage_str (str): percentage string (e.g., '28%').
+        percentage_str (str): percentage string (e.g., '+5.34%', '-5.55%', '28%').
 
     Returns:
-        float | None: extracted float value, or None if extraction fails.
+        float | None: extracted float value (positive or negative), or None if extraction fails.
     """
     if percentage_str:
-        match = re.match(r"(\d+(?:\.\d+)?)%", percentage_str)
+        match = re.match(r"([+-]?\d+(?:\.\d+)?)%", percentage_str)
         if match:
             return float(match.group(1))
-
+    
     return None
-
 
 def convert_minutes_to_seconds(minutes_str: str) -> int | None:
     """
