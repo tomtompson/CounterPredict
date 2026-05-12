@@ -1,11 +1,9 @@
-# app/schemas/matches/stats.py
-
 from app.schemas.base import AuditMixin, HLTVBaseModel
 
 
 class PlayerStatSide(HLTVBaseModel):
     nickname: str
-    id: str | None
+    id: int | None
     side: str
     kd: str
     swing: float
@@ -20,14 +18,14 @@ class TeamSideStats(HLTVBaseModel):
 
 
 class MapScore(HLTVBaseModel):
-    score: str | None
-    ct: str | None
-    tr: str | None
+    score: int | None
+    ct: int | None
+    tr: int | None
 
 
 class MapStats(HLTVBaseModel):
     map_index: int
-    map_stats_id: str | None
+    map_stats_id: int | None
     map_name: str | None
     team1_score: MapScore
     team2_score: MapScore
@@ -37,13 +35,13 @@ class MapStats(HLTVBaseModel):
 
 class TeamInfo(HLTVBaseModel):
     name: str
-    id: str | None
-    score: str
+    id: int | None
+    score: int
 
 
 class EventInfo(HLTVBaseModel):
     name: str | None
-    id: str | None
+    id: int | None
 
 
 class MatchInfo(HLTVBaseModel):
@@ -51,7 +49,7 @@ class MatchInfo(HLTVBaseModel):
     team2: TeamInfo
     match_date: str | None
     match_time: str | None
-    unix_timestamp: str | None
+    unix_timestamp: int | None
     event: EventInfo
 
 

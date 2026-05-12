@@ -21,5 +21,5 @@ class PersonalAchievementDetail(HLTVBaseModel):
 
 
 class PlayerPersonalAchievements(HLTVBaseModel, AuditMixin):
-    id: str
+    id: int
     personal_achievements: PersonalAchievementDetail | None = None

@@ -17,5 +17,5 @@ class PlayerCareerStatsDetails(HLTVBaseModel):
 
 
 class PlayerCareerStats(HLTVBaseModel, AuditMixin):
-    id: str
+    id: int
     stats: PlayerCareerStatsDetails | None = None

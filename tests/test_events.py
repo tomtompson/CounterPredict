@@ -15,7 +15,7 @@ def test_search_events(client):
     data = response.json()
     assert data["query"] == EVENTS_SEARCH.query
     ids = [r["id"] for r in data["results"]]
-    assert "3883" in ids  # IEM Katowice 2019
+    assert 3883 in ids  # IEM Katowice 2019
 
 
 def test_get_event_profile(client):

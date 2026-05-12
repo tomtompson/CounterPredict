@@ -4,7 +4,7 @@ from app.schemas.base import AuditMixin, HLTVBaseModel
 
 
 class PlayerProfile(HLTVBaseModel, AuditMixin):
-    id: str
+    id: int
     url: HttpUrl
     nickname: str
     name: str
@@ -30,5 +30,5 @@ class PlayerProfile(HLTVBaseModel, AuditMixin):
     def parse_rating(cls, v: str) -> float | None:
         try:
             return float(v)
-        except ValueError, TypeError:
+        except (ValueError, TypeError):
             return None

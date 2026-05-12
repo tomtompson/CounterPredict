@@ -4,7 +4,7 @@ from app.schemas.base import AuditMixin, HLTVBaseModel
 
 
 class TeamSearchPlayersDetails(HLTVBaseModel):
-    id: str
+    id: int
     nickname: str
     name: str
     nationality: str
@@ -12,7 +12,7 @@ class TeamSearchPlayersDetails(HLTVBaseModel):
 
 
 class TeamSearchResult(HLTVBaseModel):
-    id: str
+    id: int
     name: str
     country: str
     url: HttpUrl

@@ -4,12 +4,12 @@ from app.schemas.base import AuditMixin, HLTVBaseModel
 
 
 class CoachDetails(HLTVBaseModel):
-    id: str
+    id: int
     nickname: str
 
 
 class LineupDetails(HLTVBaseModel):
-    id: str
+    id: int
     nickname: str
 
 
@@ -26,5 +26,5 @@ class TeamProfileDetails(HLTVBaseModel):
 
 
 class TeamProfile(HLTVBaseModel, AuditMixin):
-    id: str
+    id: int
     team_profile: TeamProfileDetails | None
