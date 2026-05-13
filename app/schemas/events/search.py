@@ -4,7 +4,7 @@ from app.schemas.base import AuditMixin, HLTVBaseModel
 
 
 class EventsSearchResult(HLTVBaseModel):
-    id: str
+    id: int
     name: str
     url: HttpUrl
     event_location: str

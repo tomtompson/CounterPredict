@@ -40,13 +40,12 @@ from app.schemas.players import (
 )
 from app.schemas.ranking import (
     LineupDetails as RankingLineupDetails,
-)
-from app.schemas.ranking import (
     RankingStats,
     RankingStatsDetails,
 )
 from app.schemas.teams import (
     CoachDetails,
+    LineupDetails as TeamLineupDetails,
     TeamAchievements,
     TeamProfile,
     TeamProfileDetails,
@@ -54,9 +53,6 @@ from app.schemas.teams import (
     TeamSearch,
     TeamSearchResult,
     UpcomingMatches,
-)
-from app.schemas.teams import (
-    LineupDetails as TeamLineupDetails,
 )
 
 # ---------------------------------------------------------------------------
@@ -67,7 +63,7 @@ PLAYER_SEARCH = PlayerSearch(
     query="s1mple",
     results=[
         PlayerSearchResult(
-            id="7998",
+            id=7998,
             name="Oleksandr Kostyliev",
             nickname="s1mple",
             nationality="Ukraine",
@@ -78,7 +74,7 @@ PLAYER_SEARCH = PlayerSearch(
 )
 
 PLAYER_PROFILE = PlayerProfile(
-    id="7998",
+    id=7998,
     url="https://www.hltv.org/player/7998/s1mple",
     nickname="s1mple",
     name="Oleksandr Kostyliev",
@@ -92,13 +88,13 @@ PLAYER_PROFILE = PlayerProfile(
 )
 
 PLAYER_TEAM_ACHIEVEMENTS = PlayerTeamAchievements(
-    id="7998",
+    id=7998,
     achievement_count=56,
     achievements=[],
 )
 
 PLAYER_PERSONAL_ACHIEVEMENTS = PlayerPersonalAchievements(
-    id="7998",
+    id=7998,
     personal_achievements=PersonalAchievementDetail(
         major_winner_count=1,
         major_mvp_count=1,
@@ -109,13 +105,13 @@ PLAYER_PERSONAL_ACHIEVEMENTS = PlayerPersonalAchievements(
 )
 
 PLAYER_TROPHIES = PlayerTrophies(
-    id="7998",
+    id=7998,
     trophy_count=18,
     trophies=[],
 )
 
 PLAYER_STATS = PlayerStats(
-    id="7998",
+    id=7998,
     stats=PlayerStatsRoles(
         firepower=PlayerStatsFirepower(
             kills_per_round=0.84,
@@ -175,7 +171,7 @@ PLAYER_STATS = PlayerStats(
 )
 
 PLAYER_CAREER_STATS = PlayerCareerStats(
-    id="7998",
+    id=7998,
     stats=PlayerCareerStatsDetails(
         total_kills=41402.0,
         headshot_percentage=41.2,
@@ -199,7 +195,7 @@ TEAM_SEARCH = TeamSearch(
     query="natus vincere",
     results=[
         TeamSearchResult(
-            id="4608",
+            id=4608,
             name="Natus Vincere",
             country="Europe",
             url="https://www.hltv.org/team/4608/natus-vincere",
@@ -210,7 +206,7 @@ TEAM_SEARCH = TeamSearch(
 )
 
 TEAM_PROFILE = TeamProfile(
-    id="4608",
+    id=4608,
     team_profile=TeamProfileDetails(
         name="Natus Vincere",
         valve_ranking=3,
@@ -218,33 +214,33 @@ TEAM_PROFILE = TeamProfile(
         weeks_in_top30_for_core=148,
         average_player_age=24.0,
         lineup=[
-            TeamLineupDetails(id="9816", nickname="Aleksib"),
-            TeamLineupDetails(id="14759", nickname="iM"),
-            TeamLineupDetails(id="18987", nickname="b1t"),
-            TeamLineupDetails(id="20127", nickname="w0nderful"),
-            TeamLineupDetails(id="22673", nickname="makazze"),
+            TeamLineupDetails(id=9816, nickname="Aleksib"),
+            TeamLineupDetails(id=14759, nickname="iM"),
+            TeamLineupDetails(id=18987, nickname="b1t"),
+            TeamLineupDetails(id=20127, nickname="w0nderful"),
+            TeamLineupDetails(id=22673, nickname="makazze"),
         ],
-        coach=[CoachDetails(id="472", nickname="B1ad3")],
+        coach=[CoachDetails(id=472, nickname="B1ad3")],
         logo_url=None,
         social_media=None,
     ),
 )
 
 TEAM_ACHIEVEMENTS = TeamAchievements(
-    id="4608",
+    id=4608,
     achievement_count=105,
     team_achievements=[],
 )
 
 TEAM_UPCOMING_MATCHES = UpcomingMatches(
-    team_id="4608",
+    team_id=4608,
     upcoming_matches=None,
     match_count=0,
     timezone="UTC",
 )
 
 TEAM_RESULTS = TeamResults(
-    team_id="4608",
+    team_id=4608,
     results=[],
     result_count=0,
 )
@@ -260,7 +256,7 @@ EVENTS_SEARCH = EventsSearch(
 )
 
 EVENT_PROFILE = EventProfile(
-    id="7148",
+    id=7148,
     event_profile=EventProfileDetail(
         name="PGL CS2 Major Copenhagen 2024",
         start_date="Mar 21st 2024",
@@ -271,7 +267,7 @@ EVENT_PROFILE = EventProfile(
         location_flag_url="https://www.hltv.org/img/static/flags/30x20/DK.gif",
         mvp=[
             EventMvpDetail(
-                id="19206",
+                id=19206,
                 nickname="jL",
                 event_stats="https://www.hltv.org/stats/players/19206/who?event=7148",
             )
@@ -282,8 +278,8 @@ EVENT_PROFILE = EventProfile(
 )
 
 EVENT_TEAM_STATS = EventTeamStats(
-    event_id="7148",
-    team_id="4608",
+    event_id=7148,
+    team_id=4608,
     stats=EventTeamStatsDetails(
         team_placement="1st",
         prize=[PrizeDetails(prize=500000, club_share=None)],
@@ -295,11 +291,11 @@ EVENT_TEAM_STATS = EventTeamStats(
 )
 
 EVENT_RESULTS = EventResults(
-    event_id="7148",
+    event_id=7148,
     results=[
         EventResultDetails(
             match_url="https://www.hltv.org/matches/2370727/faze-vs-natus-vincere-pgl-cs2-major-copenhagen-2024",
-            match_id="2370727",
+            match_id=2370727,
             match_date="2024-03-31",
             team1_name="FaZe",
             team1_logo=None,
@@ -325,38 +321,38 @@ RANKING_STATS = RankingStats(
     ranking_date="2026-05-11",
     ranking_stats=[
         RankingStatsDetails(
-            team_id="9565",
+            team_id=9565,
             team_name="Vitality",
             placement=1,
             hltv_points=1000,
             logo_url="https://img-cdn.hltv.org/teamlogo/yeXBldn9w8LZCgdElAenPs.png?ixlib=java-2.1.0&w=50&s=15eaba0b75250065d20162d2cb05e3e6",
             lineup=[
                 RankingLineupDetails(
-                    player_id="7322",
+                    player_id=7322,
                     nickname="apEX",
                     nationality="France",
                     picture_url="https://img-cdn.hltv.org/playerbodyshot/3M9h08qvl3YOsaRcAvKhs4.png?bg=3e4c54&h=200&ixlib=java-2.1.0&rect=121%2C0%2C467%2C467&w=200&s=35368eff8b418f421339d96c83c5cf3f",
                 ),
                 RankingLineupDetails(
-                    player_id="11816",
+                    player_id=11816,
                     nickname="ropz",
                     nationality="Estonia",
                     picture_url="https://img-cdn.hltv.org/playerbodyshot/YQ9kQQ3aop1JZQE9xJ140r.png?bg=3e4c54&h=200&ixlib=java-2.1.0&rect=117%2C8%2C467%2C467&w=200&s=6a04eac3ad99e2e75838eae47df2ee97",
                 ),
                 RankingLineupDetails(
-                    player_id="11893",
+                    player_id=11893,
                     nickname="ZywOo",
                     nationality="France",
                     picture_url="https://img-cdn.hltv.org/playerbodyshot/blnoWFtH8GUJZjhr8H0P4u.png?bg=3e4c54&h=200&ixlib=java-2.1.0&rect=121%2C8%2C467%2C467&w=200&s=b1042678b6af57a2f029eb7a5eb79c10",
                 ),
                 RankingLineupDetails(
-                    player_id="16693",
+                    player_id=16693,
                     nickname="flameZ",
                     nationality="Israel",
                     picture_url="https://img-cdn.hltv.org/playerbodyshot/LUQi5dX9boyO0uDadUGht5.png?bg=3e4c54&h=200&ixlib=java-2.1.0&rect=121%2C8%2C467%2C467&w=200&s=0d6e89c20fa62ca1e8bec46074e936cc",
                 ),
                 RankingLineupDetails(
-                    player_id="18462",
+                    player_id=18462,
                     nickname="mezii",
                     nationality="United Kingdom",
                     picture_url="https://img-cdn.hltv.org/playerbodyshot/7GVUrVLAQkgnuovRkk5Bxw.png?bg=3e4c54&h=200&ixlib=java-2.1.0&rect=117%2C8%2C467%2C467&w=200&s=a48f2791f78b51e6fefa5f54346cdb07",
@@ -387,11 +383,11 @@ MATCH_STATS = MatchStats(
     is_live=False,
     stats=MatchStatsData(
         match_info=MatchInfo(
-            team1=TeamInfo(name="Project G", id="12502", score="2"),
-            team2=TeamInfo(name="RUBY", id="12694", score="1"),
+            team1=TeamInfo(name="Project G", id=12502, score=2),
+            team2=TeamInfo(name="RUBY", id=12694, score=1),
             match_date="4th of August 2024",
             match_time="11:00",
-            unix_timestamp="1722762000000",
+            unix_timestamp=1722762000000,
             event=EventInfo(name=None, id=None),
         ),
         map_pool=[],

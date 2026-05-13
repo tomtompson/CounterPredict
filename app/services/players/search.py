@@ -53,7 +53,7 @@ class HLTVPlayerSearch(HLTVBase):
 
             results.append(
                 {
-                    "id": str(id),
+                    "id": id,
                     "name": name,
                     "nickname": nickname,
                     "nationality": nationality,

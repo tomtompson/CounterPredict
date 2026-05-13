@@ -4,19 +4,19 @@ from app.schemas.base import AuditMixin, HLTVBaseModel
 
 
 class EventEvpsDetails(HLTVBaseModel):
-    id: str
+    id: int
     nickname: str
     event_stats: HttpUrl
 
 
 class EventMvpDetail(HLTVBaseModel):
-    id: str | None
+    id: int | None
     nickname: str | None
     event_stats: HttpUrl | None
 
 
 class EventTeamDetail(HLTVBaseModel):
-    id: str
+    id: int
     name: str
     team_placement: str
 
@@ -35,5 +35,5 @@ class EventProfileDetail(HLTVBaseModel):
 
 
 class EventProfile(HLTVBaseModel, AuditMixin):
-    id: str
+    id: int
     event_profile: EventProfileDetail

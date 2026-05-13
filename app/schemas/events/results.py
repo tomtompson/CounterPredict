@@ -1,7 +1,3 @@
-# app/schemas/events/results.py
-
-from typing import List, Optional
-
 from pydantic import HttpUrl
 
 from app.schemas.base import AuditMixin, HLTVBaseModel
@@ -11,24 +7,24 @@ class EventResultDetails(HLTVBaseModel):
     """Schema for a single match result within an event."""
 
     match_url: HttpUrl
-    match_id: Optional[str]
-    match_date: Optional[str]
+    match_id: int | None
+    match_date: str | None
 
-    team1_name: Optional[str]
-    team1_logo: Optional[HttpUrl]
-    team1_score: Optional[int]
+    team1_name: str | None
+    team1_logo: HttpUrl | None
+    team1_score: int | None
 
-    team2_name: Optional[str]
-    team2_logo: Optional[HttpUrl]
-    team2_score: Optional[int]
+    team2_name: str | None
+    team2_logo: HttpUrl | None
+    team2_score: int | None
 
-    match_type: Optional[str]
-    match_won: Optional[bool]
+    match_type: str | None
+    match_won: bool | None
 
 
 class EventResults(HLTVBaseModel, AuditMixin):
     """Schema for event results response."""
 
-    event_id: str
-    results: List[EventResultDetails]
+    event_id: int
+    results: list[EventResultDetails]
     result_count: int

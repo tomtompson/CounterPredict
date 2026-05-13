@@ -4,7 +4,7 @@ from app.schemas.base import AuditMixin, HLTVBaseModel
 
 
 class TeamAchievementDetail(HLTVBaseModel):
-    id: str
+    id: int
     name: str
 
 
@@ -16,6 +16,6 @@ class TeamAchievementDetails(HLTVBaseModel):
 
 
 class PlayerTeamAchievements(HLTVBaseModel, AuditMixin):
-    id: str
+    id: int
     achievement_count: int | None = None
     achievements: list[TeamAchievementDetails] | None = None

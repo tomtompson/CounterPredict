@@ -111,7 +111,7 @@ class HLTVEventsSearch(HLTVBase):
                     )
 
                     event_data = {
-                        "id": str(event_id),
+                        "id": event_id,
                         "name": name,
                         "url": url,
                         "event_location": event_location,
