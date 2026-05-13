@@ -49,20 +49,13 @@ class Players:
 
     class Stats:
         # Base patterns
-        _STATS_SIDE_COMBINED = "//div[contains(@class, 'stats-side-combined')]"
-        _PER_ROUND_BASE = (
-            _STATS_SIDE_COMBINED
-            + "//div[contains(@data-per-round-title, '{title}') and contains(@class, 'stats-side-combined')]//div[contains(@class, 'role-stats-data')]//text()"
-        )
-        _TITLED_STAT_BASE = (
-            _STATS_SIDE_COMBINED
-            + "//div[contains(@class, 'role-stats-top')][.//div[contains(@class, 'role-stats-title') and contains(text(), '{title}')]]//div[contains(@class, 'role-stats-data')]/text()"
-        )
+        _PER_ROUND_BASE = "//div[contains(@class, 'role-stats-row') and contains(@class, 'stats-side-combined') and @data-per-round-title='{title}']//div[@class='role-stats-data']/text()"
+        _TITLED_STAT_BASE = "//div[contains(@class, 'role-stats-top')][.//div[contains(@class, 'role-stats-title') and contains(text(), '{title}')]]//div[contains(@class, 'role-stats-data')]/text()"
 
         # firepower stats
         KILLS_PER_ROUND = _PER_ROUND_BASE.format(title="Kills per round")
         KILLS_PER_ROUND_WIN = _PER_ROUND_BASE.format(title="Kills per round win")
-        DAMAGE_PER_ROUND = "//div[contains(@data-per-round-title, 'Damage per round') and not(contains(@data-per-round-title, 'Damage per round win')) and contains(@class, 'stats-side-combined')]//div[contains(@class, 'role-stats-data')]//text()"
+        DAMAGE_PER_ROUND = _PER_ROUND_BASE.format(title="Damage per round")
         DAMAGE_PER_ROUND_WIN = _PER_ROUND_BASE.format(title="Damage per round win")
         ROUNDS_WITH_A_KILL_PERCENTAGE = _PER_ROUND_BASE.format(
             title="Rounds with a kill"
@@ -133,7 +126,7 @@ class Players:
             title="Sniper kills percentage"
         )
         ROUNDS_WITH_SNIPER_KILLS_PERCENTAGE = _PER_ROUND_BASE.format(
-            title="Rounds with sniper kills percentage"
+            title="Rounds with sniper kills percentage"  # actual data-per-round-title on HLTV
         )
         SNIPER_MULTI_KILL_ROUNDS = _PER_ROUND_BASE.format(
             title="Sniper multi-kill rounds"

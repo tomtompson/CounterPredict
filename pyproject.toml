@@ -10,12 +10,13 @@ dependencies = [
     "cloudscraper>=1.2.71",
     "curl-cffi>=0.15.0",
     "fastapi>=0.136.1",
+    "httpx>=0.28.1",
     "lxml>=6.1.0",
-    "pydantic>=2.13.3",
-    "pydantic-settings>=2.14.0",
+    "pydantic>=2.13.4",
+    "pydantic-settings>=2.14.1",
     "python-dotenv>=1.2.2",
     "pytz>=2026.2",
-    "requests>=2.33.1",
+    "requests>=2.34.0",
     "slowapi>=0.1.9",
     "starlette>=1.0.0",
     "uvicorn>=0.46.0",
@@ -27,9 +28,17 @@ hltv-api = "app.main:main"
 [tool.ty.environment]
 python = ".venv"
 
+[tool.pytest.ini_options]
+pythonpath = ["."]
+
 [tool.ruff]
 [tool.ruff.lint]
 select = ["I", "RUF022"]
 
 [dependency-groups]
-dev = ["lxml-stubs>=0.5.1", "ruff>=0.15.12", "ty>=0.0.34"]
+dev = [
+    "lxml-stubs>=0.5.1",
+    "pytest>=9.0.3",
+    "ruff>=0.15.12",
+    "ty>=0.0.35",
+]
