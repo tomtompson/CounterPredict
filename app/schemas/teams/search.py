@@ -23,3 +23,14 @@ class TeamSearchResult(HLTVBaseModel):
 class TeamSearch(HLTVBaseModel, AuditMixin):
     query: str
     results: list[TeamSearchResult] | None
+
+
+class TeamListItem(HLTVBaseModel):
+    id: str
+    name: str
+    country: str | None
+    url: HttpUrl
+    team_logo_url: HttpUrl | None
+    lineup: list[TeamSearchPlayersDetails] | None
+    placement: int | None
+    hltv_points: int | None

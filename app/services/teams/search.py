@@ -1,11 +1,11 @@
 # app/services/team_search.py
-
 from dataclasses import dataclass
 
 from fastapi import HTTPException
 
 from app.services.base import HLTVBase
-from app.utils.utils import extract_country_name_from_flag_url, extract_from_url
+from app.utils.utils import clear_number_str, extract_country_name_from_flag_url, extract_from_url
+from app.xpaths import Ranking
 
 
 @dataclass
@@ -17,22 +17,30 @@ class HLTVTeamSearch(HLTVBase):
 
     """
 
-    query: str
+    query: str = None
+    top_n: int = None
 
     # ==================== INIT METHODS ====================
 
     def __post_init__(self) -> None:
         """Set up team search with query."""
         super().__post_init__()
+        if self.query is not None:
+            self.URL = f"https://www.hltv.org/search?term={self.query}"
+            self.response["query"] = self.query
 
-        self.URL = f"https://www.hltv.org/search?term={self.query}"
-        self.response["query"] = self.query
+            self.logger.info(f"searching teams with query: {self.query}")
 
-        self.logger.info(f"searching teams with query: {self.query}")
+            self.page_data = self.__fetch_json()
 
-        self.page_data = self.__fetch_json()
+            self.logger.info("team search data fetched successfully")
+        elif self.top_n is not None:
+            self.URL = "https://www.hltv.org/ranking/teams"
+            self.response["top_n"] = self.top_n
 
-        self.logger.info("team search data fetched successfully")
+            self.logger.info(f"fetching top {self.top_n} teams")
+            self.page = self.request_url_page()
+            self.logger.info("top teams page fetched successfully")
 
     # ==================== PRIVATE METHODS ====================
 
@@ -66,6 +74,131 @@ class HLTVTeamSearch(HLTVBase):
             )
 
     # ==================== PARSING METHODS ====================
+
+    @staticmethod
+    def __make_absolute_url(url: str | None) -> str | None:
+        """Convert a relative HLTV URL into an absolute URL."""
+        if not url:
+            return None
+        if url.startswith("http"):
+            return url
+        if url.startswith("//"):
+            return f"https:{url}"
+        if url.startswith("/"):
+            return f"https://www.hltv.org{url}"
+        return url
+
+    def __parse_ranking_lineup(self, team_element) -> list[dict]:
+        """
+        Parse lineup data from the ranking page team card.
+
+        Returns:
+            list[dict]: player dicts compatible with TeamSearchPlayersDetails.
+        """
+        lineup = []
+
+        try:
+            player_rows = self.get_elements_by_xpath(
+                Ranking.Stats.PLAYER_ROW,
+                element=team_element,
+            )
+
+            for player in player_rows:
+                player_nickname = self.get_text_by_xpath(
+                    Ranking.Stats.PLAYER_NICKNAME,
+                    element=player,
+                )
+                player_url = self.get_text_by_xpath(
+                    Ranking.Stats.PLAYER_URL,
+                    element=player,
+                )
+                nationality = self.get_text_by_xpath(
+                    Ranking.Stats.PLAYER_NATIONALITY,
+                    element=player,
+                )
+                player_id = extract_from_url(player_url, "id") if player_url else None
+                profile_url = self.__make_absolute_url(player_url)
+
+                if not player_id or not player_nickname or not profile_url:
+                    continue
+
+                lineup.append(
+                    {
+                        "id": str(player_id),
+                        "nickname": player_nickname,
+                        "name": player_nickname,
+                        "nationality": nationality,
+                        "profile_url": profile_url,
+                    },
+                )
+        except Exception as e:
+            self.logger.exception(f"error parsing ranking lineup: {e}")
+
+        return lineup
+
+    def __parse_top_teams(self) -> list[dict]:
+        """
+        Parse the ranking page into a plain team list for `/teams/list`.
+
+        Returns:
+            list[dict]: top-ranked team data.
+        """
+        results = []
+
+        try:
+            team_rows = self.get_elements_by_xpath(Ranking.Stats.TEAM_ROW)
+            self.logger.info(f"found {len(team_rows)} teams in ranking")
+
+            for index, team in enumerate(team_rows, start=1):
+                if index > self.top_n:
+                    break
+
+                team_name = self.get_text_by_xpath(Ranking.Stats.TEAM_NAME, element=team)
+                team_url = self.get_text_by_xpath(Ranking.Stats.TEAM_URL, element=team)
+                team_logo_url = self.get_text_by_xpath(
+                    Ranking.Stats.TEAM_LOGO_URL,
+                    element=team,
+                )
+                placement_text = self.get_text_by_xpath(
+                    Ranking.Stats.PLACEMENT,
+                    element=team,
+                )
+                points_text = self.get_text_by_xpath(
+                    Ranking.Stats.HLTV_POINTS,
+                    element=team,
+                )
+                lineup = self.__parse_ranking_lineup(team)
+
+                team_id = extract_from_url(team_url, "id") if team_url else None
+                placement = (
+                    int(clear_number_str(placement_text))
+                    if clear_number_str(placement_text)
+                    else index
+                )
+                hltv_points = (
+                    int(clear_number_str(points_text))
+                    if clear_number_str(points_text)
+                    else None
+                )
+
+                if not team_id or not team_name or not team_url:
+                    continue
+
+                results.append(
+                    {
+                        "id": str(team_id),
+                        "name": team_name,
+                        "url": self.__make_absolute_url(team_url),
+                        "team_logo_url": self.__make_absolute_url(team_logo_url),
+                        "lineup": lineup,
+                        "placement": placement,
+                        "hltv_points": hltv_points,
+                    },
+                )
+        except Exception as e:
+            self.logger.exception(f"error parsing top teams: {e}")
+
+        return results
 
     def __parse_search_results(self) -> list[dict]:
         """
@@ -169,6 +302,30 @@ class HLTVTeamSearch(HLTVBase):
         return results
 
     # ==================== PUBLIC METHODS ====================
+
+    def get_teams(self) -> list[dict]:
+        """
+        Get a ranked list of teams.
+
+        Returns:
+            list[dict]: list of team dicts with id, name, country, url, team_logo_url, lineup, placement, and hltv_points.
+        """
+        try:
+            if self.top_n is None:
+                raise HTTPException(
+                    status_code=400,
+                    detail="top_n is required for team list requests",
+                )
+
+            return self.__parse_top_teams()
+        except HTTPException:
+            raise
+        except Exception as e:
+            self.logger.exception(f"error getting team list: {e}")
+            raise HTTPException(
+                status_code=500,
+                detail=f"error getting team list: {e!s}",
+            )
 
     def search_teams(self) -> dict:
         """

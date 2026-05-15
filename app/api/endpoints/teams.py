@@ -3,6 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Query
 
 from app.schemas.teams import (
+    TeamListItem,
     TeamAchievements,
     TeamProfile,
     TeamResults,
@@ -19,6 +20,11 @@ from app.services.teams import (
 from app.utils.utils import get_common_timezones
 
 router = APIRouter()
+
+@router.get("/list", response_model=list[TeamListItem])
+def list_teams(top_n: Annotated[int, Query(ge=1)] = 50):
+    hltv = HLTVTeamSearch(top_n=top_n)
+    return hltv.get_teams()
 
 
 @router.get(

@@ -7,6 +7,7 @@ from app.schemas.teams.profile import (
 )
 from app.schemas.teams.results import TeamResultDetails, TeamResults
 from app.schemas.teams.search import (
+    TeamListItem,
     TeamSearch,
     TeamSearchPlayersDetails,
     TeamSearchResult,
@@ -18,6 +19,7 @@ __all__ = [
     "LineupDetails",
     "TeamAchievements",
     "TeamAchievementsDetails",
+    "TeamListItem",
     "TeamProfile",
     "TeamProfileDetails",
     "TeamResultDetails",
