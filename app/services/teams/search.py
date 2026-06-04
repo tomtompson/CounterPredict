@@ -278,7 +278,7 @@ class HLTVTeamSearch(HLTVBase):
                             continue
 
                     team_data = {
-                        "id": str(team_id),
+                        "id": team_id,
                         "name": name,
                         "country": country,
                         "url": url,

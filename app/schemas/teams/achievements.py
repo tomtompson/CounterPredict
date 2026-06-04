@@ -4,13 +4,13 @@ from app.schemas.base import AuditMixin, HLTVBaseModel
 
 
 class TeamAchievementsDetails(HLTVBaseModel):
-    id: str
+    id: int
     tournament_name: str
     placement: str
     team_event_stats: HttpUrl
 
 
 class TeamAchievements(HLTVBaseModel, AuditMixin):
-    id: str
+    id: int
     achievement_count: int | None
     team_achievements: list[TeamAchievementsDetails] | None

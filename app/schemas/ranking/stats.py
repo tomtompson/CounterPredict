@@ -4,14 +4,14 @@ from app.schemas.base import AuditMixin, HLTVBaseModel
 
 
 class LineupDetails(HLTVBaseModel):
-    player_id: str
+    player_id: int
     nickname: str
     nationality: str
     picture_url: HttpUrl
 
 
 class RankingStatsDetails(HLTVBaseModel):
-    team_id: str
+    team_id: int
     team_name: str
     placement: int
     hltv_points: int

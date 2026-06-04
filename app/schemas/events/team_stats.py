@@ -18,12 +18,12 @@ class VrsDetails(HLTVBaseModel):
 
 
 class CoachDetails(HLTVBaseModel):
-    id: str
+    id: int
     nickname: str
 
 
 class LineupDetails(HLTVBaseModel):
-    id: str
+    id: int
     nickname: str
     event_stats: HttpUrl
 
@@ -38,6 +38,6 @@ class EventTeamStatsDetails(HLTVBaseModel, AuditMixin):
 
 
 class EventTeamStats(HLTVBaseModel, AuditMixin):
-    event_id: str
-    team_id: str
+    event_id: int
+    team_id: int
     stats: EventTeamStatsDetails

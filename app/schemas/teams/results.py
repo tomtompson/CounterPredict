@@ -5,7 +5,7 @@ from app.schemas.base import AuditMixin, HLTVBaseModel
 
 class TeamResultDetails(HLTVBaseModel):
     match_url: HttpUrl
-    match_id: str | None
+    match_id: int | None
     match_date: str | None
     team1_name: str | None
     team1_logo: HttpUrl | None
@@ -20,6 +20,6 @@ class TeamResultDetails(HLTVBaseModel):
 
 
 class TeamResults(HLTVBaseModel, AuditMixin):
-    team_id: str
+    team_id: int
     results: list[TeamResultDetails]
     result_count: int

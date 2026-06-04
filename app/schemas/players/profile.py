@@ -4,7 +4,7 @@ from app.schemas.base import AuditMixin, HLTVBaseModel
 
 
 class PlayerProfile(HLTVBaseModel, AuditMixin):
-    id: str
+    id: int
     url: HttpUrl
     nickname: str
     name: str

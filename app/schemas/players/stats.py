@@ -73,5 +73,5 @@ class PlayerStatsRoles(HLTVBaseModel):
 
 
 class PlayerStats(HLTVBaseModel, AuditMixin):
-    id: str
+    id: int
     stats: PlayerStatsRoles | None = None
