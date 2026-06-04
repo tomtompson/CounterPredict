@@ -1,12 +1,22 @@
-from fastapi import APIRouter
+from typing import Annotated
 
-from app.schemas.events import EventProfile, EventResults, EventsSearch, EventTeamStats
+from fastapi import APIRouter, Query
+
+from app.schemas.events import (
+    EventProfile,
+    EventResults,
+    EventsSearch,
+    EventTeamStats,
+    EventUpcomingMatches,
+)
 from app.services.events import (
     HLTVEventProfile,
     HLTVEventResults,
     HLTVEventsSearch,
     HLTVEventTeamStats,
+    HLTVEventsUpcomingMatches,
 )
+from app.utils.utils import get_common_timezones
 
 router = APIRouter()
 
@@ -45,3 +55,20 @@ def get_team_event_stats(event_id: str, team_id: str):
 def get_event_results(event_id: str):
     hltv = HLTVEventResults(event_id=event_id)
     return hltv.get_event_results()
+    
+@router.get(
+    "/{event_id}/upcoming_matches",
+    response_model=EventUpcomingMatches,
+)
+def get_upcoming_matches(
+    event_id: str,
+    timezone: Annotated[
+        str,
+        Query(
+            description="list of timezeones (first is used)",
+            enum=get_common_timezones(),
+        ),
+    ] = "UTC",
+):
+    hltv = HLTVEventsUpcomingMatches(event_id=event_id)
+    return hltv.get_upcoming_matches(user_timezone=timezone)

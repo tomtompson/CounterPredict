@@ -93,3 +93,31 @@ class Events:
         MATCH_TYPE = ".//div[contains(@class, 'map-text')]/text()"
 
         MATCH_URL = ".//a[contains(@class, 'a-reset')]/@href"
+
+    class EventMatches:
+        EVENT_NAME = "//div[contains(@class, 'event-hub-title')]/text()"
+        DAY_SECTION = (
+            "//div[contains(@class, 'matches-events-list') and @match-container]"
+        )
+        DAY_HEADLINE = ".//div[contains(@class, 'matches-list-headline')]/text()"
+        DAY_HEADLINE_ALT = ".//div[contains(@class, 'section-headline')]/text()"
+        MATCH_WRAPPER = (
+            ".//div[contains(@class, 'match-wrapper') and not(@live='true')]"
+        )
+
+        MATCH_ID = "./@data-match-id"
+        TEAM_NAME = ".//div[contains(@class, 'match-teamname')]/text()"
+        TEAM_LOGO = ".//div[contains(@class, 'match-team-logo-container')]/img/@src"
+        TOURNAMENT_NAME = ".//div[@class='match-event']/text()"
+        TOURNAMENT_ID = ".//div[@class='match-event']/@data-event-id"
+        TOURNAMENT_LOGO = (
+            ".//div[contains(@class, 'match-event-logo-container')]/img/@src"
+        )
+        MATCH_TIME = ".//div[contains(@class, 'match-time')]/text()"
+        MATCH_TIMESTAMP_ATTR = ".//div[contains(@class, 'match-time')]/@data-unix"
+        MATCH_TIMESTAMP = ".//div[contains(@class, 'match-time')]/@data-unix"
+        MATCH_TYPE = ".//div[contains(@class, 'match-meta') and not(contains(text(), 'Live'))]/text()"
+        MATCH_URL = ".//a[contains(@class, 'match-info')]/@href"
+        # wraper team xpath
+        TEAM1_ID = "./@team1"
+        TEAM2_ID = "./@team2"

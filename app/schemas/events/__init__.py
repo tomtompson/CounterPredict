@@ -15,6 +15,10 @@ from app.schemas.events.team_stats import (
     PrizeDetails,
     VrsDetails,
 )
+from app.schemas.events.upcoming_matches import (
+    EventUpcomingMatchDetails,
+    EventUpcomingMatches,
+)
 
 __all__ = [
     "CoachDetails",
@@ -22,6 +26,8 @@ __all__ = [
     "EventMvpDetail",
     "EventProfile",
     "EventProfileDetail",
+    "EventUpcomingMatchDetails",
+    "EventUpcomingMatches",
     "EventResultDetails",
     "EventResults",
     "EventTeamDetail",

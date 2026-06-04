@@ -164,3 +164,86 @@ class HLTVEventsSearch(HLTVBase):
             )
 
         return self.response
+    
+    def get_event_upcoming_matches(self) -> dict:
+        """
+        Get upcoming matches for the event.
+
+        Returns:
+            dict: query, results list, total count, and success flag.
+        """
+        try:
+            if not self.page_data or not isinstance(self.page_data, list) or len(self.page_data) == 0:
+                self.logger.warning("unexpected data structure or empty response")
+                return {
+                    "query": self.query,
+                    "results": [],
+                    "total": 0,
+                    "success": True,
+                }
+
+            events = self.page_data[0].get("events", [])
+            event = next((e for e in events if str(e.get("id")) == self.query), None)
+
+            if not event:
+                self.logger.warning(f"event with id {self.query} not found in search results")
+                return {
+                    "query": self.query,
+                    "results": [],
+                    "total": 0,
+                    "success": True,
+                }
+
+            matches_path = event.get("eventMatchesLocation")
+            if not matches_path:
+                self.logger.info(f"no matches found for event {self.query}")
+                return {
+                    "query": self.query,
+                    "results": [],
+                    "total": 0,
+                    "success": True,
+                }
+
+            matches_url = f"https://www.hltv.org{matches_path}"
+            self.logger.debug(f"fetching upcoming matches from {matches_url}")
+
+            res = self.make_request(matches_url)
+            matches_data = res.json()
+
+            results = []
+            for idx, match in enumerate(matches_data.get("matches", [])):
+                try:
+                    match_id = match.get("id")
+                    if not match_id:
+                        self.logger.debug(f"skipping match {idx}: missing id")
+                        continue
+
+                    team1 = match.get("team1", {}).get("name")
+                    team2 = match.get("team2", {}).get("name")
+                    time_str = match.get("time")
+                    map_name = match.get("map")
+
+                    match_data = {
+                        "id": str(match_id),
+                        "team1": team1,
+                        "team2": team2,
+                        "time": time_str,
+                        "map": map_name,
+                    }
+                    results.append(match_data)
+
+                except Exception as e:
+                    self.logger.exception(f"error parsing match {idx}: {e}")
+                    continue
+
+            self.response["query"] = self.query
+            self.response["results"] = results
+            self.response["total"] = len(results)
+            self.response["success"] = True 
+        except Exception as e:
+            self.logger.exception(f"error in search_events: {e}")
+            raise HTTPException(
+                status_code=500,
+                detail=f"error searching events: {e!s}",
+            )
+        return self.response

@@ -25,7 +25,7 @@ class HLTVEventResults(HLTVBase):
 
         self.use_flaresolverr = True
         self.response["event_id"] = self.event_id
-        self.URL = f"https://www.hltv.org/results?event={self.event_id}"
+        self.URL = f"https://www.hltv.org/events/{self.event_id}/matches"
 
     # ==================== PRIVATE METHODS ====================
 

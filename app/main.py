@@ -1,3 +1,5 @@
+import logging
+
 import uvicorn
 from fastapi import FastAPI
 from slowapi import Limiter, _rate_limit_exceeded_handler
@@ -9,6 +11,11 @@ from starlette.responses import RedirectResponse
 from app.api.api import api_router
 from app.settings import settings
 from app.utils.ntf import notify_request
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+)
 
 limiter = Limiter(
     key_func=get_remote_address,
