@@ -6,6 +6,9 @@
 # $ git config --global mergetool.keepBackup false
 *.orig
 
+# Data for training model ---- no ready yet
+data/
+
 # Created by git when using merge tools for conflicts
 *.BACKUP.*
 *.BASE.*

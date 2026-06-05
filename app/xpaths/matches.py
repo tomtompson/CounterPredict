@@ -270,3 +270,39 @@ class Matches:
             _PLAYER_ROWS_BASE.format(cls="tstats hidden", t=2)
             + "//td[contains(@class,'rating text-center')]/text()"
         )
+
+        
+
+    class MatchPastPlayersStats:
+        PLAYER_ID = (
+            "//div[contains(@class, 'lineup')]//a[contains(@href, '/player/')]/@href"
+            " | //td[contains(@class, 'players')]//a[contains(@href, '/player/')]/@href"
+        )
+
+        SUMMARY_STAT_BOXES = "//div[contains(@class, 'player-summary-stat-box')]"
+        SUMMARY_STAT_TITLE = (
+            ".//div[contains(@class, 'player-summary-stat-box-title')]/text()"
+        )
+        SUMMARY_STAT_VALUE = (
+            ".//div[contains(@class, 'player-summary-stat-box-value')]/text()"
+            " | .//div[contains(@class, 'player-summary-stat-box-rating-data-text')]/text()"
+        )
+        ROUND_SWING = ".//div[@class='player-summary-stat-box-swing-data-text']"
+
+        _ROLE_SECTION_BASE = (
+            "//div[contains(@class, 'role-stats-section') and contains(@class, 'role-{role}')]"
+        )
+        _ROLE_SECTION_SIDE_BASE = (
+            ".//div[contains(@class, 'role-stats-section-title-wrapper') and contains(@class, '{side_class}')]"
+        )
+        _ROLE_ROW_SIDE_BASE = (
+            ".//div[contains(@class, 'role-stats-row') and contains(@class, '{side_class}')]"
+        )
+
+        ROLE_SECTION_SCORE = (
+            _ROLE_SECTION_SIDE_BASE
+            + "//div[contains(@class, 'row-stats-section-score')]/text()"
+        )
+        ROLE_ROWS = _ROLE_ROW_SIDE_BASE
+        ROLE_ROW_TITLE = ".//div[contains(@class, 'role-stats-title')]/text()"
+        ROLE_ROW_VALUE = ".//div[contains(@class, 'role-stats-data')]/text()"
