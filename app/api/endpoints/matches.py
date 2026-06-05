@@ -8,7 +8,13 @@ from app.schemas.matches import (
     MatchStats,
     TodayMatches,
 )
-from app.services.matches import HLTVLiveMatches, HLTVMatchStats, HLTVTodayMatches, HLTVMatchPastPlayersStats
+from app.services.matches import (
+    HLTVLiveMatches,
+    HLTVMatchPastPlayersStats,
+    HLTVMatchStats,
+    HLTVTodayMatches,
+    HLTVMatchUpcomingPlayersStats,
+)
 from app.utils.utils import get_common_timezones
 
 router = APIRouter()
@@ -56,3 +62,12 @@ def get_match_stats(match_id: int):
 def get_past_players_stats(match_id: int):
     hltv = HLTVMatchPastPlayersStats(match_id=match_id)
     return hltv.get_past_players_stats()
+
+
+@router.get(
+    "stats/upcoming/players/{match_id}/",
+    response_model=MatchPastPlayersStats,
+)
+def get_upcoming_players_stats(match_id: int):
+    hltv = HLTVMatchUpcomingPlayersStats(match_id=match_id)
+    return hltv.get_upcoming_players_stats()

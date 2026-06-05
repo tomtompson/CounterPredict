@@ -1,4 +1,4 @@
-# app/services/matches/past_players_stats.py
+# app/services/matches/upcoming_players_stats.py
 
 import re
 from calendar import monthrange
@@ -11,15 +11,14 @@ from app.services.base import HLTVBase
 from app.utils.utils import (
     convert_minutes_to_seconds,
     extract_float_from_percentage_number,
-    extract_from_url,
     parse_float,
 )
 from app.xpaths import Matches
 
 
 @dataclass
-class HLTVMatchPastPlayersStats(HLTVBase):
-    """Class for getting each past player's stats before a given match."""
+class HLTVMatchUpcomingPlayersStats(HLTVBase):
+    """Class for getting each upcoming match player's current stats."""
 
     ROLE_SECTIONS = (
         "firepower",
@@ -39,19 +38,17 @@ class HLTVMatchPastPlayersStats(HLTVBase):
     match_id: int
 
     def __post_init__(self) -> None:
-        """Set up match stats with match ID."""
         super().__post_init__()
 
         self.use_flaresolverr = True
         self.URL = f"https://www.hltv.org/matches/{self.match_id}/na-vs-na"
 
-        self.logger.info(f"loading match stats for match {self.match_id}")
+        self.logger.info(f"loading upcoming match page for match {self.match_id}")
         self.page = self.request_url_page()
-        self.logger.info(f"match page loaded for {self.match_id}")
+        self.logger.info(f"upcoming match page loaded for {self.match_id}")
 
     @staticmethod
     def __normalize_stat_key(label: str | None) -> str | None:
-        """Normalize HLTV summary labels into predictable snake_case keys."""
         if not label:
             return None
 
@@ -71,8 +68,16 @@ class HLTVMatchPastPlayersStats(HLTVBase):
         return normalized or None
 
     @staticmethod
+    def __normalize_player_slug(value: str | None) -> str | None:
+        if not value:
+            return None
+        slug = value.strip().lower()
+        slug = re.sub(r"'([^']+)'", r"\1", slug)
+        slug = re.sub(r"[^a-z0-9]+", "-", slug).strip("-")
+        return slug or None
+
+    @staticmethod
     def __parse_stat_value(value: str | None):
-        """Convert HLTV stat values into typed values where possible."""
         if value is None or value == "-":
             return None
         if "%" in value:
@@ -84,52 +89,71 @@ class HLTVMatchPastPlayersStats(HLTVBase):
         return numeric_value if numeric_value is not None else value
 
     @staticmethod
-    def __get_stats_date_range(match_date: str) -> tuple[str, str]:
-        end_date = datetime.strptime(match_date, "%Y-%m-%d")
-        month = end_date.month - 3
-        year = end_date.year
+    def __get_stats_date_range() -> tuple[str, str]:
+        today = datetime.now()
+        month = today.month - 3
+        year = today.year
 
         while month <= 0:
             month += 12
             year -= 1
 
-        day = min(end_date.day, monthrange(year, month)[1])
-        start_date = end_date.replace(year=year, month=month, day=day)
-        return start_date.strftime("%Y-%m-%d"), end_date.strftime("%Y-%m-%d")
+        day = min(today.day, monthrange(year, month)[1])
+        start_date = today.replace(year=year, month=month, day=day)
+        return start_date.strftime("%Y-%m-%d"), today.strftime("%Y-%m-%d")
 
-    def __parse_players(self) -> tuple[str | None, list[str]]:
-        """Extract match date and unique player URLs from the match page."""
+    def __parse_players(self) -> tuple[str, str, list[dict[str, str]]]:
         try:
-            date_string = self.get_text_by_xpath(Matches.MatchStats.MATCH_DATE)
-            cleaned_string = date_string.replace("th", "").replace("nd", "").replace("rd", "").replace("st", "")
-            dt_object = datetime.strptime(cleaned_string, "%d of %B %Y")
-            formatted_date = dt_object.strftime("%Y-%m-%d")
-            player_urls = self.get_all_by_xpath(Matches.MatchPastPlayersStats.PLAYER_ID)
-            unique_player_urls = list(dict.fromkeys(player_urls))
+            player_elements = self.get_elements_by_xpath(
+                Matches.MatchUpcomingPlayersStats.PLAYER_COMPARE,
+            )
+            start_date, end_date = self.__get_stats_date_range()
+            seen_ids = set()
+            players = []
+
+            for player_element in player_elements:
+                player_id = self.get_text_by_xpath(
+                    Matches.MatchUpcomingPlayersStats.PLAYER_ID,
+                    element=player_element,
+                )
+                player_name = self.get_text_by_xpath(
+                    Matches.MatchUpcomingPlayersStats.PLAYER_NICKNAME,
+                    element=player_element,
+                )
+                player_slug = self.__normalize_player_slug(player_name)
+
+                if not player_id or not player_slug or player_id in seen_ids:
+                    continue
+
+                seen_ids.add(player_id)
+                players.append({"id": player_id, "slug": player_slug})
 
             self.logger.info(
-                f"found {len(unique_player_urls)} players for match {self.match_id}",
+                f"found {len(players)} players for upcoming match {self.match_id}",
             )
-            return formatted_date, unique_player_urls
+            return start_date, end_date, players
         except Exception as e:
-            self.logger.error(f"Error parsing players for match {self.match_id}: {e}")
-            raise HTTPException(status_code=500, detail="Error parsing players stats")
+            self.logger.error(
+                f"Error parsing players for upcoming match {self.match_id}: {e}",
+            )
+            raise HTTPException(
+                status_code=500,
+                detail="Error parsing upcoming players stats",
+            )
 
     def get_player_stats(
         self,
         player_id: str,
         player_name: str,
-        match_date: str,
+        start_date: str,
+        end_date: str,
     ) -> dict:
-        """Get past summary and role stats for a player before the match date."""
-        player_slug = (player_name or "unknown").strip().strip("/")
-        start_date, end_date = self.__get_stats_date_range(match_date.strip())
         url = (
-            f"https://www.hltv.org/stats/players/{player_id}/{player_slug}"
+            f"https://www.hltv.org/stats/players/{player_id}/{player_name}"
             f"?startDate={start_date}&endDate={end_date}"
         )
         self.logger.info(
-            f"requesting past stats for player {player_id} from {start_date} to {end_date} from url {url}",
+            f"requesting upcoming stats for player {player_id}/{player_name} from {start_date} to {end_date} from url {url}",
         )
         page = self.request_url_page(url=url)
         stats = {"summary": {}, "roles": {}}
@@ -205,12 +229,11 @@ class HLTVMatchPastPlayersStats(HLTVBase):
                     role_section_xpath,
                     element=page,
                 )
-
                 if not role_section:
                     continue
 
-                role_data = {}
                 section_element = role_section[0]
+                role_data = {}
 
                 for side_name, side_class in self.ROLE_SIDES.items():
                     side_score = None
@@ -218,20 +241,14 @@ class HLTVMatchPastPlayersStats(HLTVBase):
                     score_xpath = Matches.MatchPastPlayersStats.ROLE_SECTION_SCORE.format(
                         side_class=side_class,
                     )
-                    score = self.get_text_by_xpath(
-                        score_xpath,
-                        element=section_element,
-                    )
+                    score = self.get_text_by_xpath(score_xpath, element=section_element)
                     if score is not None:
                         side_score = self.__parse_stat_value(score)
 
                     row_xpath = Matches.MatchPastPlayersStats.ROLE_ROWS.format(
                         side_class=side_class,
                     )
-                    rows = self.get_elements_by_xpath(
-                        row_xpath,
-                        element=section_element,
-                    )
+                    rows = self.get_elements_by_xpath(row_xpath, element=section_element)
 
                     for row in rows:
                         row_title = self.get_text_by_xpath(
@@ -256,49 +273,45 @@ class HLTVMatchPastPlayersStats(HLTVBase):
                 if role_data:
                     stats["roles"][role_name] = role_data
         except Exception as e:
-            self.logger.error(f"Error parsing past stats for player {player_id}: {e}")
-            raise HTTPException(status_code=500, detail="Error parsing player past stats")
-
-        return stats
-
-    def get_past_players_stats(self) -> dict:
-        """Get past summary stats for all players in the match."""
-        try:
-            match_date, players = self.__parse_players()
-
-            self.response["match_id"] = self.match_id
-            self.response["match_date"] = match_date
-            self.response["players"] = []
-
-            for player in players:
-                self.logger.info(
-                    f"getting past stats for player {player} in match {self.match_id}",
-                )
-                player_id_clean = extract_from_url(player, "id") if player else None
-                player_name = extract_from_url(player, "nickname") if player else None
-                self.logger.info(f"extracted player id {player_id_clean} from url {player}")
-                if not player_id_clean or not match_date:
-                    continue
-                player_stats = self.get_player_stats(
-                    player_id=player_id_clean,
-                    player_name=player_name,
-                    match_date=match_date,
-                )
-                self.response["players"].append(
-                    {
-                        "id": player_id_clean,
-                        "name": player_name,
-                        "stats": player_stats,
-                    },
-                )
-
-        except Exception as e:
             self.logger.error(
-                f"Error getting past players stats for match {self.match_id}: {e}",
+                f"Error parsing upcoming stats for player {player_id}: {e}",
             )
             raise HTTPException(
                 status_code=500,
-                detail="Error getting past players stats",
+                detail="Error parsing upcoming player stats",
+            )
+
+        return stats
+
+    def get_upcoming_players_stats(self) -> dict:
+        try:
+            start_date, end_date, players = self.__parse_players()
+
+            self.response["match_id"] = self.match_id
+            self.response["match_date"] = end_date
+            self.response["players"] = []
+
+            for player in players:
+                player_stats = self.get_player_stats(
+                    player_id=player["id"],
+                    player_name=player["slug"],
+                    start_date=start_date,
+                    end_date=end_date,
+                )
+                self.response["players"].append(
+                    {
+                        "id": player["id"],
+                        "name": player["slug"],
+                        "stats": player_stats,
+                    },
+                )
+        except Exception as e:
+            self.logger.error(
+                f"Error getting upcoming players stats for match {self.match_id}: {e}",
+            )
+            raise HTTPException(
+                status_code=500,
+                detail="Error getting upcoming players stats",
             )
 
         return self.response

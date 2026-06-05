@@ -279,15 +279,40 @@ class Matches:
             " | //td[contains(@class, 'players')]//a[contains(@href, '/player/')]/@href"
         )
 
-        SUMMARY_STAT_BOXES = "//div[contains(@class, 'player-summary-stat-box')]"
+        SUMMARY_STAT_BOXES = (
+            "//div[contains(@class, 'player-summary-stat-box-right-middle')]"
+        )
         SUMMARY_STAT_TITLE = (
-            ".//div[contains(@class, 'player-summary-stat-box-title')]/text()"
+            ".//div[contains(@class, 'player-summary-stat-box-data-description-text')"
+            " and contains(@class, 'player-summary-stat-box-data-text')]/text()"
         )
         SUMMARY_STAT_VALUE = (
-            ".//div[contains(@class, 'player-summary-stat-box-value')]/text()"
-            " | .//div[contains(@class, 'player-summary-stat-box-rating-data-text')]/text()"
+            ".//div[contains(@class, 'player-summary-stat-box-rating-data-text')]/text()"
         )
-        ROUND_SWING = ".//div[@class='player-summary-stat-box-swing-data-text']"
+        SUMMARY_STAT_T_VALUE = (
+            ".//div[contains(@class, 'player-summary-stat-box-side-rating t-rating')]"
+            "//div[contains(@class, 'player-summary-stat-box-side-rating-background-wrapper')]/text()[normalize-space()]"
+        )
+        SUMMARY_STAT_CT_VALUE = (
+            ".//div[contains(@class, 'player-summary-stat-box-side-rating ct-rating')]"
+            "//div[contains(@class, 'player-summary-stat-box-side-rating-background-wrapper')]/text()[normalize-space()]"
+        )
+        SUMMARY_DATA_ROWS = (
+            "//div[contains(@class, 'player-summary-stat-box-right-bottom')]"
+            "//div[contains(@class, 'player-summary-stat-box-data-wrapper')]"
+        )
+        SUMMARY_DATA_TITLE = (
+            ".//div[contains(@class, 'player-summary-stat-box-data-text')"
+            " and contains(@class, 'traditionalData')]/text()"
+            " | .//div[contains(@class, 'player-summary-stat-box-data-text')"
+            " and not(contains(@class, 'ecoAdjustedData'))]/text()"
+        )
+        SUMMARY_DATA_VALUE = (
+            ".//div[contains(@class, 'player-summary-stat-box-data')"
+            " and contains(@class, 'traditionalData')]/text()"
+            " | .//div[contains(@class, 'player-summary-stat-box-data')"
+            " and not(contains(@class, 'ecoAdjustedData'))]/text()"
+        )
 
         _ROLE_SECTION_BASE = (
             "//div[contains(@class, 'role-stats-section') and contains(@class, 'role-{role}')]"
@@ -306,3 +331,12 @@ class Matches:
         ROLE_ROWS = _ROLE_ROW_SIDE_BASE
         ROLE_ROW_TITLE = ".//div[contains(@class, 'role-stats-title')]/text()"
         ROLE_ROW_VALUE = ".//div[contains(@class, 'role-stats-data')]/text()"
+
+    class MatchUpcomingPlayersStats:
+        PLAYER_COMPARE = "//div[contains(@class, 'player-compare') and @data-player-id]"
+        PLAYER_ID = "./@data-player-id"
+        PLAYER_NICKNAME = (
+            ".//div[contains(@class, 'text-ellipsis')]/text()"
+            " | .//img[contains(@class, 'player-photo')]/@title"
+            " | .//img[contains(@class, 'player-photo')]/@alt"
+        )
