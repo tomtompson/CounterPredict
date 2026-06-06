@@ -1,5 +1,5 @@
-# app/services/team_search.py
 from dataclasses import dataclass
+from datetime import datetime, timedelta
 
 from fastapi import HTTPException
 
@@ -19,6 +19,7 @@ class HLTVTeamSearch(HLTVBase):
 
     query: str = None
     top_n: int = None
+    ranking_type: str = "hltv"
 
     # ==================== INIT METHODS ====================
 
@@ -35,12 +36,15 @@ class HLTVTeamSearch(HLTVBase):
 
             self.logger.info("team search data fetched successfully")
         elif self.top_n is not None:
-            self.URL = "https://www.hltv.org/ranking/teams"
+            self.URL = self.__build_ranking_url()
             self.response["top_n"] = self.top_n
+            self.response["ranking_type"] = self.ranking_type
 
-            self.logger.info(f"fetching top {self.top_n} teams")
+            self.logger.info(
+                f"fetching top {self.top_n} teams for {self.ranking_type} ranking",
+            )
             self.page = self.request_url_page()
-            self.logger.info("top teams page fetched successfully")
+            self.logger.info("top teams ranking page fetched successfully")
 
     # ==================== PRIVATE METHODS ====================
 
@@ -87,6 +91,29 @@ class HLTVTeamSearch(HLTVBase):
         if url.startswith("/"):
             return f"https://www.hltv.org{url}"
         return url
+
+    def __build_ranking_url(self) -> str:
+        """Build the ranking URL for the requested ranking type."""
+        if self.ranking_type == "hltv":
+            now = datetime.now()
+            ranking_date = now - timedelta(days=now.weekday())
+            month = ranking_date.strftime("%B").lower()
+            return (
+                f"https://www.hltv.org/ranking/teams/"
+                f"{ranking_date.year}/{month}/{ranking_date.day}"
+            )
+        if self.ranking_type == "valve":
+            now = datetime.now()
+            month = now.strftime("%B").lower()
+            return (
+                f"https://www.hltv.org/valve-ranking/teams/"
+                f"{now.year}/{month}/{now.day}"
+            )
+
+        raise HTTPException(
+            status_code=400,
+            detail="invalid ranking_type: expected 'hltv' or 'valve'",
+        )
 
     def __parse_ranking_lineup(self, team_element) -> list[dict]:
         """
@@ -175,7 +202,7 @@ class HLTVTeamSearch(HLTVBase):
                     if clear_number_str(placement_text)
                     else index
                 )
-                hltv_points = (
+                points = (
                     int(clear_number_str(points_text))
                     if clear_number_str(points_text)
                     else None
@@ -192,7 +219,8 @@ class HLTVTeamSearch(HLTVBase):
                         "team_logo_url": self.__make_absolute_url(team_logo_url),
                         "lineup": lineup,
                         "placement": placement,
-                        "hltv_points": hltv_points,
+                        "hltv_points": points if self.ranking_type == "hltv" else None,
+                        "valve_points": points if self.ranking_type == "valve" else None,
                     },
                 )
         except Exception as e:
@@ -303,9 +331,9 @@ class HLTVTeamSearch(HLTVBase):
 
     # ==================== PUBLIC METHODS ====================
 
-    def get_teams(self) -> list[dict]:
+    def __get_ranking_teams(self) -> list[dict]:
         """
-        Get a ranked list of teams.
+        Get a ranked list of teams for the configured ranking type.
 
         Returns:
             list[dict]: list of team dicts with id, name, country, url, team_logo_url, lineup, placement, and hltv_points.
@@ -326,6 +354,18 @@ class HLTVTeamSearch(HLTVBase):
                 status_code=500,
                 detail=f"error getting team list: {e!s}",
             )
+
+    def get_hltv_teams(self) -> list[dict]:
+        """Get the HLTV ranking team list."""
+        return self.__get_ranking_teams()
+
+    def get_world_ranking_teams(self) -> list[dict]:
+        """Get the Valve world ranking team list for the current date."""
+        return self.__get_ranking_teams()
+
+    def get_teams(self) -> list[dict]:
+        """Backward-compatible alias for the HLTV ranking team list."""
+        return self.get_hltv_teams()
 
     def search_teams(self) -> dict:
         """

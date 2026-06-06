@@ -21,10 +21,17 @@ from app.utils.utils import get_common_timezones
 
 router = APIRouter()
 
-@router.get("/list", response_model=list[TeamListItem])
-def list_teams(top_n: int = 50):
-    hltv = HLTVTeamSearch(top_n=top_n)
-    return hltv.get_teams()
+
+@router.get("/hltv-ranking", response_model=list[TeamListItem])
+def list_hltv_ranking(top_n: int = 50):
+    hltv = HLTVTeamSearch(top_n=top_n, ranking_type="hltv")
+    return hltv.get_hltv_teams()
+
+
+@router.get("/world-ranking", response_model=list[TeamListItem])
+def list_world_ranking(top_n: int = 50):
+    hltv = HLTVTeamSearch(top_n=top_n, ranking_type="valve")
+    return hltv.get_world_ranking_teams()
 
 
 @router.get(

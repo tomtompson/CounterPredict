@@ -7,7 +7,7 @@
 *.orig
 
 # Data for training model ---- no ready yet
-data/
+# data/
 
 # Created by git when using merge tools for conflicts
 *.BACKUP.*

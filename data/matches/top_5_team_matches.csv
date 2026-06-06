@@ -1,0 +1,25 @@
+match_id,team_1,team_score,team_2,team2_score,team_1_winner,match_date,event_name
+2394174,Vitality,1,Natus Vincere,2,False,2026-05-16,IEM Atlanta 2026
+2393350,Vitality,3,Natus Vincere,0,True,2026-05-03,BLAST Rivals 2026 Season 1
+2393245,Vitality,3,Spirit,0,True,2026-04-19,IEM Rio 2026
+2393241,Vitality,2,Natus Vincere,0,True,2026-04-17,IEM Rio 2026
+2393236,Vitality,1,Falcons,2,False,2026-04-15,IEM Rio 2026
+2394156,Spirit,3,Falcons,0,True,2026-05-17,PGL Astana 2026
+2393242,Spirit,2,Falcons,0,True,2026-04-18,IEM Rio 2026
+2393226,Spirit,0,Falcons,2,False,2026-04-14,IEM Rio 2026
+2389647,Spirit,2,Natus Vincere,0,True,2026-02-01,IEM Kraków 2026
+2388128,Spirit,0,Vitality,2,False,2025-12-13,StarLadder Budapest Major 2025
+2394228,Falcons,1,Legacy,3,False,2026-05-24,CS Asia Championships 2026
+2394219,Falcons,2,Legacy,0,True,2026-05-22,CS Asia Championships 2026
+2391757,Falcons,1,Natus Vincere,2,False,2026-03-20,BLAST Open Rotterdam 2026
+2389279,Falcons,2,Vitality,1,True,2026-01-24,BLAST Bounty 2026 Season 1 Finals
+2388125,Falcons,0,Spirit,2,False,2025-12-11,StarLadder Budapest Major 2025
+2394171,Natus Vincere,1,Legacy,2,False,2026-05-14,IEM Atlanta 2026
+2391775,Natus Vincere,0,Vitality,3,False,2026-03-29,BLAST Open Rotterdam 2026
+2391128,Natus Vincere,0,Legacy,2,False,2026-03-09,ESL Pro League Season 23 Stage 2
+2388115,Natus Vincere,0,Vitality,2,False,2025-12-06,StarLadder Budapest Major 2025
+2385938,Natus Vincere,0,Falcons,2,False,2025-10-05,ESL Pro League Season 22
+2385300,Legacy,0,Falcons,2,False,2025-09-14,FISSURE Playground 2
+2384149,Legacy,0,Vitality,2,False,2025-08-10,BLAST Bounty 2025 Season 2
+2382432,Legacy,13,Vitality,3,True,2025-06-12,BLAST.tv Austin Major 2025
+2382375,Legacy,0,Vitality,2,False,2025-05-19,IEM Dallas 2025

@@ -2,6 +2,7 @@
 
 import re
 from calendar import monthrange
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from datetime import datetime
 
@@ -20,6 +21,7 @@ from app.xpaths import Matches
 class HLTVMatchUpcomingPlayersStats(HLTVBase):
     """Class for getting each upcoming match player's current stats."""
 
+    MAX_WORKERS = 4
     ROLE_SECTIONS = (
         "firepower",
         "entrying",
@@ -283,6 +285,29 @@ class HLTVMatchUpcomingPlayersStats(HLTVBase):
 
         return stats
 
+    def __fetch_player_result(
+        self,
+        player: dict[str, str],
+        start_date: str,
+        end_date: str,
+    ) -> dict | None:
+        player_id = player.get("id")
+        player_slug = player.get("slug")
+        if not player_id or not player_slug:
+            return None
+
+        player_stats = self.get_player_stats(
+            player_id=player_id,
+            player_name=player_slug,
+            start_date=start_date,
+            end_date=end_date,
+        )
+        return {
+            "id": player_id,
+            "name": player_slug,
+            "stats": player_stats,
+        }
+
     def get_upcoming_players_stats(self) -> dict:
         try:
             start_date, end_date, players = self.__parse_players()
@@ -291,20 +316,27 @@ class HLTVMatchUpcomingPlayersStats(HLTVBase):
             self.response["match_date"] = end_date
             self.response["players"] = []
 
-            for player in players:
-                player_stats = self.get_player_stats(
-                    player_id=player["id"],
-                    player_name=player["slug"],
-                    start_date=start_date,
-                    end_date=end_date,
-                )
-                self.response["players"].append(
-                    {
-                        "id": player["id"],
-                        "name": player["slug"],
-                        "stats": player_stats,
-                    },
-                )
+            max_workers = min(self.MAX_WORKERS, len(players)) or 1
+            ordered_results: list[dict | None] = [None] * len(players)
+
+            with ThreadPoolExecutor(max_workers=max_workers) as executor:
+                future_to_index = {
+                    executor.submit(
+                        self.__fetch_player_result,
+                        player,
+                        start_date,
+                        end_date,
+                    ): index
+                    for index, player in enumerate(players)
+                }
+
+                for future in as_completed(future_to_index):
+                    index = future_to_index[future]
+                    ordered_results[index] = future.result()
+
+            self.response["players"] = [
+                result for result in ordered_results if result is not None
+            ]
         except Exception as e:
             self.logger.error(
                 f"Error getting upcoming players stats for match {self.match_id}: {e}",

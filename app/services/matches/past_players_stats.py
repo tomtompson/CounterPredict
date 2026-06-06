@@ -2,6 +2,7 @@
 
 import re
 from calendar import monthrange
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from datetime import datetime
 
@@ -21,6 +22,7 @@ from app.xpaths import Matches
 class HLTVMatchPastPlayersStats(HLTVBase):
     """Class for getting each past player's stats before a given match."""
 
+    MAX_WORKERS = 4
     ROLE_SECTIONS = (
         "firepower",
         "entrying",
@@ -101,7 +103,7 @@ class HLTVMatchPastPlayersStats(HLTVBase):
         """Extract match date and unique player URLs from the match page."""
         try:
             date_string = self.get_text_by_xpath(Matches.MatchStats.MATCH_DATE)
-            cleaned_string = date_string.replace("th", "").replace("nd", "").replace("rd", "").replace("st", "")
+            cleaned_string = re.sub(r"(\d+)(st|nd|rd|th)", r"\1", date_string or "")
             dt_object = datetime.strptime(cleaned_string, "%d of %B %Y")
             formatted_date = dt_object.strftime("%Y-%m-%d")
             player_urls = self.get_all_by_xpath(Matches.MatchPastPlayersStats.PLAYER_ID)
@@ -261,6 +263,28 @@ class HLTVMatchPastPlayersStats(HLTVBase):
 
         return stats
 
+    def __fetch_player_result(self, player: str, match_date: str) -> dict | None:
+        self.logger.info(
+            f"getting past stats for player {player} in match {self.match_id}",
+        )
+        player_id_clean = extract_from_url(player, "id") if player else None
+        player_name = extract_from_url(player, "nickname") if player else None
+        self.logger.info(f"extracted player id {player_id_clean} from url {player}")
+
+        if not player_id_clean or not match_date:
+            return None
+
+        player_stats = self.get_player_stats(
+            player_id=player_id_clean,
+            player_name=player_name,
+            match_date=match_date,
+        )
+        return {
+            "id": player_id_clean,
+            "name": player_name,
+            "stats": player_stats,
+        }
+
     def get_past_players_stats(self) -> dict:
         """Get past summary stats for all players in the match."""
         try:
@@ -270,27 +294,22 @@ class HLTVMatchPastPlayersStats(HLTVBase):
             self.response["match_date"] = match_date
             self.response["players"] = []
 
-            for player in players:
-                self.logger.info(
-                    f"getting past stats for player {player} in match {self.match_id}",
-                )
-                player_id_clean = extract_from_url(player, "id") if player else None
-                player_name = extract_from_url(player, "nickname") if player else None
-                self.logger.info(f"extracted player id {player_id_clean} from url {player}")
-                if not player_id_clean or not match_date:
-                    continue
-                player_stats = self.get_player_stats(
-                    player_id=player_id_clean,
-                    player_name=player_name,
-                    match_date=match_date,
-                )
-                self.response["players"].append(
-                    {
-                        "id": player_id_clean,
-                        "name": player_name,
-                        "stats": player_stats,
-                    },
-                )
+            max_workers = min(self.MAX_WORKERS, len(players)) or 1
+            ordered_results: list[dict | None] = [None] * len(players)
+
+            with ThreadPoolExecutor(max_workers=max_workers) as executor:
+                future_to_index = {
+                    executor.submit(self.__fetch_player_result, player, match_date): index
+                    for index, player in enumerate(players)
+                }
+
+                for future in as_completed(future_to_index):
+                    index = future_to_index[future]
+                    ordered_results[index] = future.result()
+
+            self.response["players"] = [
+                result for result in ordered_results if result is not None
+            ]
 
         except Exception as e:
             self.logger.error(

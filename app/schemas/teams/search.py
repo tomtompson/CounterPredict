@@ -33,3 +33,4 @@ class TeamListItem(HLTVBaseModel):
     lineup: list[TeamSearchPlayersDetails] | None
     placement: int | None
     hltv_points: int | None
+    valve_points: int | None
