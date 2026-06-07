@@ -13,6 +13,7 @@ from app.schemas.teams.search import (
     TeamSearchResult,
 )
 from app.schemas.teams.upcoming_matches import UpcomingMatchDetails, UpcomingMatches
+from app.schemas.teams.map_stats import TeamMapStatsResponse
 
 __all__ = [
     "CoachDetails",
@@ -29,4 +30,5 @@ __all__ = [
     "TeamSearchResult",
     "UpcomingMatchDetails",
     "UpcomingMatches",
+    "TeamMapStatsResponse",
 ]

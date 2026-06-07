@@ -3,6 +3,7 @@ from app.services.teams.profile import HLTVTeamProfile
 from app.services.teams.results import HLTVTeamResults
 from app.services.teams.search import HLTVTeamSearch
 from app.services.teams.upcoming_matches import HLTVTeamUpcomingMatches
+from app.services.teams.map_stats import HLTVTeamMapStats
 
 __all__ = [
     "HLTVTeamAchievements",
@@ -10,4 +11,5 @@ __all__ = [
     "HLTVTeamResults",
     "HLTVTeamSearch",
     "HLTVTeamUpcomingMatches",
+    "HLTVTeamMapStats",
 ]

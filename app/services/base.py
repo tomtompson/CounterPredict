@@ -13,6 +13,8 @@ from fastapi import HTTPException
 from lxml import etree
 from lxml.etree import _Element
 from requests.models import Response as RequestsResponse
+from curl_cffi.requests.exceptions import HTTPError as CurlHTTPError
+from requests.exceptions import HTTPError as RequestsHTTPError
 
 from app.settings import settings
 from app.utils.utils import trim
@@ -160,17 +162,20 @@ class HLTVBase:
             self.logger.info(f"request to {url} - status: {response.status_code}")
             response.raise_for_status()
             return response
-        except requests.exceptions.HTTPError as e:
-            if hasattr(e.response, "status_code") and e.response.status_code == 403:
-                raise HTTPException(status_code=403, detail=f"access forbidden: {url}")
+
+        except (CurlHTTPError, RequestsHTTPError) as e:
+            status_code = getattr(getattr(e, "response", None), "status_code", 500)
+
+            if status_code == 403:
+                raise HTTPException(
+                    status_code=403,
+                    detail=f"access forbidden: {url}",
+                )
+
             raise HTTPException(
-                status_code=getattr(e.response, "status_code", 500),
+                status_code=status_code,
                 detail=str(e),
             )
-        except requests.exceptions.ConnectionError:
-            raise HTTPException(status_code=500, detail=f"connection error: {url}")
-        except requests.exceptions.TooManyRedirects:
-            raise HTTPException(status_code=404, detail=f"not found: {url}")
 
     def _make_request_flaresolverr(self, url: str) -> FlareSolverrResponse:
         try:
