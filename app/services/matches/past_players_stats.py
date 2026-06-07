@@ -1,6 +1,7 @@
 # app/services/matches/past_players_stats.py
 
 import re
+import time
 from calendar import monthrange
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
@@ -23,6 +24,8 @@ class HLTVMatchPastPlayersStats(HLTVBase):
     """Class for getting each past player's stats before a given match."""
 
     MAX_WORKERS = 4
+    MAX_PLAYER_RETRIES = 3
+    RETRY_SLEEP_SECONDS = 10
     ROLE_SECTIONS = (
         "firepower",
         "entrying",
@@ -267,23 +270,44 @@ class HLTVMatchPastPlayersStats(HLTVBase):
         self.logger.info(
             f"getting past stats for player {player} in match {self.match_id}",
         )
+
         player_id_clean = extract_from_url(player, "id") if player else None
         player_name = extract_from_url(player, "nickname") if player else None
-        self.logger.info(f"extracted player id {player_id_clean} from url {player}")
 
         if not player_id_clean or not match_date:
             return None
 
-        player_stats = self.get_player_stats(
-            player_id=player_id_clean,
-            player_name=player_name,
-            match_date=match_date,
+        last_error = None
+
+        for attempt in range(1, self.MAX_PLAYER_RETRIES + 1):
+            try:
+                player_stats = self.get_player_stats(
+                    player_id=player_id_clean,
+                    player_name=player_name,
+                    match_date=match_date,
+                )
+
+                return {
+                    "id": player_id_clean,
+                    "name": player_name,
+                    "stats": player_stats,
+                }
+
+            except Exception as exc:
+                last_error = exc
+                self.logger.warning(
+                    f"failed player {player_id_clean} in match {self.match_id} "
+                    f"attempt {attempt}/{self.MAX_PLAYER_RETRIES}: {exc}",
+                )
+
+                if attempt < self.MAX_PLAYER_RETRIES:
+                    time.sleep(self.RETRY_SLEEP_SECONDS)
+
+        self.logger.error(
+            f"giving up on player {player_id_clean} in match {self.match_id}: {last_error}",
         )
-        return {
-            "id": player_id_clean,
-            "name": player_name,
-            "stats": player_stats,
-        }
+
+        return None
 
     def get_past_players_stats(self) -> dict:
         """Get past summary stats for all players in the match."""
@@ -305,7 +329,14 @@ class HLTVMatchPastPlayersStats(HLTVBase):
 
                 for future in as_completed(future_to_index):
                     index = future_to_index[future]
-                    ordered_results[index] = future.result()
+
+                    try:
+                        ordered_results[index] = future.result()
+                    except Exception as exc:
+                        self.logger.warning(
+                            f"skipping one player result in match {self.match_id}: {exc}",
+                        )
+                        ordered_results[index] = None
 
             self.response["players"] = [
                 result for result in ordered_results if result is not None

@@ -63,3 +63,8 @@ class Teams:
             ".//td[contains(@class, 'event')]//img[contains(@class, 'event-logo')]/@src"
         )
         MATCH_TYPE = ".//div[contains(@class, 'map-text')]/text()"
+
+    class MapStats:
+        MAP_BLOCKS = "//div[contains(@class, 'col')][.//div[contains(@class, 'map-pool-map-name')] and .//div[contains(@class, 'stats-rows')]]"
+        MAP_NAME = ".//div[contains(@class, 'map-pool-map-name')]/text()"
+        STATS_ROWS = ".//div[contains(@class, 'stats-row')]"

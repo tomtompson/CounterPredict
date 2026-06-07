@@ -11,9 +11,14 @@ if str(PROJECT_ROOT) not in sys.path:
 from app.services.teams import HLTVTeamSearch
 
 
-OUTPUT_FILE = Path(__file__).with_name("top_5_teams.csv")
-HLTV_LOOKUP_LIMIT = 20
-VALVE_OUTPUT_LIMIT = 5
+OUTPUT_FILE = Path(__file__).with_name("top_50_teams.csv")
+
+# Number of teams to save (HLTV is the primary ranking)
+HLTV_OUTPUT_LIMIT = 50
+
+# Number of Valve teams to fetch for matching
+VALVE_LOOKUP_LIMIT = 100
+
 FIELDNAMES = [
     "team_name",
     "id",
@@ -24,35 +29,42 @@ FIELDNAMES = [
 ]
 
 
-def fetch_top_teams(limit: int = 50) -> list[dict]:
+def fetch_top_teams(limit: int = HLTV_OUTPUT_LIMIT) -> list[dict]:
+    # Fetch enough Valve teams to maximize matches
+    valve_ranking = HLTVTeamSearch(
+        top_n=VALVE_LOOKUP_LIMIT,
+        ranking_type="valve",
+    ).get_world_ranking_teams()
+
+    # HLTV is the primary ranking source
     hltv_ranking = HLTVTeamSearch(
-        top_n=max(limit, HLTV_LOOKUP_LIMIT),
+        top_n=limit,
         ranking_type="hltv",
     ).get_hltv_teams()
-    valve_ranking = HLTVTeamSearch(top_n=limit, ranking_type="valve").get_world_ranking_teams()
-    hltv_by_id = {
+
+    valve_by_id = {
         str(team["id"]): {
-            "hltv_placement": team["placement"],
-            "hltv_points": team["hltv_points"],
+            "valve_placement": team["placement"],
+            "valve_points": team["valve_points"],
         }
-        for team in hltv_ranking
+        for team in valve_ranking
     }
 
     rows = []
 
-    for team in valve_ranking:
+    for team in hltv_ranking:
         team_id = str(team["id"])
-        hltv_team = hltv_by_id.get(team_id, {})
+        valve_team = valve_by_id.get(team_id, {})
 
         rows.append(
             {
                 "team_name": team["name"],
                 "id": team_id,
-                "hltv_placement": hltv_team.get("hltv_placement"),
-                "hltv_points": hltv_team.get("hltv_points"),
-                "valve_placement": team["placement"],
-                "valve_points": team["valve_points"],
-            },
+                "hltv_placement": team["placement"],
+                "hltv_points": team["hltv_points"],
+                "valve_placement": valve_team.get("valve_placement"),
+                "valve_points": valve_team.get("valve_points"),
+            }
         )
 
     return rows
@@ -68,7 +80,7 @@ def write_csv(rows: list[dict], output_file: Path = OUTPUT_FILE) -> Path:
 
 
 def main() -> None:
-    rows = fetch_top_teams(limit=VALVE_OUTPUT_LIMIT)
+    rows = fetch_top_teams(limit=HLTV_OUTPUT_LIMIT)
     output_file = write_csv(rows)
     print(f"saved {len(rows)} teams to {output_file}")
 

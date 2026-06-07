@@ -9,6 +9,7 @@ from app.schemas.teams import (
     TeamResults,
     TeamSearch,
     UpcomingMatches,
+    TeamMapStatsResponse,
 )
 from app.services.teams import (
     HLTVTeamAchievements,
@@ -16,6 +17,7 @@ from app.services.teams import (
     HLTVTeamResults,
     HLTVTeamSearch,
     HLTVTeamUpcomingMatches,
+    HLTVTeamMapStats,
 )
 from app.utils.utils import get_common_timezones
 
@@ -100,3 +102,11 @@ def get_team_results(
         results_data["result_count"] = len(results_data["results"])
 
     return results_data
+
+@router.get(
+    "/{team_id}/map-stats",
+    response_model=TeamMapStatsResponse,
+)
+def get_team_map_stats(team_id: str):
+    service = HLTVTeamMapStats(team_id=team_id)
+    return service.get_team_map_stats()
