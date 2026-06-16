@@ -23,7 +23,7 @@ dependencies = [
 ]
 
 [project.scripts]
-hltv-api = "app.main:main"
+counterpredict = "app.main:main"
 
 [tool.ty.environment]
 python = ".venv"
@@ -41,4 +41,12 @@ dev = [
     "pytest>=9.0.3",
     "ruff>=0.15.12",
     "ty>=0.0.35",
+]
+
+jupyter = [
+  "ipykernel>=7.3.0",
+]
+
+data=[
+    "pandas>=3.0.3",
 ]
